@@ -1,0 +1,66 @@
+[
+  {
+    "src": "assets/images/user/avatar-1.jpg",
+    "name": "John Doe",
+    "time": "2h ago",
+    "department": "Technical department",
+    "message": "2",
+    "status": "bg-success"
+  },
+  {
+    "src": "assets/images/user/avatar-2.jpg",
+    "name": "Keef ",
+    "time": "3h ago",
+    "department": "Support Executive",
+    "message": "3",
+    "status": "bg-success"
+  },
+  {
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Lazaro ",
+    "time": "yesterday",
+    "department": "Support Executive",
+    "message": "1",
+    "status": "bg-warning"
+  },
+  {
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Adeline ",
+    "time": "4/25/2021",
+    "department": "TeamWorker",
+    "message": "9",
+    "status": "bg-danger"
+  },
+  {
+    "src": "assets/images/user/avatar-1.jpg",
+    "name": "John Doe",
+    "time": "2h ago",
+    "department": "Technical department",
+    "message": "2",
+    "status": "bg-success"
+  },
+  {
+    "src": "assets/images/user/avatar-2.jpg",
+    "name": "Keef ",
+    "time": "3h ago",
+    "department": "Support Executive",
+    "message": "3",
+    "status": "bg-success"
+  },
+  {
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Lazaro ",
+    "time": "yesterday",
+    "department": "Support Executive",
+    "message": "1",
+    "status": "bg-warning"
+  },
+  {
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Adeline ",
+    "time": "4/25/2021",
+    "department": "TeamWorker",
+    "message": "9",
+    "status": "bg-danger"
+  }
+]
