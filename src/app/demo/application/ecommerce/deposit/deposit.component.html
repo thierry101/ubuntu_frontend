@@ -1,0 +1,471 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">💼 Dettes clients et acomptes</h5>
+            <button (click)="resetFilter()" class="btn btn-sm btn-outline-secondary">
+                🔄 Réinitialiser
+            </button>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end mb-4">
+
+                <!-- Recherche -->
+                <div class="col-6 col-md-3">
+                    <label class="form-label fw-semibold small text-muted">🔍 Recherchez une facture</label>
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <!-- Boutique -->
+                <div class="col-6 col-md-3" *ngIf="role === 'Admin' || role === 'Daf'">
+                    <label class="form-label fw-semibold small text-muted">🏬 Boutique / Entrepôt</label>
+                    <select (change)="filterByWhStore()" [(ngModel)]="selectWhShop" class="form-select form-select-sm">
+                        <option value="0">Choisir ...</option>
+                        <option *ngFor="let item of warehouses" [value]="item?.id">{{ item?.nameWh }}</option>
+                    </select>
+                </div>
+
+                <!-- Période + Exporter (wrapper commun) -->
+                <div class="col-12 col-md-6">
+                    <div>
+                        <!-- Période -->
+                        <div>
+                            <label class="form-label fw-semibold small text-muted">📅 Période</label>
+                            <div class="input-group input-group-sm" style="overflow:visible">
+                                <input [(ngModel)]="startDate" type="date" class="form-control"
+                                    style="min-width:0;width:0;flex:1">
+                                <input [(ngModel)]="endDate" type="date" class="form-control"
+                                    style="min-width:0;width:0;flex:1;border-left:0.5px solid #d0e4f7">
+                                <button (click)="filterStock()" class="btn btn-outline-secondary" type="button"
+                                    style="flex-shrink:0">✅ Ok</button>
+                            </div>
+                        </div>
+                        <!-- Exporter -->
+                        <div style="display:flex;align-items:flex-end">
+                            <button (click)="filterStock()" class="btn btn-sm btn-success w-100"
+                                style="white-space:nowrap">
+                                📤 Exporter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RÉSUMÉ -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="card bg-success text-white shadow-sm rounded-3">
+                        <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="small mb-1">💰 Montant total</h6>
+                                <h5 class="fw-bold mb-0">{{ amt_all_deposits | number }} {{ devise }}</h5>
+                            </div>
+                            <i class="ti ti-coin-euro fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card bg-warning text-white shadow-sm rounded-3">
+                        <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="small mb-1">📥 Montant collecté</h6>
+                                <h5 class="fw-bold mb-0">{{ amt_deposit_colllected | number }} {{ devise }}</h5>
+                            </div>
+                            <i class="ti ti-coin-euro fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card bg-danger text-white shadow-sm rounded-3">
+                        <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="small mb-1">📉 Montant restant</h6>
+                                <h5 class="fw-bold mb-0">{{ rest_amt_deposit | number }} {{ devise }}</h5>
+                            </div>
+                            <i class="ti ti-coin-euro fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <app-spinners *ngIf="isLoading" message="⏳ Chargement des factures ..."></app-spinners>
+            <app-spinners *ngIf="isLoadingItem" message="⏳ Chargement ..."></app-spinners>
+
+            <!-- TABLE DESKTOP -->
+            <div *ngIf="!isLoading" class="table-responsive mb-3 d-none d-md-block">
+                <table class="table table-hover align-middle table-bordered text-center">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th>📅 Date</th>
+                            <th>🧾 N° Facture</th>
+                            <th *ngIf="role === 'Admin' || role === 'Daf'">🏬 Boutique / Entrepôt</th>
+                            <th>👤 Client</th>
+                            <th>💵 Montant</th>
+                            <th>💵 Acompte</th>
+                            <th>💵 Reste à payer</th>
+                            <th>⚙️ Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of all_orders; trackBy: trackByOderId"
+                            [ngClass]="{ 'table-active': item?.id === idOrder }">
+                            <td>{{ item?.created_at | date:'dd/MM/yyyy à HH:mm':'':'fr' }}</td>
+                            <td class="fw-semibold">{{ item?.nberInvoice }}</td>
+                            <td *ngIf="role === 'Admin' || role === 'Daf'">{{ item?.warehouse?.nameWh }}</td>
+                            <td class="text-wrap">{{ item?.client?.name }}</td>
+                            <td>{{ item?.new_order_amount | number }} {{ devise }}</td>
+                            <td>{{ item?.amount_paid | number }} {{ devise }}</td>
+                            <td>{{ item?.amount_remaining | number }} {{ devise }}</td>
+                            <td>
+                                <button title="Voir détails" (click)="viewItems(item)"
+                                    class="btn btn-outline-info btn-sm rounded-circle me-1" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    <i class="ti ti-eye"></i>
+                                </button>
+                                <button title="Imprimer" (click)="itemToPrint(item)"
+                                    class="btn btn-primary btn-sm rounded-circle" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalSelectedFormat">
+                                    <i class="ti ti-printer"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="all_orders?.length === 0">
+                            <td colspan="6" class="text-center text-muted">😕 Aucune facture trouvée</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-order-list d-block d-md-none" *ngIf="!isLoading">
+
+                <div *ngIf="all_orders?.length === 0"
+                    style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                    😕 Aucune facture trouvée
+                </div>
+
+                <div *ngFor="let item of all_orders; trackBy: trackByOderId" class="order-card"
+                    [class.active]="item?.id === idOrder">
+
+                    <div class="order-top">
+                        <div>
+                            <div class="order-nber">{{ item?.nberInvoice }}</div>
+                            <div class="order-date">{{ item?.created_at | date:'dd/MM/yyyy à HH:mm':'':'fr' }}</div>
+                        </div>
+                        <div>
+                            <div class="order-client">{{ item?.client?.name }}</div>
+                            <div class="order-wh" *ngIf="role === 'Admin' || role === 'Daf'">
+                                {{ item?.warehouse?.nameWh }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="amounts-grid">
+                        <div class="amt-block">
+                            <span class="amt-lbl">Montant</span>
+                            <span class="amt-val total">{{ item?.new_order_amount | number }}</span>
+                        </div>
+                        <div class="amt-block">
+                            <span class="amt-lbl">Acompte</span>
+                            <span class="amt-val paid">{{ item?.amount_paid | number }}</span>
+                        </div>
+                        <div class="amt-block">
+                            <span class="amt-lbl">Reste</span>
+                            <span class="amt-val rest">{{ item?.amount_remaining | number }}</span>
+                        </div>
+                    </div>
+
+                    <div class="order-actions">
+                        <button class="btn-act btn-view" (click)="viewItems(item)" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                            👁 Détails
+                        </button>
+                        <button class="btn-act btn-print" (click)="itemToPrint(item)" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalSelectedFormat">
+                            🖨️ Imprimer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PAGINATION -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DÉTAILS FACTURE -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🧾 Détails de la facture <b>{{ order_to_print?.nberInvoice }}</b></h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+
+                    <!-- Articles -->
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle">
+                                <thead class="table-light small">
+                                    <tr>
+                                        <th>📦 Article</th>
+                                        <th>🔢 Quantité</th>
+                                        <th>💸 P.U</th>
+                                        <th>💰 Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let product of all_items">
+                                        <td class="text-wrap">{{ product?.product?.product }}</td>
+                                        <td>{{ product?.quantity | number }}</td>
+                                        <td>{{ product?.sold_price | number }} {{ devise }}</td>
+                                        <td>{{ product?.total_price | number }} {{ devise }}</td>
+                                    </tr>
+                                    <tr class="fw-semibold table-light">
+                                        <td>✅ Montant à payer :</td>
+                                        <td class="text-success">{{ order_to_print?.new_order_amount | number }} {{
+                                            devise }}
+                                        </td>
+                                        <td>✅ Réduction :</td>
+                                        <td class="text-success">{{ order_to_print?.reduction_credit_note | number }} {{
+                                            devise
+                                            }}</td>
+                                    </tr>
+                                    <tr class="fw-semibold table-light">
+                                        <td colspan="2">⚠️ Acompte :</td>
+                                        <td colspan="2" class="text-warning">{{ order_to_print?.amount_paid | number }}
+                                            {{
+                                            devise }}</td>
+                                    </tr>
+                                    <tr class="fw-semibold table-light">
+                                        <td colspan="2">🚨 Reste à payer :</td>
+                                        <td colspan="2" class="text-danger">{{ order_to_print?.amount_remaining | number
+                                            }} {{
+                                            devise }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Échelonnement -->
+                    <div class="col-md-6">
+                        <div class="bg-light rounded-3 p-3">
+                            <h6 class="fw-semibold mb-3">💰 Échelonnement de paiement</h6>
+                            <ul class="list-unstyled small mb-3">
+                                <li *ngFor="let deposit of deposits"
+                                    class="mb-3 p-3 rounded-3 border bg-light-subtle position-relative shadow-sm">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="mb-1">
+                                                <strong class="text-primary">👤 Utilisateur :</strong>
+                                                <span class="text-dark">{{ deposit?.user?.name }}</span>
+                                            </p>
+                                            <p class="mb-1">
+                                                <strong class="text-success">💵 Montant :</strong>
+                                                <span class="fw-semibold">{{ deposit?.amountPaid | number }} {{ devise
+                                                    }}</span>
+                                            </p>
+                                            <p class="mb-1">
+                                                <strong class="text-info">📅 Date :</strong>
+                                                <span>{{ deposit?.created_at | date:'dd/MM/yyyy à HH:mm':'':'fr'
+                                                    }}</span>
+                                            </p>
+                                            <p class="mb-0" *ngIf="deposit?.nextPaymentDate">
+                                                <strong class="text-warning">⏭️ Prochain paiement :</strong>
+                                                <span>{{ deposit?.nextPaymentDate | date }}</span>
+                                            </p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            <button class="btn btn-sm btn-outline-primary rounded-circle"
+                                                (click)="itemToPrintDeposit(deposit)" data-bs-toggle="modal"
+                                                data-bs-target="#exampleModalDeposit" title="🖨️ Imprimer">
+                                                <i class="ti ti-printer"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <!-- Nouveau versement -->
+                            <div class="row" *ngIf="order_to_print?.amount_remaining !== 0">
+                                <label class="form-label small fw-semibold">💶 Montant</label>
+                                <ng-container *ngFor="let item of defaultTypePayments">
+                                    <div class="col-6" *ngIf="fetchedTypePayments?.[item?.value]">
+                                        <label [for]="'input-' + item?.value" class="form-label small text-muted">
+                                            {{ item?.name }}
+                                        </label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            [id]="'input-' + item?.value" [name]="item?.value"
+                                            [(ngModel)]="amounts[item.value]" />
+                                    </div>
+                                </ng-container>
+                                <small class="text-danger">{{ errors?.deposit }}</small>
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label small fw-semibold">📅 Date prochain paiement</label>
+                                    <input [min]="minDate" type="date" [(ngModel)]="nextDate"
+                                        class="form-control form-control-sm" />
+                                    <small class="text-danger">{{ errors?.nextDate }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <button (click)="registerNewDeposit()" class="btn btn-primary btn-sm" type="button"
+                                        [disabled]="isLoadingDeposit">
+                                        <span *ngIf="!isLoadingDeposit">➕ Enregistrer</span>
+                                        <span *ngIf="isLoadingDeposit">
+                                            <span class="spinner-grow spinner-grow-sm me-1"></span> ⏳ Chargement...
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FORMAT IMPRESSION -->
+<div class="modal fade" id="exampleModalSelectedFormat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🖨️ Choisir le format d'impression</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalInvoiceDeposit" id="radio80mm">
+                    <label class="form-check-label" for="radio80mm">🧾 Impression 80mm</label>
+                </div>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="radio" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalBigFormat" id="radioA4">
+                    <label class="form-check-label" for="radioA4">📄 Impression A4</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">❌ Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ACOMPTE IMPRESSION -->
+<div class="modal fade" id="exampleModalDeposit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🧾 Facture - Acompte</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div #tableToPrint23 id="tableToPrint23" class="receipt">
+                    <div class="header text-center mb-2">
+                        <h5 class="fw-bold"> {{ settingEnterprise?.nameEtprise }}</h5>
+                        <p *ngIf="order_to_print?.warehouse?.nameWh" class="mb-0"> {{ order_to_print?.warehouse?.nameWh
+                            }}</p>
+                        <p class="small"> Date : {{ current_deposit?.created_at | date:'dd/MM/yyyy à HH:mm':'':'fr' }}
+                        </p>
+                        <hr />
+                        <h6>Acompte - Facture N° {{ order_to_print?.nberInvoice }}</h6>
+                    </div>
+                    <div class="items small">
+                        <div *ngIf="previous_deposits?.length > 0" class="mb-3">
+                            <h6 class="fw-semibold">Acomptes précédents</h6>
+                            <ul class="ps-3">
+                                <li *ngFor="let prev of previous_deposits">
+                                    Montant : {{ prev?.amountPaid | number }} {{ devise }} <br />
+                                    Date : {{ prev?.created_at | date:'dd/MM/yyyy à HH:mm':'':'fr' }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">Total facture</div>
+                            <div class="col-6">{{ order_to_print?.amountToPay | number }} {{ devise }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">Nouvel acompte</div>
+                            <div class="col-6">{{ current_deposit?.amountPaid | number }} {{ devise }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">Total des acomptes</div>
+                            <div class="col-6">{{ allTotalAmountPaid | number }} {{ devise }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">Reste à payer</div>
+                            <div class="col-6">
+                                {{ order_to_print?.amountToPay - allTotalAmountPaid | number }} {{ devise }}
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <p *ngIf="current_deposit?.nextPaymentDate" class="small">
+                        Date prochain versement : {{ current_deposit?.nextPaymentDate | date:'dd/MM/yyyy':'':'fr' }}
+                    </p>
+                    <div class="footer text-center small">
+                        <p class="mb-0">{{ settingEnterprise?.signature }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">❌ Fermer</button>
+                <button (click)="printOrderAcompte()" class="btn btn-primary btn-sm">🖨️ Imprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IMPRESSIONS -->
+<!-- <div class="modal fade" id="exampleModalInvoiceDeposit" tabindex="-1" aria-hidden="true">
+    <app-smal-invoice [order_printed]="invoice" [item_of_deposit]="item_of_deposit"></app-smal-invoice>
+</div> -->
+
+<div class="modal fade" id="exampleModalInvoiceDeposit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🧾 Facture 80/50mm</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <app-smal-invoice [order_printed]="order_to_print" [item_of_deposit]="item_of_deposit">
+                </app-smal-invoice>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL SUPPRESSION -->
+<div class="modal fade" id="exampleModalDelete" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <app-delete-confirm-modal [title]="'🗑️ Suppression de facture'"
+            [confirmMessage]="'Pour confirmer la suppression de cette facture, veuillez taper le mot'"
+            [wordToType]="'facture'" [errors]="errors" (deleteConfirmed)="deleteStock()">
+        </app-delete-confirm-modal>
+    </div>
+</div>

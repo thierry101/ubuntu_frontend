@@ -1,0 +1,13 @@
+// Angular import
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-maintain-error',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './maintain-error.component.html',
+  styleUrls: ['./maintain-error.component.scss']
+})
+export class MaintainErrorComponent {}

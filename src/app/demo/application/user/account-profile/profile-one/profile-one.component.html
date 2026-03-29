@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card border-0 shadow-sm">
+      <!-- Card Header -->
+      <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">
+          <i class="material-icons-two-tone me-2">person</i> Mon compte
+        </h5>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="row">
+          <!-- LEFT SIDE (Paramètres généraux) -->
+          <div class="col-md-8 ps-4">
+            <app-card cardTitle="⚙️ Paramètres généraux">
+              <div class="row" [formGroup]="formUser">
+                <div class="col-sm-6">
+                  <div class="form-group mb-3">
+                    <label class="form-label" for="Username">Nom</label>
+                    <input type="text" id="Username" class="form-control form-control-sm" formControlName="name" />
+                    <small class="text-danger">{{ errors?.name }}</small>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group mb-3">
+                    <label class="form-label" for="Surname">Prénom</label>
+                    <input type="text" id="Surname" class="form-control form-control-sm" formControlName="surname" />
+                    <small class="text-danger">{{ errors?.surname }}</small>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group mb-3">
+                    <label class="form-label" for="AccountPhone">
+                      Numéro de téléphone <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="AccountPhone" class="form-control form-control-sm" formControlName="phone" />
+                    <small class="text-danger">{{ errors?.phone }}</small>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group mb-3">
+                    <label class="form-label" for="AccountEmail">
+                      Adresse Email <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="AccountEmail" class="form-control form-control-sm" formControlName="email" />
+                    <small class="text-danger">{{ errors?.email }}</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer text-end">
+                <button (click)="updateProfile()" class="btn btn-success btn-sm">
+                  Mettre à jour les informations
+                </button>
+              </div>
+            </app-card>
+          </div>
+
+          <!-- RIGHT SIDE (Changer mot de passe) -->
+          <div class="col-md-4 border-end pe-4">
+            <app-card cardTitle="🔒 Changer le mot de passe">
+              <div [formGroup]="formPassword">
+                <div class="col mb-3">
+                  <label for="inputOldPassword" class="form-label">Ancien mot de passe</label>
+                  <div class="input-group">
+                    <input formControlName="oldPassword" [type]="passwordType2" id="inputOldPassword"
+                      class="form-control form-control-sm" />
+                    <button (click)="shOldPasswd()" class="btn btn-outline-secondary btn-sm" type="button">
+                      <i *ngIf="show2" class="ti ti-eye"></i>
+                      <i *ngIf="!show2" class="ti ti-eye-off"></i>
+                    </button>
+                  </div>
+                  <small class="text-danger">{{errors?.oldPassword}}</small>
+                </div>
+
+                <div class="col mb-3">
+                  <label for="inputConfirmPassword" class="form-label">Nouveau mot de passe</label>
+                  <div class="input-group">
+                    <input formControlName="newPassword" [type]="passwordType" id="inputConfirmPassword"
+                      class="form-control form-control-sm" />
+                    <button (click)="shNewPasswd()" class="btn btn-outline-secondary btn-sm" type="button">
+                      <i *ngIf="show" class="ti ti-eye"></i>
+                      <i *ngIf="!show" class="ti ti-eye-off"></i>
+                    </button>
+                  </div>
+                  <small class="text-danger">{{errors?.newPassword}}</small>
+                </div>
+              </div>
+
+              <div class="text-end mt-3">
+                <button (click)="createNewPassword()" class="btn btn-primary btn-sm">Mettre à jour le mot de
+                  passe</button>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

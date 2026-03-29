@@ -1,0 +1,190 @@
+/* ════════════════════════════════
+   FERMETURE MAGASIN — COULEURS GLOBALES
+════════════════════════════════ */
+
+/* ── CARD ── */
+.card {
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(21, 101, 192, 0.10) !important;
+    overflow: hidden !important;
+}
+
+/* ── HEADER ── */
+.card-header {
+    border-radius: 14px 14px 0 0 !important;
+    padding: 16px 20px !important;
+
+    h5 {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* ── BODY ── */
+.card-body {
+    padding: 28px 24px !important;
+
+    /* Message principal */
+    p.fw-semibold.fs-5 {
+        color: #0d1b2a !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Compte à rebours */
+    .text-muted.fs-6 {
+        color: #7a9ab8 !important;
+        font-size: 13px !important;
+        margin-bottom: 16px !important;
+
+        strong {
+            color: #1565C0 !important;
+            font-family: 'DM Mono', monospace;
+            font-size: 14px !important;
+        }
+    }
+
+    /* Bouton retour profil */
+    .btn-outline-primary {
+        border: 0.5px solid #1565C0 !important;
+        color: #1565C0 !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        padding: 8px 16px !important;
+        box-shadow: none !important;
+
+        &:hover {
+            background: #e3f2fd !important;
+            color: #1565C0 !important;
+        }
+    }
+}
+
+/* ── TABLEAU HORAIRES ── */
+.table-responsive {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    border: 0.5px solid #e6f0fa !important;
+
+    table {
+        margin-bottom: 0 !important;
+    }
+
+    thead th {
+        background: #f0f7ff !important;
+        color: #5a7a99 !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.6px !important;
+        padding: 10px 12px !important;
+        border: none !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+    }
+
+    tbody td {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        border: none !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+        color: #1a2e42 !important;
+        vertical-align: middle !important;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+
+    tbody tr:hover td {
+        background: #f8fbff !important;
+    }
+
+    .text-success {
+        color: #2e7d32 !important;
+        font-weight: 600 !important;
+    }
+
+    .text-danger {
+        color: #c62828 !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── CARD ── */
+    .card {
+        border-radius: 14px !important;
+        margin: 12px !important;
+    }
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+    }
+
+    /* ── BODY ── */
+    .card-body {
+        padding: 20px 16px !important;
+
+        p.fw-semibold.fs-5 {
+            font-size: 14px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .text-muted.fs-6 {
+            font-size: 12px !important;
+            margin-bottom: 14px !important;
+
+            strong {
+                font-size: 13px !important;
+            }
+        }
+
+        .btn-outline-primary {
+            font-size: 12px !important;
+            padding: 8px 14px !important;
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
+    }
+
+    /* ── TABLEAU MOBILE ── */
+    .table-responsive {
+        border-radius: 10px !important;
+
+        thead th {
+            font-size: 10px !important;
+            padding: 8px 10px !important;
+        }
+
+        tbody td {
+            font-size: 12px !important;
+            padding: 8px 10px !important;
+        }
+
+        /* Colonne Jour en gras */
+        tbody td:first-child {
+            font-weight: 600 !important;
+            color: #1565C0 !important;
+        }
+
+        /* Heures en monospace */
+        tbody td:nth-child(2),
+        tbody td:nth-child(3) {
+            font-family: 'DM Mono', monospace !important;
+            font-size: 12px !important;
+        }
+    }
+}

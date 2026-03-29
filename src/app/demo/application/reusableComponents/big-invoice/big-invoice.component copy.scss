@@ -1,0 +1,35 @@
+@media print {
+
+  .modal,
+  .modal-dialog,
+  .modal-content {
+    all: unset;
+  }
+
+  .receipt-print {
+    page-break-inside: avoid;
+    width: 100%;
+    max-width: 21cm;
+    margin: auto;
+    font-size: 11pt;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #ccc !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

@@ -1,0 +1,294 @@
+/* ── STYLES DE BASE ── */
+.order-box {
+    padding: 0.8rem 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.order-box .list-group {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.order-box .list-group-item {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0;
+    background-color: transparent;
+}
+
+.order-box .list-group-item .small {
+    font-size: 0.82rem;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 7px 14px !important;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+
+            .dropdown-item {
+                font-size: 12px !important;
+                padding: 10px 14px !important;
+            }
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── FILTRES ── */
+    .card-body>.row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin: 0 0 12px !important;
+
+        >[class*="col-"] {
+            width: 100% !important;
+            flex: none !important;
+            padding: 0 !important;
+        }
+
+        /* Colonnes cachées sur mobile */
+        .col-md-3.d-none.d-md-block {
+            display: none !important;
+        }
+
+        /* Boutique pleine largeur */
+        .col-12.col-md-3 {
+            grid-column: 1 / -1 !important;
+        }
+
+        /* Période pleine largeur */
+        .col-md-5 {
+            grid-column: 1 / -1 !important;
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        /* Input group dates */
+        .input-group {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: visible !important;
+
+            input[type="date"] {
+                border: none !important;
+                border-right: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 !important;
+                padding: 9px 6px !important;
+                font-size: 12px !important;
+                min-height: 40px !important;
+                flex: 1 !important;
+                width: 0 !important;
+                min-width: 0 !important;
+                box-shadow: none !important;
+
+                &:first-child {
+                    border-radius: 8px 0 0 8px !important;
+                }
+            }
+
+            .btn {
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 8px 8px 0 !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 0 12px !important;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    /* ── CONTAINER COMMANDES ── */
+    .container.py-2 {
+        padding: 0 !important;
+    }
+
+    /* ── ORDER BOX ── */
+    .order-box {
+        background: #fff !important;
+        border-radius: 12px !important;
+        border: 0.5px solid #d0e4f7 !important;
+        padding: 12px 14px !important;
+        margin-bottom: 10px !important;
+        box-shadow: none !important;
+
+        /* ── TOP LINE ── */
+        .d-flex.justify-content-between.align-items-center.border-bottom {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+            padding-bottom: 8px !important;
+            margin-bottom: 8px !important;
+
+            h6 {
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                color: #1565C0 !important;
+                margin-bottom: 2px !important;
+            }
+
+            small {
+                font-size: 11px !important;
+            }
+
+            .text-end {
+                text-align: right !important;
+
+                .fw-semibold.text-success {
+                    font-size: 14px !important;
+                    font-family: 'DM Mono', monospace;
+                }
+
+                .badge {
+                    font-size: 10px !important;
+                }
+            }
+        }
+
+        /* ── CLIENT ── */
+        .small.text-muted.mb-2 {
+            font-size: 11px !important;
+            margin-bottom: 8px !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        /* ── LIST GROUP ── */
+        .list-group {
+            margin-top: 8px !important;
+            margin-bottom: 8px !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+            border: 0.5px solid #e6f0fa !important;
+        }
+
+        .list-group-item {
+            padding: 8px 10px !important;
+            margin-bottom: 0 !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-bottom: 0.5px solid #e6f0fa !important;
+            font-size: 12px !important;
+
+            &:last-child {
+                border-bottom: none !important;
+            }
+
+            strong {
+                font-size: 12px !important;
+                color: #0d1b2a !important;
+            }
+
+            .small {
+                font-size: 11px !important;
+                color: #7a9ab8 !important;
+            }
+
+            .fw-semibold {
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                font-family: 'DM Mono', monospace !important;
+                color: #1565C0 !important;
+            }
+        }
+
+        /* ── FOOTER TVA ── */
+        .text-end.mt-2.small {
+            margin-top: 8px !important;
+
+            .badge {
+                font-size: 10px !important;
+                padding: 4px 10px !important;
+                border-radius: 20px !important;
+            }
+        }
+    }
+
+    /* ── EMPTY STATE ── */
+    .text-center.py-5 {
+        padding: 30px 0 !important;
+
+        i {
+            font-size: 2rem !important;
+        }
+
+        h6 {
+            font-size: 13px !important;
+        }
+
+        p {
+            font-size: 12px !important;
+        }
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+}

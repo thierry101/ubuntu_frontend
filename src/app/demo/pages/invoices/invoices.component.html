@@ -1,0 +1,191 @@
+<div class="">
+    <div class="card border-0 shadow-sm">
+        <!-- HEADER -->
+        <div
+            class="card-header bg-primary bg-gradient text-white d-flex align-items-center justify-content-between py-3">
+            <h5 class="mb-0 fw-semibold d-flex align-items-center">
+                📦 <span class="ms-2">Facturations</span>
+            </h5>
+        </div>
+
+        <!-- BODY -->
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="table-responsive p-4">
+
+                <!-- Pourcentage prélevé -->
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-semibold mb-0 text-secondary">
+                        Pourcentage prélevé :
+                    </h6>
+                    <span class="badge rounded-pill text-bg-primary px-3 py-2 shadow-sm fs-6">
+                        {{ percentage }} %
+                    </span>
+                </div>
+
+                <!-- Loading Spinner -->
+                <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+                <!-- TABLE -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Référence</th>
+                                <th>Mois</th>
+                                <th class="text-end">Montant</th>
+                                <th>Date limite</th>
+                                <th>Statut</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody *ngIf="allInvoices?.length; else noData">
+                            <tr *ngFor="let invoice of allInvoices; trackBy: invoice?.id" class="invoice-row">
+                                <td class="fw-medium text-dark">{{ invoice?.invoice_number }}</td>
+                                <td class="text-capitalize">
+                                    {{ returnStringAsDate(invoice?.month_invoice, invoice?.year_invoice)
+                                    | date:'MMMM/yyyy':'':'fr' }}
+                                </td>
+                                <td class="text-end fw-semibold text-dark">
+                                    {{ invoice?.amount_to_pay | number:'1.0-0' }} {{ devise }}
+                                </td>
+                                <td class="text-muted">
+                                    {{ invoice?.end_date_to_pay | date:'dd/MM/yyyy' }}
+                                </td>
+
+                                <td>
+                                    <span class="badge rounded-pill border px-3 py-2 fw-medium"
+                                        [ngClass]="getStatusClass(invoice?.status_payment)">
+                                        {{ invoice?.status_payment }}
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <button (click)="getPaymentDetail(invoice)"
+                                        class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="Payer"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                    <button *ngIf="invoice?.status_payment === 'Payée'"
+                                        class="btn btn-outline-success btn-sm rounded-circle shadow-sm mx-1"
+                                        title="Télécharger">
+                                        <i class="ti ti-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                    [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                    (pageChange)="onPageChange($event)">
+                </app-set-pagination>
+
+                <!-- Si aucune donnée -->
+                <ng-template #noData>
+                    <div class="text-center text-muted py-5">
+                        <i class="ti ti-file-off fs-2 mb-2 d-block"></i>
+                        <p class="mb-0">Aucune facture trouvée</p>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Paiement facture</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-section">
+                    <div class="payment-title">
+                        <h5>Choisissez une méthode de paiement</h5>
+                    </div>
+
+                    <div class="btn-group payment-group w-100" role="group">
+                        <ng-container *ngFor="let p of myPayments; let i = index">
+                            <!-- Wave -->
+                            <ng-container *ngIf="p?.type_payment === 'wave' && waveContries.includes(p?.country)">
+                                <input type="radio" name="paymentMethod" class="btn-check" [id]="'wave-' + i"
+                                    [value]="p?.type_payment" (click)="selectPayment($event)" [checked]="i === 0" />
+
+                                <label class="btn payment-btn payment-wave" [for]="'wave-' + i">
+                                    <img src="assets/images/payments/wave.png" class="payment-logo">
+                                    <span>Wave</span>
+                                </label>
+                            </ng-container>
+
+                            <!-- MoMo -->
+                            <ng-container *ngIf="p?.type_payment === 'momo' && momoContries.includes(p?.country)">
+                                <input type="radio" name="paymentMethod" class="btn-check" [id]="'momo-' + i"
+                                    [value]="p?.type_payment" (click)="selectPayment($event)" />
+
+                                <label class="btn payment-btn payment-momo" [for]="'momo-' + i">
+                                    <img src="assets/images/payments/mtn.png" class="payment-logo">
+                                    <span>MoMo</span>
+                                </label>
+                            </ng-container>
+
+                            <!-- Orange Money -->
+                            <ng-container *ngIf="p?.type_payment === 'orange' && orangeContries.includes(p?.country)">
+                                <input type="radio" name="paymentMethod" class="btn-check" [id]="'orange-' + i"
+                                    [value]="p?.type_payment" (click)="selectPayment($event)" />
+
+                                <label class="btn payment-btn payment-orange" [for]="'orange-' + i">
+                                    <img src="assets/images/payments/orange-money.png" class="payment-logo">
+                                    <span>Orange Money</span>
+                                </label>
+                            </ng-container>
+                        </ng-container>
+                        <small class="text-danger">{{errors?.paymentMethod}}</small>
+                    </div>
+                    <small class="text-danger">{{errors?.invoice}}</small>
+                    <p *ngIf="typePayment" class="payment-instructions">
+                        Faites un dépôt de
+                        <b>{{ amountToPay | number:'1.0-0' }} {{ devise }}</b>
+                        sur le numéro
+                        <b>{{ typePayment?.account_nber }}</b>
+                        puis envoyez-nous une capture d’écran en pièce jointe.
+                    </p>
+                </div>
+
+                <!-- Upload Section -->
+                <div *ngIf="typePayment" class="upload-box">
+                    <label class="upload-label">
+                        <input type="file" accept="image/*,application/pdf" (change)="handleFileInput($event)" hidden />
+                        📤 Télécharger une capture ou PDF
+                    </label>
+                    <small class="text-danger">{{errors?.file_payment}}</small>
+                    <!-- Image Preview -->
+                    <div class="preview-container" *ngIf="previewImage && (fileType === 'image')">
+                        <img [src]="previewImage | image" class="preview-image" alt="Aperçu capture" />
+                        <!-- <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button> -->
+                    </div>
+
+                    <!-- PDF Preview -->
+                    <div class="pdf-preview" *ngIf="fileType === 'pdf'">
+                        <div class="pdf-box">
+                            📄 <span>{{ uploadedFile?.name || "paymentInvoice.pdf" }}</span>
+                        </div>
+                        <!-- <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button> -->
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="idClosePaymentModal" type="button" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner [loading]="isSubmitPayment" label="Valider" icon="''"
+                    cssClass="btn btn-primary btn-sm" (clicked)="validPayment()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>

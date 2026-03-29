@@ -1,0 +1,353 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🏷️ Fidélisation clients
+            </h5>
+        </div>
+        <!-- Button trigger modal -->
+        <button type="button" (click)="resetForm()" class="btn btn-info" data-bs-toggle="modal"
+            data-bs-target="#exampleModal">
+            🎁 Configurer niveau de récompense
+        </button>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="row g-2 mb-3"> 
+                <div class="row g-2">
+                    <div class="col-md-4 col-sm-6" *ngFor="let item of allRewards; let i = index">
+
+                        <div class="flip-card" role="button" tabindex="0" (click)="onCardClick(item)">
+
+                            <div class="flip-card-inner">
+
+                                <!-- ================= RECTO ================= -->
+                                <div class="card carte-fidelite flip-card-front shadow"
+                                    [style.--card-color]="item?.color">
+
+                                    <div class="card-body text-center">
+                                        <img [src]="logo | image" alt="Logo" class="logo mb-2">
+                                        <h6 class="text-uppercase text-muted">Carte de fidélité</h6>
+                                        <h3 class="carte-nom">{{ item?.name_card }}</h3>
+
+                                        <p class="carte-message mt-2">
+                                            Réduction prochaine achat :
+                                            <span *ngIf="item?.rewardTypeClient === 'percentage'">
+                                                {{ item?.percentage_discount }}%
+                                            </span>
+                                            <span *ngIf="item?.rewardTypeClient === 'amt'">
+                                                {{ item?.amount_discount | number:'1.0-0' }} {{ devise }}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- ================= VERSO ================= -->
+                                <div class="card carte-fidelite flip-card-back shadow"
+                                    [style.--card-color]="item?.color">
+
+                                    <!-- Badge Modifier -->
+                                    <span class="badge bg-warning text-dark badge-edit"
+                                        (click)="$event.stopPropagation(); fillEdit(item)" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal">
+                                        <i class="bi bi-pencil"></i> <span>Modifier</span>
+                                    </span>
+
+                                    <!-- Badge Supprimer -->
+                                    <span class="badge bg-danger badge-delete"
+                                        (click)="$event.stopPropagation(); deleteCard(item)">
+                                        <i class="bi bi-trash"></i> <span>Supprimer</span>
+                                    </span>
+
+                                    <div class="card-body text-start small pt-5">
+
+                                        <h6 class="text-center fw-bold mb-2">Détails de la carte</h6>
+
+                                        <ul class="list-unstyled mb-0">
+                                            <li><strong>Base :</strong> {{ getTypeReward(item?.typeReward)?.name }}</li>
+                                            <li><strong>Période :</strong> {{ getPeriod(item?.periodReward)?.name }}
+                                            </li>
+
+                                            <li *ngIf="item?.amount_reward">
+                                                <strong>Montant :</strong>
+                                                {{ item?.amount_reward | number:'1.0-0' }} {{ devise }}
+                                            </li>
+
+                                            <li *ngIf="item?.nber_cmdes">
+                                                <strong>Nbre cmdes :</strong>
+                                                {{ item?.nber_cmdes | number:'1.0-0' }}
+                                            </li>
+
+                                            <li><strong>Type :</strong> {{ getTypeRw(item?.rewardTypeClient)?.name }}
+                                            </li>
+
+                                            <li *ngIf="item?.percentage_discount">
+                                                <strong>Remise :</strong> {{ item?.percentage_discount }} %
+                                            </li>
+
+                                            <li *ngIf="item?.amount_discount">
+                                                <strong>Remise :</strong>
+                                                {{ item?.amount_discount | number:'1.0-0' }} {{ devise }}
+                                            </li>
+
+                                            <li class="d-flex align-items-center gap-2">
+                                                <strong>Statut :</strong>
+
+                                                <div class="form-check form-switch m-0 d-flex align-items-center">
+                                                    <input class="form-check-input me-2" type="checkbox" role="switch"
+                                                        id="switchStateReward{{ i }}" [checked]="item?.stateReward"
+                                                        (click)="$event.stopPropagation()"
+                                                        (change)="onToggleState(item, $event)">
+
+                                                    <label class="form-check-label mb-0" for="switchStateReward{{ i }}"
+                                                        (click)="$event.stopPropagation()"
+                                                        [class.text-success]="item?.stateReward"
+                                                        [class.text-danger]="!item?.stateReward">
+                                                        {{ item?.stateReward ? 'Actif' : 'Inactif' }}
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row g-4">
+                <!-- RIGHT COLUMN -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+                    <!-- <h6 class="fw-bold mb-0">📋 Liste des clients à récompenser</h6> -->
+                    <span class="badge bg-info-subtle text-dark fw-semibold">
+                        Nombre de clients : {{ pagination?.nberItems || 0 }}
+                    </span>
+                </div>
+
+                <!-- Loading Spinner -->
+                <app-spinners *ngIf="isLoading" message="Chargement des clients ..."></app-spinners>
+
+                <!-- Clients List -->
+                <div *ngIf="!isLoading" class="table-responsive mb-5">
+                    <table class="table table-hover align-middle table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nom</th>
+                                <th>Téléphone</th>
+                                <th *ngIf="typeReward==='nberCmdes'">Commandes</th>
+                                <th *ngIf="typeReward==='amntBuy'">Total</th>
+                                <th *ngIf="typeReward==='amntBuy'">Statut client</th>
+                                <th *ngIf="typeReward==='amntBuy'">Coupon créé</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let clientRewarded of listRewardedClients trackBy: trackByClientRewaredId">
+                                <td class="fw-semibold text-start text-primary">{{clientRewarded?.name}}
+                                </td>
+                                <td>{{clientRewarded?.phone}}</td>
+                                <td *ngIf="typeReward==='nberCmdes'">
+                                    {{clientRewarded?.total_orders | number:'1.0-0'}}</td>
+                                <td *ngIf="typeReward==='amntBuy'">
+                                    <strong>{{clientRewarded?.total_amount | number:'1.0-0'}} {{devise}}</strong>
+                                </td>
+                                <td>{{clientRewarded?.reward}}</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="switchCheckCheckedDisabled" disabled
+                                            [checked]="clientRewarded?.already_rewarded">
+                                        <label *ngIf="clientRewarded?.already_rewarded" class="form-check-label"
+                                            for="switchCheckCheckedDisabled">Oui</label>
+                                        <label *ngIf="!clientRewarded?.already_rewarded" class="form-check-label"
+                                            for="switchCheckCheckedDisabled">Non</label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <button [disabled]="clientRewarded?.already_rewarded"
+                                        (click)="createDiscount(clientRewarded)"
+                                        class="btn btn-success btn-sm rounded-circle mx-1" title="Créer un coupon">
+                                        <i class="ti ti-ticket"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="listRewardedClients?.length === 0 && !isLoading">
+                                <td colspan="6" class="text-center text-muted">
+                                    Aucun client à récompenser
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <app-set-pagination class="mt-3" [currentPage]="pagination?.currentPage"
+                    [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                    [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                </app-set-pagination>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETAIL CLIENT -->
+<!-- <div class="modal fade" id="clientModal18" tabindex="-1" aria-labelledby="clientModalLabel18" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title" id="clientModalLabel18">
+                    🧾 Détails du client — {{commandDetail?.name}}
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    <li *ngFor="let item of commandDetail?.items" class="list-group-item py-3">
+                        <div><strong>Article :</strong> {{item?.product_name}}</div>
+                        <div><strong>Quantité :</strong> {{item?.quantity}}</div>
+                        <div><strong>Prix unitaire :</strong> {{item?.sold_price | number:'1.0-0'}} {{devise}}</div>
+                        <div><strong>Total :</strong>
+                            <span class="text-success fw-bold">{{item?.total_price | number:'1.0-0'}} {{devise}}</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="mt-3 border-top pt-3">
+                    <h6 class="mb-1">🧾 Nombre de commandes :
+                        <strong>{{commandDetail?.number_of_commands | number:'1.0-0'}}</strong>
+                    </h6>
+                    <h6>Total :
+                        <span class="text-success fw-bold">{{commandDetail?.total | number:'1.0-0'}} {{devise}}</span>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">{{modalTitle}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row g-3">
+                <!-- Type de récompense -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold d-block mb-2">Nom carte de fidélité</label>
+                    <input [(ngModel)]="nameRw" type="text" class="form-control form-control-sm"
+                        id="inputNameFidelity4">
+                    <small class="text-danger">{{ errors?.name_rw }}</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputColor4" class="form-label">Couleur</label>
+                    <input [(ngModel)]="colorRw" type="color" class="form-control" id="inputColor4">
+                    <small class="text-danger">{{ errors?.color_rw }}</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold d-block mb-2">Base de récompense</label>
+                    <select [(ngModel)]="typeReward" class="form-select form-select-sm stylish-select">
+                        <option value="0">Choisir...</option>
+                        <option *ngFor="let baseRw of basesReward" [value]="baseRw?.value">
+                            {{ baseRw?.name }}
+                        </option>
+                    </select>
+                    <small class="text-danger">{{ errors?.baseReward }}</small>
+                </div>
+
+                <!-- Montant de l'achat -->
+                <div class="col-md-6" *ngIf="typeReward==='amntBuy'">
+                    <label class="form-label fw-semibold mb-1">Montant de l'achat</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light">{{devise}}</span>
+                        <input [(ngModel)]="amtCheck" min="0" type="number" class="form-control"
+                            placeholder="Entrez le montant..." />
+                    </div>
+                    <small class="text-danger">{{ errors?.amntOrCmds }}</small>
+                </div>
+
+                <!-- Nombre de commandes -->
+                <div class="col-md-6" *ngIf="typeReward==='nberCmdes'">
+                    <label class="form-label fw-semibold mb-1">Nombre de commandes</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light"><i class="bi bi-basket"></i></span>
+                        <input [(ngModel)]="nberCmd" min="0" type="number" class="form-control"
+                            placeholder="Entrez la quantité..." />
+                    </div>
+                    <small class="text-danger">{{ errors?.amntOrCmds }}</small>
+                </div>
+
+                <!-- Période -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold d-block mb-2">Période de
+                        récompense</label>
+                    <select [(ngModel)]="periodReward" class="form-select form-select-sm stylish-select">
+                        <option value="0">Choisir...</option>
+                        <option *ngFor="let periodRw of periodsReward" [value]="periodRw?.value">
+                            {{ periodRw?.name }}
+                        </option>
+                    </select>
+                    <small class="text-danger">{{ errors?.period }}</small>
+                </div>
+
+                <!-- Type de récompense client -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold d-block mb-2">Comment récompenser le
+                        client ?</label>
+                    <select [(ngModel)]="typeRewardClient" class="form-select form-select-sm stylish-select">
+                        <option value="0">Choisir...</option>
+                        <option value="amt">Montant</option>
+                        <option value="percentage">Pourcentage</option>
+                    </select>
+                    <small class="text-danger">{{ errors?.rewardTypeClient }}</small>
+                </div>
+
+                <!-- Montant récompense -->
+                <div class="col-md-6" *ngIf="typeRewardClient==='amt'">
+                    <label class="form-label fw-semibold mb-1">Montant de réduction </label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light">{{devise}}</span>
+                        <input [(ngModel)]="amtReward" min="0" type="number" class="form-control"
+                            placeholder="Entrez le montant..." />
+                    </div>
+                    <small class="text-danger">{{ errors?.amtOrPercentage }}</small>
+                </div>
+
+                <!-- Pourcentage récompense -->
+                <div class="col-md-6" *ngIf="typeRewardClient==='percentage'">
+                    <label class="form-label fw-semibold mb-1">Pourcentage de remise</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light">%</span>
+                        <input [(ngModel)]="percentReward" min="0" max="100" type="number" class="form-control"
+                            placeholder="Ex : 10" />
+                    </div>
+                    <small class="text-danger">{{ errors?.amtOrPercentage }}</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModalRw001" class="btn btn-secondary rounded-3 btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <button *ngIf="!editRw" (click)="validateReward()" class="btn btn-success btn-sm rounded-3">
+                    <i class="ti ti-check-circle me-1"></i> Valider
+                </button>
+                <button (click)="saveEditReward()" *ngIf="editRw" class="btn btn-warning btn-sm rounded-3">
+                    <i class="ti ti-check-circle me-1"></i> Modifier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

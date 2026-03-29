@@ -1,0 +1,475 @@
+/* ════════════════════════════════
+   LOGIN — MOBILE < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── FOND ── */
+  .auth-main {
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0f7ff 100%) !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+  }
+
+  .auth-wrapper.v1 {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+  }
+
+  .auth-form {
+    width: 100% !important;
+    max-width: 420px !important;
+    padding: 0 !important;
+  }
+
+  /* ── CARD ── */
+  .auth-form .card {
+    margin-top: 0 !important;
+    border-radius: 20px !important;
+    border: none !important;
+    box-shadow: 0 8px 32px rgba(21, 101, 192, 0.12) !important;
+    overflow: hidden !important;
+  }
+
+  .auth-form .card-body {
+    padding: 28px 24px !important;
+  }
+
+  /* ── HEADER : titre + logo ── */
+  .auth-form .row .d-flex.justify-content-between {
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+
+    h2 {
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      color: #0d1b2a !important;
+      margin-bottom: 2px !important;
+    }
+
+    h4 {
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      color: #7a9ab8 !important;
+    }
+
+    app-logo {
+
+      img,
+      svg {
+        width: 44px !important;
+        height: 44px !important;
+      }
+    }
+  }
+
+  /* ── BOUTON GOOGLE ── */
+  .auth-form .d-grid .btn-light-primary {
+    width: 100% !important;
+    background: #f8fbff !important;
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 10px !important;
+    padding: 11px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #1a2e42 !important;
+    margin-bottom: 4px !important;
+    box-shadow: none !important;
+
+    img {
+      width: 18px !important;
+      height: 18px !important;
+    }
+  }
+
+  /* ── SÉPARATEUR ── */
+  .auth-form .saprator {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 16px 0 !important;
+
+    &::before,
+    &::after {
+      content: '' !important;
+      flex: 1 !important;
+      height: 0.5px !important;
+      background: #e6f0fa !important;
+    }
+
+    span {
+      font-size: 12px !important;
+      color: #7a9ab8 !important;
+      white-space: nowrap !important;
+    }
+  }
+
+  /* ── SOUS-TITRE EMAIL ── */
+  .auth-form h5.my-4 {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #7a9ab8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    margin: 0 0 16px !important;
+  }
+
+  /* ── FORMULAIRE ── */
+  .auth-form form.row.g-3 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin: 0 !important;
+  }
+
+  .auth-form form .col-md-12 {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    padding: 0 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .auth-form .form-label {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: #7a9ab8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.7px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .auth-form .form-control {
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 10px !important;
+    padding: 11px 14px !important;
+    font-size: 13px !important;
+    color: #1a2e42 !important;
+    min-height: 44px !important;
+    box-shadow: none !important;
+
+    &:focus {
+      border-color: #1565C0 !important;
+    }
+  }
+
+  /* ── INPUT GROUP MOT DE PASSE ── */
+  .auth-form .input-group {
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    margin-bottom: 0 !important;
+
+    .form-control {
+      border: none !important;
+      border-radius: 0 !important;
+      min-height: 44px !important;
+    }
+
+    .btn-outline-secondary {
+      border: none !important;
+      border-left: 0.5px solid #d0e4f7 !important;
+      border-radius: 0 !important;
+      background: #f8fbff !important;
+      color: #7a9ab8 !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      padding: 0 14px !important;
+      box-shadow: none !important;
+      white-space: nowrap !important;
+    }
+  }
+
+  /* ── REMEMBER + FORGOT ── */
+  .auth-form .d-flex.mt-1.justify-content-between {
+    margin-bottom: 20px !important;
+
+    .form-check {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      padding: 0 !important;
+    }
+
+    .form-check-input {
+      width: 16px !important;
+      height: 16px !important;
+      margin: 0 !important;
+      accent-color: #1565C0 !important;
+    }
+
+    .form-check-label {
+      font-size: 12px !important;
+      color: #7a9ab8 !important;
+    }
+
+    h5.text-secondary {
+      font-size: 12px !important;
+      margin: 0 !important;
+
+      a {
+        font-weight: 600 !important;
+        color: #1565C0 !important;
+        text-decoration: none !important;
+      }
+    }
+  }
+
+  /* ── BOUTON CONNEXION ── */
+  .auth-form .d-grid.mt-4 .btn {
+    background: #1565C0 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 13px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 14px rgba(21, 101, 192, 0.25) !important;
+
+    &:active {
+      background: #1256a8 !important;
+      transform: scale(0.98) !important;
+    }
+  }
+
+  /* ── SÉPARATEUR HR ── */
+  .auth-form hr {
+    border-color: #e6f0fa !important;
+    margin: 20px 0 !important;
+  }
+
+  /* ── LIENS INSCRIPTION ── */
+  .auth-form h5.d-flex.justify-content-center {
+    font-size: 12px !important;
+    flex-wrap: wrap !important;
+    text-align: center !important;
+    gap: 4px !important;
+    line-height: 1.8 !important;
+    margin-top: 4px !important;
+
+    span {
+      color: #7a9ab8 !important;
+    }
+
+    a.text-primary {
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: #1565C0 !important;
+    }
+
+    a.text-success {
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: #2e7d32 !important;
+    }
+  }
+
+  /* ── ICÔNE DANS FORM ── */
+  form i {
+    top: 10px !important;
+    right: 14px !important;
+    font-size: 16px !important;
+    padding: 8px !important;
+  }
+}
+
+
+/* ══════════════════════════════════════
+   LOGIN — DESKTOP (toutes tailles)
+   Couleurs alignées sur la charte bleue
+══════════════════════════════════════ */
+
+/* ── FOND ── */
+.auth-main {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f0f7ff 100%) !important;
+}
+
+/* ── CARD ── */
+.auth-form .card {
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(21, 101, 192, 0.12) !important;
+}
+
+/* ── TITRES ── */
+.auth-form h2.text-secondary {
+  color: #0d1b2a !important;
+}
+
+.auth-form h4 {
+  color: #7a9ab8 !important;
+}
+
+/* ── BOUTON GOOGLE ── */
+.auth-form .btn-light-primary {
+  background: #f8fbff !important;
+  border: 0.5px solid #d0e4f7 !important;
+  color: #1a2e42 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: #e8f4ff !important;
+    border-color: #90caf9 !important;
+  }
+}
+
+/* ── SÉPARATEUR ── */
+.auth-form .saprator {
+  span {
+    color: #7a9ab8 !important;
+  }
+
+  &::before,
+  &::after {
+    background: #e6f0fa !important;
+  }
+}
+
+/* ── SOUS-TITRE EMAIL ── */
+.auth-form h5.my-4 {
+  color: #7a9ab8 !important;
+  font-size: 13px !important;
+}
+
+/* ── LABELS ── */
+.auth-form .form-label {
+  color: #7a9ab8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.7px !important;
+}
+
+/* ── INPUTS ── */
+.auth-form .form-control {
+  border: 0.5px solid #d0e4f7 !important;
+  border-radius: 10px !important;
+  color: #1a2e42 !important;
+  box-shadow: none !important;
+
+  &:focus {
+    border-color: #1565C0 !important;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.08) !important;
+  }
+
+  &::placeholder {
+    color: #b0c8e0 !important;
+  }
+}
+
+/* ── INPUT GROUP MOT DE PASSE ── */
+.auth-form .input-group {
+  border: 0.5px solid #d0e4f7 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+
+  .form-control {
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .btn-outline-secondary {
+    border: none !important;
+    border-left: 0.5px solid #d0e4f7 !important;
+    background: #f8fbff !important;
+    color: #7a9ab8 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    &:hover {
+      background: #e8f4ff !important;
+      color: #1565C0 !important;
+    }
+  }
+}
+
+/* ── CHECKBOX ── */
+.auth-form .form-check-input {
+  accent-color: #1565C0 !important;
+  border-color: #d0e4f7 !important;
+
+  &:checked {
+    background-color: #1565C0 !important;
+    border-color: #1565C0 !important;
+  }
+}
+
+.auth-form .form-check-label {
+  color: #7a9ab8 !important;
+  font-size: 13px !important;
+}
+
+/* ── MOT DE PASSE OUBLIÉ ── */
+.auth-form h5.text-secondary a {
+  color: #1565C0 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+
+  &:hover {
+    text-decoration: underline !important;
+  }
+}
+
+/* ── BOUTON CONNEXION ── */
+.auth-form .d-grid .btn-secondary {
+  background: #1565C0 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.25) !important;
+
+  &:hover {
+    background: #1256a8 !important;
+  }
+
+  &:active {
+    transform: scale(0.98) !important;
+  }
+}
+
+/* ── HR ── */
+.auth-form hr {
+  border-color: #e6f0fa !important;
+}
+
+/* ── LIENS INSCRIPTION ── */
+.auth-form h5.d-flex.justify-content-center {
+  color: #7a9ab8 !important;
+  font-size: 13px !important;
+
+  a.text-primary {
+    color: #1565C0 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+
+  a.text-success {
+    color: #2e7d32 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+}
+
+/* ── ERREURS ── */
+.auth-form .text-danger {
+  font-size: 12px !important;
+  color: #c62828 !important;
+}

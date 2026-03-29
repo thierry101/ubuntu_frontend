@@ -1,0 +1,50 @@
+<div class="card border-0 shadow-sm rounded-3">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+        <h5 class="mb-0 d-flex align-items-center">
+            <span class="me-2" style="font-size: 1.3rem;">⛔️</span>
+            Fermeture du magasin
+        </h5>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body text-center">
+        <p class="fw-semibold fs-5 mb-3">
+            {{ errorData?.msg || "Erreur inconnue." }}
+        </p>
+
+        <div *ngIf="errorData?.next_day" class="text-muted fs-6 mb-3">
+            ⏳ Réouverture dans <strong>{{ countdown }}</strong>
+        </div>
+
+        <button routerLink="/my-profile" class="btn btn-outline-primary btn-sm mb-4">
+            ← Mon profil
+        </button>
+
+        <!-- Work Schedule Table -->
+        <div *ngIf="workSchedule?.length" class="table-responsive">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Jour</th>
+                        <th>Ouverture</th>
+                        <th>Fermeture</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let day of workSchedule">
+                        <td>{{ day.label }}</td>
+                        <td>{{ day.start_time | slice:0:5 }}</td>
+                        <td>{{ day.end_time | slice:0:5 }}</td>
+                        <td>
+                            <span [class.text-success]="day.active === 'True'"
+                                [class.text-danger]="day.active !== 'True'">{{ day.active === 'True' ? 'Ouvert' :
+                                'Fermé' }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div (click)="clearCities()" class="card mt-5">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Créer un compte</b></h2>
+                <h4 class="text-muted"><b>Entrez vos informations</b></h4>
+              </div>
+              <app-logo></app-logo>
+            </div>
+          </div>
+          <!-- <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted" style="width: 100%">
+            <img src="assets/images/authentication/google-icon.svg" alt="google icon" />S'enregistrer avec Google
+          </button>
+          <div class="saprator mt-3">
+            <span>ou</span>
+          </div> -->
+          <!-- <h5 class="my-4 d-flex justify-content-center"> S'enregistrer </h5> -->
+          <div class="row g-3" [formGroup]="formRegisterSeller">
+            <div class="col-md-12">
+              <label for="inputEmail4" class="form-label"><b>Adresse Email</b></label>
+              <input formControlName="email" placeholder="Adresse Email" type="text"
+                class="form-control form-control-sm" id="inputEmail4">
+              <small class="text-danger">{{ errors?.email }}</small>
+            </div>
+            <div class="col-md-12">
+              <label for="inputEntprise4" class="form-label"><b>Nom de l'entreprise</b></label>
+              <input formControlName="entrpriseName" placeholder="Nom de l'entreprise" type="text"
+                class="form-control form-control-sm" id="inputEntprise4">
+              <small class="text-danger">{{ errors?.entrpriseName }}</small>
+            </div>
+            <div class="col-md-12">
+              <label for="inputEntprise4" class="form-label"><b>Url du catalogue</b></label>
+              <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text" id="basic-addon2">{{baseUrl}}/catalog/?shop=</span>
+                <input formControlName="urlCatalog" type="text" class="form-control" aria-describedby="basic-addon2">
+              </div>
+              <small class="text-danger">{{ errors?.urlCatalog }}</small>
+            </div>
+            <div class="col-md-6">
+              <label for="inputCountry" class="form-label"><b>Pays</b> {{country_emoji}}</label>
+              <select (change)="choiceCountry()" formControlName="country" id="inputCountry"
+                class="form-select form-select-sm">
+                <option value="0">Choisir ...</option>
+                <option *ngFor="let country of countries" [value]="country?.name">{{country?.name}}</option>
+              </select>
+              <small class="text-danger">{{ errors?.country }}</small>
+            </div>
+            <div class="col-md-6">
+              <label for="inputCity" class="form-label"><b>Ville</b></label>
+              <app-selected id="articleSelect" [placeholder]="'Choisir la ville...'"
+                [(searchTerm)]="searchTerm" [results]="cities" [displayField]="'name'" [error]="errors?.city"
+                [showResults]="!!cities?.length" (search)="searchCityBasedCountry($event)"
+                (select)="selectProduct($event)">
+              </app-selected>
+            </div>
+            <div class="col-md-12">
+              <label for="inputPhoneEtprise4" class="form-label"><b>Numéro de téléphone</b></label>
+              <div class="row">
+                <div class="col-3">
+                  <input placeholder="Code pays" formControlName="code" readonly type="text"
+                    value="{{country_phone_code}}" class="form-control form-control-sm" id="Code_phone">
+                </div>
+                <div class="col-9">
+                  <input formControlName="phone" placeholder="Numéro de téléphone" type="tel"
+                    class="form-control form-control-sm" id="inputPhoneEtprise4">
+                  <small class="text-danger">{{ errors?.phone }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="inputPsswdEtprise4" class="form-label"><b>Mot de passe</b></label>
+              <div class="input-group mb-3">
+                <input [type]="passwordType" formControlName="password" class="form-control form-control-sm"
+                  placeholder="Mot de passe" aria-describedby="button-addon2">
+                <button (click)="shPasswd()" class="btn btn-outline-secondary" type="button" id="button-addon2">
+                  <i *ngIf="show" class="ti ti-eye"></i>
+                  <i *ngIf="!show" class="ti ti-eye-off"></i>
+                </button>
+              </div>
+              <small class="text-danger">{{ errors?.password }}</small>
+            </div>
+            <div class="col-md-12">
+              <label for="inputPromo4" class="form-label"><b>Code promo</b></label>
+              <input formControlName="promoCode" placeholder="Code promo" type="text"
+                class="form-control form-control-sm" id="inputPromo4">
+              <small class="text-danger">{{ errors?.promoCode }}</small>
+            </div>
+            <div class="form-check">
+              <input formControlName="acceptTerms" class="form-check-input input-primary" type="checkbox"
+                id="customCheckc1" />
+              <label class="form-check-label" for="customCheckc1">
+                <h5><a target="_blank" [routerLink]="['/private-policy']" routerLinkActive="router-link-active">Accepter
+                    <span>nos termes et conditions.</span></a></h5>
+              </label>
+            </div>
+            <small class="text-danger">{{ errors?.acceptTerms }}</small>
+            <div class="d-grid mt-4">
+              <button (click)="registerSeller()" [disabled]="isLoading" type="button" class="btn btn-secondary p-2">
+                <span *ngIf="!isLoading">S'enregistrer</span>
+                <span *ngIf="isLoading"><i class="spinner-border spinner-border-sm me-1"></i> Enregistrement...</span>
+
+              </button>
+            </div>
+          </div>
+          <hr />
+          <h5 class="d-flex justify-content-center align-items-center gap-2 mt-4 text-muted">
+            <span>Vous avez déjà un compte ?</span>
+            <a [routerLink]="['/login']" class="fw-semibold text-primary text-decoration-none">
+              Se connecter
+            </a>
+            <span class="mx-1">ou</span>
+            <a [routerLink]="['/register-space-partner']" class="fw-semibold text-success text-decoration-none">
+              Devenir partenaire
+            </a>
+          </h5>
+
+        </div>
+      </div>
+      <app-my-theme></app-my-theme>
+    </div>
+  </div>

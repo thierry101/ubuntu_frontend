@@ -1,0 +1,26 @@
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    width: 80mm;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+  }
+
+  hr {
+    border-top: 1px dashed #000;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-end {
+    text-align: right;
+  }
+}

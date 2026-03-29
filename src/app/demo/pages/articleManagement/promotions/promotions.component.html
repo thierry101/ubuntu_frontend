@@ -1,0 +1,238 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🏷️ Gestion des promotions
+            </h5>
+            <button (click)="resetForm()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">
+                ➕ Promotion
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- Search and Info -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                    <app-search-list [searchTerm]="searchTermPromotion"
+                        (searchChange)="onSearchChange($event)"></app-search-list>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-info-subtle text-dark fw-semibold">
+                        Nombre de promotions : {{pagination?.nberItems | number}}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement des promotions ..."></app-spinners>
+
+            <!-- Promotions Table -->
+            <div *ngIf="!isLoading" class="table-responsive">
+                <small class="text-danger fw-semibold">{{ errors?.permission }}</small>
+                <table class="table table-hover align-middle table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nom promotion</th>
+                            <th>Créée par</th>
+                            <th>Article</th>
+                            <th>Numéro stock</th>
+                            <th>Boutique/Entrepôt</th>
+                            <th>Pourcentage</th>
+                            <th>Date d'expiration</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of all_promotions trackBy:trackByPromotionId">
+                            <td class="text-start">{{ item?.name }}</td>
+                            <td>{{ item?.user?.email }}</td>
+                            <td class="text-wrap">{{ item?.product?.product_name }}</td>
+                            <td>{{item?.product?.indiceStock}}</td>
+                            <td>{{ item?.warehouseShop?.nameWh }}</td>
+                            <td>{{ item?.percentage }}%</td>
+                            <td>{{ item?.expirationDate | date:'d MMMM y':'':'fr-FR' }}</td>
+                            <td class="text-center">
+                                <button (click)="editPromotion(item)" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal"
+                                    class="btn btn-outline-warning mx-1 btn-sm rounded-circle" title="Supprimer">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+                                <button (click)="deleteThePromotion(item)"
+                                    class="btn btn-outline-danger btn-sm rounded-circle" title="Supprimer">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="all_promotions.length === 0 && !isLoading">
+                            <td colspan="7" class="text-center text-muted">Aucune promotion trouvée</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-promo-list d-block d-md-none" *ngIf="!isLoading">
+
+                <div *ngIf="all_promotions.length === 0" class="empty">
+                    Aucune promotion trouvée
+                </div>
+
+                <div *ngFor="let item of all_promotions trackBy: trackByPromotionId" class="promo-card">
+
+                    <div class="promo-top">
+                        <div class="promo-name">{{ item?.name }}</div>
+                        <span class="promo-pct">-{{ item?.percentage }}%</span>
+                    </div>
+
+                    <div class="promo-product">{{ item?.product?.product_name }}</div>
+
+                    <div class="promo-meta">
+                        <span class="meta-pill" *ngIf="item?.product?.indiceStock">
+                            📦 {{ item?.product?.indiceStock }}
+                        </span>
+                        <span class="meta-pill" *ngIf="item?.warehouseShop?.nameWh">
+                            🏪 {{ item?.warehouseShop?.nameWh }}
+                        </span>
+                        <span class="meta-pill" *ngIf="item?.user?.email">
+                            👤 {{ item?.user?.email }}
+                        </span>
+                        <span class="meta-pill exp" *ngIf="item?.expirationDate">
+                            📅 Exp : {{ item?.expirationDate | date:'d MMM y':'':'fr-FR' }}
+                        </span>
+                    </div>
+
+                    <div class="promo-actions">
+                        <button class="btn-act btn-edit" (click)="editPromotion(item)" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                            ✏️ Modifier
+                        </button>
+                        <button class="btn-act btn-del" (click)="deleteThePromotion(item)">
+                            🗑 Supprimer
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" (click)="clearTable()">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">
+                    <i class="ti ti-percentage me-2"></i>{{titlePromotion}}
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body">
+                <form class="row g-3">
+
+                    <!-- Error -->
+                    <div class="col-12">
+                        <small class="text-danger">{{ errors?.promotion }}</small>
+                        <small class="text-danger">{{ errors?.produc_exist }}
+                        </small>
+                    </div>
+
+                    <!-- Promotion Name -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nom promotion</label>
+                        <input [(ngModel)]="namePromotion" name="namePromotion" type="text"
+                            class="form-control form-control-sm" [readOnly]="toEdit" />
+                        <small class="text-danger">{{ errors?.name }}</small>
+                    </div>
+
+                    <!-- Indice Stock -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Indice Stock</label>
+                        <app-selected [disabled]="toEdit" [placeholder]="'Choisir l\'indice stock...'"
+                            [(searchTerm)]="searchTermStock" [results]="all_products" [displayField]="'indiceStock'"
+                            [error]="errors?.provider" [showResults]="!!all_products?.length"
+                            (search)="searchProduct($event)" (select)="selectProduct($event)">
+                        </app-selected>
+                        <small class="text-danger">{{ errors?.idStock }}</small>
+                    </div>
+
+                    <!-- Article Name -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nom article</label>
+                        <input readonly [(ngModel)]="nameProduct" name="nameProduct" type="text"
+                            class="form-control form-control-sm" />
+                    </div>
+
+                    <!-- Pourcentage -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Pourcentage (%)</label>
+                        <input type="number" [(ngModel)]="percentage" name="percentage"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.percentage }}</small>
+                    </div>
+
+                    <!-- Boutique/Entrepôt -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Boutique / Magasin</label>
+                        <input *ngIf="toEdit" [readonly]="toEdit" type="text" [(ngModel)]="nameWhStor"
+                            name="nameWhStore" class="form-control form-control-sm" />
+                        <div *ngIf="!toEdit" class="dropdown">
+                            <button class="form-select form-select-sm text-start dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Sélectionnez
+                            </button>
+                            <ul class="dropdown-menu p-2 w-100">
+                                <li *ngFor="let item of all_wh_stores">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" [name]="'warehouse-'+ item.id"
+                                            [(ngModel)]="item.checked" [id]="'check-' + item.id" />
+                                        <label class="form-check-label" [for]="'check-' + item.id">
+                                            {{ item?.nameWh }}
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                            <small class="text-danger">{{ errors?.idsWhStores }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Expiration -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date d'expiration</label>
+                        <input [(ngModel)]="expDate" type="date" name="expDate" class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.expDate }}</small>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" id="closeModelPromo009" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    Fermer
+                </button>
+                <!-- <button (click)="savePromotion()" type="button" class="btn btn-primary btn-sm">
+                    <i class="ti ti-check me-1"></i> Créer
+                </button> -->
+                <app-submit-spinner *ngIf="!toEdit" [loading]="loadSpinnerPromo" label="Créer" icon="ti ti-check me-1"
+                    cssClass="btn btn-primary btn-sm" (clicked)="savePromotion()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="toEdit" [loading]="loadSpinnerPromo" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-warning btn-sm" (clicked)="updatePromotion()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>

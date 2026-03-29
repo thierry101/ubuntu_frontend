@@ -1,0 +1,17 @@
+<div class="dropdown w-100">
+  <button class="btn btn-secondary btn-sm dropdown-toggle rounded w-100 text-start" type="button" data-bs-toggle="dropdown">
+    Choix des colonnes
+  </button>
+
+  <ul class="dropdown-menu w-100 p-2" style="max-height: 300px; overflow-y: auto;">
+    <li *ngFor="let col of columns trackBy: trackById">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [checked]="col?.visible" (change)="toggle.emit(col?.key)"
+          [id]="col?.key">
+        <label class="form-check-label" [for]="col?.key">
+          {{ col?.label }}
+        </label>
+      </div>
+    </li>
+  </ul>
+</div>

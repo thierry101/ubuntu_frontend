@@ -1,0 +1,168 @@
+<!-- ZONE DE FILTRE -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+        <h5 class="mb-0 d-flex align-items-center">
+            <span class="me-2 fs-4">📊</span> Calcul des bénéfices
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <!-- Choisir le mois -->
+            <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Choisir le mois</label>
+                <input [(ngModel)]="monthProfit" type="month" class="form-control form-control-sm shadow-sm">
+                <small class="text-danger">{{ errors?.month_data }}</small>
+            </div>
+
+            <!-- Boutique / Entrepôt -->
+            <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Boutique / Entrepôt</label>
+                <select [(ngModel)]="idWhStoreSelected" class="form-select form-select-sm shadow-sm">
+                    <option value="0">Choisir...</option>
+                    <option *ngFor="let item of warehouses" [value]="item?.id">{{ item?.nameWh }}</option>
+                </select>
+                <small class="text-danger">{{ errors?.idWhStor }}</small>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-6 col-md-2 d-grid">
+                <button (click)="calculateProfit()" class="btn btn-primary btn-sm shadow-sm">
+                    Valider
+                </button>
+            </div>
+
+            <div class="col-6 col-md-2 d-grid">
+                <button (click)="exportToPdf()" class="btn btn-info btn-sm shadow-sm">
+                    Exporter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RÉSULTATS -->
+    <div class="mt-1" *ngIf="!isLoading" id="invoicePrint">
+        <div class="row g-3">
+            <!-- Totals -->
+            <div class="col-12 col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6 col-md-6 col-lg-6">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-1">Total des ventes</h6>
+                                    <h3 class="fw-bold text-primary">
+                                        {{ totalSell || 0 | number:'1.0-0' }} {{ devise }}
+                                    </h3>
+                                </div>
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                    <i class="bi bi-cash-stack text-primary fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-6 col-lg-6">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-1">Total des achats</h6>
+                                    <h3 class="fw-bold text-success">
+                                        {{ totalBuy || 0 | number:'1.0-0' }} {{ devise }}
+                                    </h3>
+                                </div>
+                                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                    <i class="bi bi-basket text-success fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-6 col-lg-6">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-1">Total des dépenses</h6>
+                                    <h3 class="fw-bold text-danger">
+                                        {{ totalExpense || 0 | number:'1.0-0' }} {{ devise }}
+                                    </h3>
+                                </div>
+                                <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+                                    <i class="bi bi-receipt text-danger fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-6 col-lg-6">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-1">Profit</h6>
+                                    <h3 class="fw-bold text-warning">
+                                        {{ profit || 0 | number:'1.0-0' }} {{ devise }}
+                                    </h3>
+                                </div>
+                                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                    <i class="bi bi-piggy-bank text-warning fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="col-12 col-lg-7">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white border-0 pt-3 pb-0">
+                        <h5 class="fw-bold m-0">
+                            <i class="bi bi-receipt-cutoff me-2 text-primary"></i>
+                            Détails des dépenses
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="table-responsive mt-3">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Dépense</th>
+                                        <th>Montant</th>
+                                        <th>Date d'enregistrement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of allExpensives; let i = index">
+                                        <td class="text-wrap">{{ item?.expense?.name }}</td>
+                                        <td>
+                                            <span class="badge bg-primary bg-opacity-75 px-3 py-2">
+                                                {{ item?.amount | number:'1.0-0'}} {{ devise }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-calendar3 text-secondary me-1"></i>
+                                            {{ item?.updated_at | date:'dd MMM y':'':'fr-FR' }}
+                                        </td>
+                                    </tr>
+
+                                    <tr *ngIf="allExpensives?.length === 0">
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="bi bi-exclamation-circle me-2"></i>
+                                            Aucun dépense trouvé
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <app-spinners *ngIf="isLoading" message="Chargement des données..."></app-spinners>

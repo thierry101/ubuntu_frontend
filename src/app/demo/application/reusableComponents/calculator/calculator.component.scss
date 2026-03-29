@@ -1,0 +1,300 @@
+/* ── CALCULATRICE ── */
+.calc-modal {
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    background: #1e1e2e !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── HEADER ── */
+.calc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 10px;
+    background: #1e1e2e;
+}
+
+.calc-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.calc-close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.15s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+}
+
+/* ── ÉCRAN ── */
+.calc-screen {
+    padding: 12px 20px 16px;
+    background: #1e1e2e;
+    text-align: right;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.calc-expr {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: 'DM Mono', monospace;
+    min-height: 18px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calc-display {
+    font-size: 38px;
+    font-weight: 300;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── GRILLE ── */
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── BOUTONS BASE ── */
+.calc-btn {
+    height: 68px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    position: relative;
+    overflow: hidden;
+    background: #262636;
+    color: #fff;
+
+    &:active {
+        transform: scale(0.94);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: background 0.1s;
+    }
+
+    &:hover::after {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    &[style*="span 2"] {
+        justify-content: flex-start;
+        padding-left: 26px;
+    }
+}
+
+/* ── TYPES DE BOUTONS ── */
+.btn-digit {
+    background: #262636;
+    color: #fff;
+    font-size: 20px;
+}
+
+.btn-operator {
+    background: #2a2a3e;
+    color: #a78bfa;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.btn-action {
+    background: #2e2e42;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+}
+
+.btn-equals {
+    background: #1565C0;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+
+    &:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:active {
+        background: #1256a8;
+        transform: scale(0.94);
+    }
+}
+
+.btn-danger {
+    background: #2e2e42;
+    color: #f87171 !important;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ── COINS INFÉRIEURS ── */
+.calc-grid .calc-btn:nth-last-child(1) {
+    border-radius: 0 0 24px 0;
+}
+
+.calc-grid .calc-btn:nth-last-child(4) {
+    border-radius: 0 0 0 24px;
+}
+
+/* ── MODAL DESKTOP ── */
+#exampleModalCalculator .modal-dialog {
+    max-width: 300px;
+}
+
+#exampleModalCalculator .modal-content {
+    border-radius: 24px !important;
+    border: none !important;
+    background: #1e1e2e !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    #exampleModalCalculator {
+        padding: 0 !important;
+    }
+
+    #exampleModalCalculator .modal-dialog {
+        max-width: 92vw !important;
+        width: 92vw !important;
+        margin: auto !important;
+        position: fixed !important;
+        bottom: 80px !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(100%) !important;
+        top: auto !important;
+        right: auto !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    #exampleModalCalculator.show .modal-dialog {
+        transform: translateX(-50%) translateY(0) !important;
+    }
+
+    #exampleModalCalculator .modal-content {
+        border-radius: 24px !important;
+        max-height: none !important;
+        overflow: hidden !important;
+        background: #1e1e2e !important;
+        border: none !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
+
+        /* Pas de barre en haut (override bottom sheet global) */
+        &::before {
+            display: none !important;
+        }
+    }
+
+    /* ── HEADER COMPACT ── */
+    .calc-header {
+        padding: 12px 16px 8px !important;
+    }
+
+    .calc-title {
+        font-size: 11px !important;
+    }
+
+    .calc-close-btn {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+
+    /* ── ÉCRAN COMPACT ── */
+    .calc-screen {
+        min-height: 70px !important;
+        padding: 10px 16px 12px !important;
+    }
+
+    .calc-expr {
+        font-size: 12px !important;
+        min-height: 16px !important;
+    }
+
+    .calc-display {
+        font-size: 30px !important;
+    }
+
+    /* ── BOUTONS : presque carrés ── */
+    .calc-grid {
+        gap: 1px !important;
+    }
+
+    .calc-btn {
+        height: calc(92vw / 4 * 1.05) !important;
+        font-size: 17px !important;
+    }
+
+    .btn-digit {
+        font-size: 19px !important;
+    }
+
+    .btn-operator {
+        font-size: 19px !important;
+    }
+
+    .btn-equals {
+        font-size: 21px !important;
+    }
+
+    .btn-action {
+        font-size: 14px !important;
+    }
+
+    .btn-danger {
+        font-size: 13px !important;
+    }
+
+    /* ── COINS INFÉRIEURS MOBILE ── */
+    .calc-grid .calc-btn:nth-last-child(1) {
+        border-radius: 0 0 24px 0 !important;
+    }
+
+    .calc-grid .calc-btn:nth-last-child(4) {
+        border-radius: 0 0 0 24px !important;
+    }
+}

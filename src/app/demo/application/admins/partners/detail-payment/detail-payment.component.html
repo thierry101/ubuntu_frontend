@@ -1,0 +1,105 @@
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="ti ti-users me-2"></i> Espace Facture
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Loading spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement des données..."></app-spinners>
+
+            <!-- Content -->
+            <div *ngIf="!isLoading">
+                <div class="row">
+                    <!-- 🧱 Left: Informations du partenaire -->
+                    <div class="col-md-5">
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="rounded-circle bg-light d-flex justify-content-center align-items-center me-3"
+                                        style="width: 60px; height: 60px;">
+                                        <i class="ti ti-building text-primary fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0 text-capitalize">{{ enterprise?.nameEtprise }}</h5>
+                                    </div>
+                                </div>
+
+                                <table class="table table-sm table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th class="text-muted">Pays :</th>
+                                            <td>{{ enterprise?.country }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Ville :</th>
+                                            <td>{{ enterprise?.city || '—' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🧾 Right: Liste des factures -->
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-primary mb-3">
+                                    <i class="ti ti-receipt me-2"></i> Liste des Factures
+                                </h5>
+
+                                <div *ngIf="all_invoices_enterprise?.length > 0; else noInvoice">
+                                    <div *ngFor="let inv of all_invoices_enterprise" class="border border-info rounded p-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="ti ti-file-invoice me-2"></i>{{ inv?.invoice_number }}
+                                            </h6>
+                                            <span class="badge" [ngClass]="{
+                                            'bg-warning text-dark': inv?.status_payment === 'En attente de paiement',
+                                            'bg-success': inv?.status_payment === 'Payée',
+                                            'bg-danger': inv?.status_payment === 'En retard'}">
+                                            {{ inv?.status_payment }}
+                                        </span>
+                                        </div>
+
+                                        <hr/>
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p class="mb-1">
+                                                    <strong>Montant dû :</strong>
+                                                    {{ inv?.amount_to_pay | number : '1.0-2'}} {{enterprise?.devise}}
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p class="mb-1">
+                                                    <strong>Période :</strong>
+                                                    {{ (inv?.month_invoice + '-' +inv?.year_invoice + '-01') | date:'MMM y':'':'fr-FR' }}
+                                                </p>
+                                                <p class="mb-0">
+                                                    <strong>Date limite :</strong>
+                                                    {{ inv?.end_date_to_pay | date: 'dd MMM y':'':'fr-FR' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- No invoice message -->
+                                <ng-template #noInvoice>
+                                    <div class="alert alert-info text-center mb-0">
+                                        <i class="ti ti-info-circle me-2"></i>
+                                        Aucune facture trouvée.
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

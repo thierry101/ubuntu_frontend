@@ -1,0 +1,92 @@
+<app-navigation class="coded-navbar pc-sidebar" [ngClass]="{
+    'navbar-collapsed': navCollapsed,
+    horizontal: currentLayout === 'horizontal',
+    compact: currentLayout === 'compact',
+    'mob-open': navCollapsedMob
+  }" (NavCollapsedMob)="navMobClick()"></app-navigation>
+<app-nav-bar (NavCollapse)="this.navCollapsed = !this.navCollapsed" (NavCollapsedMob)="navMobClick()"></app-nav-bar>
+
+<!-- Apparait lorsqu'on raffraichit l'application sur mobile -->
+<div class="text-center w-100 d-flex align-items-center justify-content-center" [style.height.px]="pullDistance"
+  [style.opacity]="pullDistance / 80" style="overflow: hidden; background: #f4f7fa; transition: height 0.1s ease-out;">
+  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+  <small class="ms-2 fw-bold text-muted">Mise à jour...</small>
+</div>
+
+<div class="refresh-container" [style.height.px]="pullDistance" [style.opacity]="pullDistance / 75">
+  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+  <span class="ms-2 fw-bold text-muted" style="font-size: 0.8rem;">Mise à jour...</span>
+</div>
+
+<div (click)="clickOutside($event)" class="pc-container" (touchstart)="onTouchStart($event)"
+  (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+
+  <div class="coded-wrapper">
+    <div class="coded-content">
+      <div class="coded-inner-content">
+        <app-breadcrumb></app-breadcrumb>
+        <div class="main-body">
+          <div class="page-wrapper">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--
+<div (click)="clickOutside($event)" class="pc-container">
+  <div class="coded-wrapper">
+    <div class="coded-content">
+      <div class="coded-inner-content">
+        <app-breadcrumb></app-breadcrumb>
+        <div class="main-body">
+          <div class="page-wrapper">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<!-- ── BOTTOM NAV MOBILE ── -->
+<nav class="mobile-bottom-nav d-flex d-md-none">
+  <a [routerLink]="['/sales-history']" routerLinkActive="active" class="bottom-nav-item">
+    <span class="bottom-nav-icon">📃</span>
+    <span class="bottom-nav-label">Historique</span>
+  </a>
+  <a data-bs-toggle="modal" data-bs-target="#exampleModalCalculator" routerLinkActive="active" class="bottom-nav-item">
+    <span class="bottom-nav-icon">🔢</span>
+    <span class="bottom-nav-label">Calculatrice</span>
+  </a>
+  <a [routerLink]="['/store-product']" *ngIf="hasAccess || adminHasWarehouse" routerLinkActive="active"
+    class="bottom-nav-item">
+    <span class="bottom-nav-icon">🏠</span>
+    <span class="bottom-nav-label">Boutique</span>
+  </a>
+  <a [routerLink]="['/my-profile']" class="bottom-nav-item">
+    <span class="bottom-nav-icon">👤</span>
+    <span class="bottom-nav-label">Mon profil</span>
+  </a>
+</nav>
+
+<footer class="pc-footer">
+  <div class="footer-wrapper container-fluid">
+    <div class="row">
+      <div class="col my-1">
+        <p class="m-0"> Copyright &copy; <a href="https://ankecrm.com" target="_blank">AnkeCRM</a> </p>
+      </div>
+      <div class="col-auto my-1">
+        <ul class="list-inline footer-link mb-0">
+          <li class="list-inline-item">
+            <!-- <a href="https://codedthemes.com/privacy-policy/" target="_blank">Privacy Policy</a> -->
+          </li>
+          <li class="list-inline-item"><a href="tel:{{settingAdmin?.phone}}" target="_blank">Nous contacter</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<app-configuration></app-configuration>

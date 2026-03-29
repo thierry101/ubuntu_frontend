@@ -1,0 +1,602 @@
+/* ── STYLES DE BASE ── */
+.card {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    border: none;
+    background-color: #fff;
+}
+
+.btn {
+    font-size: 0.875rem;
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+}
+
+.btn i {
+    vertical-align: middle;
+}
+
+.modal-content {
+    border-radius: 12px;
+    padding: 0.5rem;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table td {
+    word-break: break-word;
+    font-size: 0.85rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f5ff;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    border-color: #86b7fe;
+}
+
+.badge-dynamic {
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.4em 0.6em;
+    border-radius: 6px;
+    background: linear-gradient(135deg,
+            color-mix(in srgb, var(--badge-color), white 20%),
+            color-mix(in srgb, var(--badge-color), black 25%));
+}
+
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    i {
+        font-size: 14px;
+        line-height: 1;
+    }
+}
+
+.small-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+
+    i {
+        font-size: 0.8rem;
+    }
+}
+
+.text-sm {
+    font-size: 0.85rem;
+}
+
+.text-wrap {
+    white-space: normal !important;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 7px 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── DEUX COLONNES → EMPILÉES ── */
+    .row>.col-md-7,
+    .row>.col-md-5 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        padding: 0 !important;
+        margin-bottom: 12px;
+    }
+
+    /* ── SEARCH ROW — badge en dessous ── */
+    .row.mb-3.align-items-center {
+        flex-wrap: wrap !important;
+
+        .col-12.col-md-6 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .col-12.col-md-6.text-end {
+            text-align: left !important;
+            margin-top: 8px;
+
+            .badge {
+                background: #e3f2fd !important;
+                color: #1565C0 !important;
+                border: 0.5px solid #90caf9;
+                border-radius: 8px !important;
+                font-size: 11px !important;
+                padding: 5px 10px !important;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    /* ── CACHER LA TABLE CLIENTS ── */
+    .col-md-7 .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE CLIENTS MOBILE ── */
+    .mobile-client-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .client-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px 16px;
+
+        &.active {
+            border-color: #1565C0;
+            background: #f0f7ff;
+        }
+    }
+
+    .client-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .client-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0d1b2a;
+        text-decoration: none;
+
+        &:hover {
+            color: #1565C0;
+        }
+    }
+
+    .client-orders {
+        font-size: 10px;
+        color: #7a9ab8;
+        margin-top: 2px;
+    }
+
+    .client-badge {
+        display: inline-block;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        flex-shrink: 0;
+    }
+
+    .client-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .phone-btn {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 0.5px solid #a5d6a7;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .client-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-act {
+        flex: 1;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border: 0.5px solid;
+
+        &.btn-edit {
+            background: #fff8e1;
+            color: #8a6200;
+            border-color: #ffe082;
+        }
+
+        &.btn-view {
+            background: #e3f2fd;
+            color: #1565C0;
+            border-color: #90caf9;
+        }
+
+        &.btn-del {
+            background: #fff0f0;
+            color: #e53935;
+            border-color: #ffd0d0;
+            flex: 0 0 40px;
+        }
+    }
+
+    /* ── SECTION FACTURES ── */
+    .col-md-5 .card {
+        border-radius: 12px !important;
+        border: 0.5px solid #d0e4f7 !important;
+        box-shadow: none !important;
+    }
+
+    .col-md-5 .card-header {
+        background: #f8fbff !important;
+        border-radius: 12px 12px 0 0 !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+        padding: 12px 16px !important;
+
+        h6 {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            color: #0d1b2a !important;
+        }
+    }
+
+    .col-md-5 .card-body {
+        padding: 14px !important;
+    }
+
+    /* Dates côte à côte */
+    .col-md-5 form.row.g-2 {
+        .col-md-6.col-12 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+            padding: 0 4px !important;
+
+            &:first-child {
+                padding-left: 0 !important;
+            }
+
+            &:last-of-type {
+                padding-right: 0 !important;
+            }
+        }
+
+        .col-12:last-child {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+    }
+
+    .col-md-5 .form-label {
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        color: #7a9ab8 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+    }
+
+    .col-md-5 .form-control {
+        border: 0.5px solid #d0e4f7 !important;
+        border-radius: 8px !important;
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+        box-shadow: none !important;
+
+        &:focus {
+            border-color: #1565C0 !important;
+            box-shadow: none !important;
+        }
+    }
+
+    .col-md-5 .btn-primary {
+        background: #1565C0 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Cacher table factures */
+    .col-md-5 .table-responsive {
+        display: none !important;
+    }
+
+    /* Mini liste factures */
+    .mobile-inv-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .inv-mini {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+
+        &.active {
+            background: #e3f2fd;
+            border-color: #90caf9;
+        }
+    }
+
+    .inv-mini-nber {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0d1b2a;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .inv-mini-date {
+        font-size: 10px;
+        color: #7a9ab8;
+        margin-top: 1px;
+    }
+
+    .inv-mini-amount {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1565C0;
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+    }
+
+    .btn-inv-view {
+        background: #e3f2fd;
+        color: #1565C0;
+        border: 0.5px solid #90caf9;
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 11px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .inv-empty {
+        text-align: center;
+        padding: 20px;
+        color: #7a9ab8;
+        font-size: 12px;
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODALS BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        padding: 0 !important;
+        max-height: 90vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        h6,
+        h1 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 18px 16px !important;
+        max-height: calc(90vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL FORMULAIRE CLIENT ── */
+    #exampleModal .modal-body form {
+        .col-12 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            min-height: 42px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+    }
+
+    /* ── MODAL ARTICLES ── */
+    #exampleModalShowProduct .modal-body .table-responsive {
+        display: block !important;
+
+        .table {
+            min-width: 480px;
+        }
+
+        thead th {
+            font-size: 10px !important;
+            padding: 8px !important;
+            background: #1565C0 !important;
+            color: #fff !important;
+            border: none !important;
+        }
+
+        tbody td {
+            font-size: 11px !important;
+            padding: 8px !important;
+            border-bottom: 0.5px solid #e6f0fa !important;
+            border-top: none !important;
+        }
+    }
+
+    /* ── MODAL WHATSAPP ── */
+    #exampleModalWhatsapp .modal-body {
+        textarea.form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            padding: 10px 12px !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+    }
+
+    .modal-lg .modal-content,
+    .modal-sm .modal-content {
+        max-height: 90vh !important;
+    }
+
+    .modal-lg .modal-body,
+    .modal-sm .modal-body {
+        max-height: calc(90vh - 130px) !important;
+    }
+}

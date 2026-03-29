@@ -1,0 +1,278 @@
+<div class="">
+  <div class="card border-0 shadow-sm">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">
+        👤 Gestion des utilisateurs
+      </h5>
+      <button (click)="resetFormUser()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+        data-bs-target="#exampleModal">
+        ➕ Utilisateur
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+      <!-- Search and Info -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+          <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChange($event)">
+          </app-search-list>
+        </div>
+        <div class="col-md-6 text-end">
+          <span class="badge bg-info-subtle text-dark fw-semibold">
+            Nombre d’utilisateurs : {{ pagination?.nberItems }}
+          </span>
+        </div>
+      </div>
+
+      <app-spinners *ngIf="isLoading" message="⏳ Chargement ..."></app-spinners>
+      <!-- Table -->
+      <div *ngIf="!isLoading" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Utilisateur</th>
+              <th class="text-center">Entrepôt / Boutique</th>
+              <th class="text-center">Téléphone</th>
+              <th class="text-center">Date dernière connexion</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let list of users; trackBy: trackByUserId"
+              [ngClass]="{ 'table-active': list?.id === idUsrToEdit }">
+
+              <!-- User Info -->
+              <td>
+                <div class="d-flex align-items-center">
+                  <img [src]="list?.image | image" alt="User" class="rounded-circle me-2 shadow-sm" width="40"
+                    height="40" />
+                  <div>
+                    <div class="fw-semibold d-flex align-items-center">
+                      {{ list?.email }}
+                      <i *ngIf="list?.is_verified" class="fas fa-check-circle text-success ms-1"></i>
+                    </div>
+                    <small class="text-muted">{{ returnRole(list?.role) }}</small>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Warehouse / Store -->
+              <td class="text-center">
+                {{ list?.whStore?.nameWh || '—' }}
+              </td>
+
+              <!-- Phone -->
+              <td class="text-center">
+                {{ list?.phone || '—' }}
+              </td>
+              <td class="text-center">{{ list?.last_seen | date:"d MMM yyyy 'à' HH:mm:ss":"UTC" || '-' }}</td>
+
+              <!-- Actions -->
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                  <button (click)="editTheUser(list)" class="btn btn-outline-warning btn-sm rounded-circle"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal" title="Modifier">
+                    <i class="ti ti-pencil"></i>
+                  </button>
+
+                  <button (click)="resetPasswordUser(list)" class="btn btn-outline-info btn-sm rounded-circle"
+                    data-bs-toggle="modal" data-bs-target="#exampleModalPassword" title="Réinitialiser le mot de passe">
+                    <i class="ti ti-key"></i>
+                  </button>
+
+                  <button (click)="deleteUser(list?.id)" class="btn btn-outline-danger btn-sm rounded-circle"
+                    title="Supprimer">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- LISTE MOBILE -->
+      <div class="mobile-user-list" style="display:none">
+        <div *ngFor="let list of users; trackBy: trackByUserId" class="user-card"
+          [class.active]="list?.id === idUsrToEdit">
+
+          <div class="user-top">
+            <img [src]="list?.image | image" class="user-avatar" alt="avatar">
+            <div class="user-info">
+              <div class="user-email">
+                {{ list?.email }}
+                <i *ngIf="list?.is_verified" class="fa fa-check-circle"></i>
+              </div>
+              <div class="user-role">{{ returnRole(list?.role) }}</div>
+            </div>
+          </div>
+
+          <div class="user-meta">
+            <span class="meta-pill">🏪 {{ list?.whStore?.nameWh || '—' }}</span>
+            <span class="meta-pill">📞 {{ list?.phone || '—' }}</span>
+          </div>
+
+          <div class="user-seen">
+            Dernière connexion : {{ list?.last_seen | date:"d MMM yyyy 'à' HH:mm:ss":"UTC" || '—' }}
+          </div>
+
+          <div class="user-actions">
+            <button class="btn-act btn-edit" (click)="editTheUser(list)" data-bs-toggle="modal"
+              data-bs-target="#exampleModal">
+              ✏️ Modifier
+            </button>
+            <button class="btn-act btn-key" (click)="resetPasswordUser(list)" data-bs-toggle="modal"
+              data-bs-target="#exampleModalPassword">
+              🔑 MDP
+            </button>
+            <button class="btn-act btn-del" (click)="deleteUser(list?.id)">
+              🗑
+            </button>
+          </div>
+
+        </div>
+
+        <div *ngIf="users?.length === 0" class="empty">
+          Aucun utilisateur trouvé
+        </div>
+      </div>
+
+      <!-- No Users -->
+      <h6 class="text-center text-muted py-3" *ngIf="users?.length === 0">
+        Aucun utilisateur trouvé
+      </h6>
+
+      <!-- Pagination -->
+      <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+        [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+      </app-set-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal: Add / Edit User -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h6 class="modal-title">{{ titleModal }}</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formUser" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Nom</label>
+            <input formControlName="name" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.name }}</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Prénom</label>
+            <input formControlName="surname" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.surname }}</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Email</label>
+            <input formControlName="email" type="email" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.email }}</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Téléphone</label>
+            <input formControlName="phone" type="tel" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.phone }}</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Rôle</label>
+            <select formControlName="role" class="form-select form-select-sm" (change)="showWhStoreBasedRole()">
+              <option [ngValue]="0">Choisir...</option>
+              <option *ngFor="let role of roles" [value]="role?.value">{{ role?.name }}</option>
+            </select>
+            <small class="text-danger">{{ errors?.role }}</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Entrepôt / Boutique</label>
+            <select formControlName="whShop" class="form-select form-select-sm">
+              <option [ngValue]="0">Choisir...</option>
+              <option *ngFor="let n of newWarehouses" [ngValue]="n?.id">{{ n?.nameWh }}</option>
+            </select>
+            <small class="text-danger">{{errors?.warehouse}}</small>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="closeModalRegister" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+          Fermer
+        </button>
+        <app-submit-spinner *ngIf="!editUser" [loading]="isSaving" label="Enregistrer" icon=""
+          cssClass="btn btn-primary btn-sm" (clicked)="registerUser()">
+        </app-submit-spinner>
+        <app-submit-spinner *ngIf="editUser" [loading]="isSaving" label="Mettre à jour" icon="ti ti-refresh me-1"
+          cssClass="btn btn-warning btn-sm" (clicked)="saveEditUser()">
+        </app-submit-spinner>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal: Reset Password -->
+<div class="modal fade" id="exampleModalPassword" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h6 class="modal-title">{{ titleModal }}</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formResetPassword" class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold">Nom</label>
+            <input readonly formControlName="name" class="form-control form-control-sm" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Prénom</label>
+            <input readonly formControlName="surname" class="form-control form-control-sm" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Email</label>
+            <input readonly formControlName="email" class="form-control form-control-sm" />
+          </div>
+
+          <div *ngIf="editUser" class="col-12">
+            <label class="form-label fw-semibold">Mot de passe</label>
+            <div class="input-group input-group-sm">
+              <input [type]="passwordType" formControlName="password" class="form-control form-control-sm"
+                placeholder="Mot de passe" />
+              <button (click)="shPasswd()" type="button" class="btn btn-outline-secondary btn-sm">
+                <i *ngIf="show" class="ti ti-eye"></i>
+                <i *ngIf="!show" class="ti ti-eye-off"></i>
+              </button>
+              <button (click)="generatePassword()" type="button" class="btn btn-outline-secondary btn-sm">
+                Générer
+              </button>
+            </div>
+            <small class="text-danger">{{ errors?.password }}</small>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button id="closeModalResetPassword" type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+          Fermer
+        </button>
+        <button (click)="saveResetPassword()" class="btn btn-primary btn-sm">
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

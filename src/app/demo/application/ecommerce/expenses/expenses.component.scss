@@ -1,0 +1,608 @@
+/* ── STYLES DE BASE ── */
+.card {
+    background-color: #fff;
+    border-radius: 1.25rem;
+    border: none;
+}
+
+h4 {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.btn-primary {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+}
+
+.btn-primary:hover {
+    background-color: #3a78c2;
+    border-color: #3a78c2;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.modal-content {
+    border-radius: 1rem;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #555;
+}
+
+input[type="month"],
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    border-radius: 0.5rem;
+    border-color: #dee2e6;
+}
+
+input[type="file"] {
+    padding: 0.45rem;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+.badge.text-bg-primary {
+    font-size: 0.875rem;
+    padding: 0.5em 1em;
+    border-radius: 2rem;
+    margin: 1rem;
+    background-color: #007bff;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header.py-3 {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            padding: 6px 12px !important;
+        }
+
+        .btn-outline-light {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+            border: 0.5px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            padding: 6px 12px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── LAYOUT : 2 colonnes → empilées ── */
+    .row.g-4 {
+        flex-direction: column !important;
+
+        .col-md-3,
+        .col-md-9,
+        .col-md-12 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+    }
+
+    /* ── SECTION TYPES DE DÉPENSES ── */
+    .col-md-3>.card {
+        border-radius: 12px !important;
+        border: 0.5px solid #d0e4f7 !important;
+        box-shadow: none !important;
+
+        .card-header {
+            background: #f8fbff !important;
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: 0.5px solid #e6f0fa !important;
+            padding: 12px 16px !important;
+
+            h6 {
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                color: #0d1b2a !important;
+            }
+
+            .btn-primary {
+                background: #1565C0 !important;
+                border: none !important;
+                border-radius: 8px !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                padding: 6px 12px !important;
+            }
+        }
+
+        .card-body {
+            padding: 0 !important;
+        }
+
+        /* Cacher table des types, montrer liste */
+        .table-responsive {
+            display: none !important;
+        }
+
+        .mobile-types-list {
+            display: flex !important;
+            flex-direction: column;
+        }
+
+        .type-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 0.5px solid #e6f0fa;
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .type-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a2e42;
+        }
+
+        .type-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-type-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0.5px solid;
+            cursor: pointer;
+            font-size: 12px;
+
+            &.edit {
+                background: #fff8e1;
+                color: #8a6200;
+                border-color: #ffe082;
+            }
+
+            &.del {
+                background: #fff0f0;
+                color: #e53935;
+                border-color: #ffd0d0;
+            }
+        }
+    }
+
+    /* ── SECTION DÉPENSES ── */
+    .col-md-9>.card,
+    .col-md-12>.card {
+        border-radius: 12px !important;
+        border: 0.5px solid #d0e4f7 !important;
+        box-shadow: none !important;
+
+        .card-header {
+            background: #f8fbff !important;
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: 0.5px solid #e6f0fa !important;
+            padding: 12px 16px !important;
+            flex-wrap: wrap !important;
+            gap: 8px;
+
+            h6 {
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                color: #0d1b2a !important;
+            }
+
+            .badge {
+                background: #e3f2fd !important;
+                color: #1565C0 !important;
+                border: 0.5px solid #90caf9;
+                border-radius: 8px !important;
+                font-size: 12px !important;
+                padding: 5px 10px !important;
+            }
+        }
+    }
+
+    /* ── FILTRES ── */
+    .row.g-3.mb-4 {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px !important;
+        margin: 0 0 12px !important;
+        gap: 10px 0 !important;
+
+        .col-md-3,
+        .col-md-5,
+        .col-md-4 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        /* Période : dates côte à côte */
+        .col-md-5 .input-group {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr auto !important;
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: visible !important;
+
+            input[type="month"] {
+                flex: 1 !important;
+                border: none !important;
+                border-radius: 0 !important;
+                font-size: 12px !important;
+                padding: 9px 8px !important;
+                min-height: 40px !important;
+                box-shadow: none !important;
+                width: 0 !important;
+                min-width: 0 !important;
+
+                &:first-child {
+                    border-right: 0.5px solid #d0e4f7 !important;
+                    border-radius: 8px 0 0 8px !important;
+                }
+
+                &:nth-child(2) {
+                    border-radius: 0 !important;
+                }
+            }
+
+            .btn-outline-primary {
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 8px 8px 0 !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 0 12px !important;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    /* ── CACHER TABLE DÉPENSES ── */
+    .table-responsive:not(.col-md-3 .table-responsive) {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE DÉPENSES ── */
+    .mobile-expense-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .expense-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 12px 14px;
+    }
+
+    .expense-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .expense-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #0d1b2a;
+        flex: 1;
+    }
+
+    .expense-amount {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1565C0;
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+    }
+
+    .expense-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 6px;
+    }
+
+    .meta-pill {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        background: #f0f7ff;
+        border: 0.5px solid #cce0f5;
+        border-radius: 20px;
+        padding: 3px 8px;
+        font-size: 11px;
+        color: #2c4f70;
+        white-space: nowrap;
+    }
+
+    .expense-desc {
+        font-size: 11px;
+        color: #7a9ab8;
+        font-style: italic;
+        margin-bottom: 8px;
+    }
+
+    .expense-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-download {
+        background: #e3f2fd;
+        color: #1565C0;
+        border: 0.5px solid #90caf9;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .btn-del-exp {
+        background: #fff0f0;
+        color: #e53935;
+        border: 0.5px solid #ffd0d0;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODALS BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 92vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        h6 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 18px 16px !important;
+        max-height: calc(92vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── FORMULAIRE MODALS ── */
+    .modal-body form,
+    .modal-body>div {
+
+        .col-md-6,
+        .col-12 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select,
+        textarea {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            min-height: 42px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        .ng-select .ng-select-container {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            min-height: 42px !important;
+            font-size: 13px !important;
+        }
+    }
+
+    .modal-lg .modal-content {
+        max-height: 95vh !important;
+    }
+
+    .modal-lg .modal-body {
+        max-height: calc(95vh - 130px) !important;
+    }
+}

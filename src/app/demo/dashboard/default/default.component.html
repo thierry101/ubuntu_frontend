@@ -1,0 +1,427 @@
+<div class="row">
+  <!-- [ sample-page ] start -->
+  <div class="col-xl-4 col-md-6">
+    <div class="card bg-primary-dark dashnum-card text-white overflow-hidden">
+      <span class="round small"></span>
+      <span class="round big"></span>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            <div class="avtar avtar-lg">
+              <i class="text-white ti ti-credit-card"></i>
+            </div>
+          </div>
+          <div class="col-10">
+            <ul ngbNav aria-busy="true" class="nav-tabs nav-pills" #nav="ngbNav">
+              <li class="nav-item" [ngbNavItem]="1">
+                <a class="nav-link text-white" ngbNavLink>Journée</a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-12">
+                      <span style="font-size: 20px;" class="text-white d-block f-34 f-w-500 my-2">
+                        {{sale_today | number:'1.0-0'}} {{devise}} <i
+                          class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+                      <p class="mb-0 opacity-50">Recette journalière</p>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li class="nav-item" [ngbNavItem]="2">
+                <a class="nav-link text-white" ngbNavLink>Mois</a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-12">
+                      <span style="font-size: 20px;" class="text-white d-block f-34 f-w-500 my-2">
+                        {{sale_month | number:'1.0-0'}} {{devise}} <i
+                          class="ti ti-arrow-down-right-circle opacity-50"></i></span>
+                      <p class="mb-0 opacity-50">Recette mensuelle</p>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div [ngbNavOutlet]="nav"> </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-md-6">
+    <div class="card bg-info-dark dashnum-card text-white overflow-hidden">
+      <span class="round small"></span>
+      <span class="round big"></span>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            <div class="avtar avtar-lg">
+              <i class="text-white ti ti-receipt-refund"></i>
+            </div>
+          </div>
+          <div class="col-10">
+            <ul ngbNav aria-busy="true" class="nav-tabs nav-pills" #navCredit="ngbNav">
+              <li class="nav-item" [ngbNavItem]="1">
+                <a class="nav-link text-white" ngbNavLink>Journée</a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-12">
+                      <span style="font-size: 20px;" class="text-white d-block f-34 f-w-500 my-2">
+                        {{credit_note_today | number:'1.0-0'}} {{devise}}
+                        <i class="ti ti-arrow-down-right-circle opacity-50"></i>
+                      </span>
+                      <p class="mb-0 opacity-50">Avoirs journaliers</p>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li class="nav-item" [ngbNavItem]="2">
+                <a class="nav-link text-white" ngbNavLink>Mois</a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-12">
+                      <span style="font-size: 20px;" class="text-white d-block f-34 f-w-500 my-2">
+                        {{credit_note_month | number:'1.0-0'}} {{devise}}
+                        <i class="ti ti-arrow-down-right-circle opacity-50"></i>
+                      </span>
+                      <p class="mb-0 opacity-50">Avoirs mensuels</p>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div [ngbNavOutlet]="navCredit"> </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-md-6">
+    <div class="card bg-secondary-dark dashnum-card text-white overflow-hidden">
+      <span class="round small"></span>
+      <span class="round big"></span>
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <div class="avtar avtar-lg">
+              <i class="text-white ti ti-credit-card"></i>
+            </div>
+          </div>
+        </div>
+        <span style="font-size: 20px;" class="text-white d-block f-34 f-w-500 my-2">
+          {{expensive_month | number:'1.0-0'}} {{devise}} <i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+        <p class="mb-0 opacity-50">Cumul des dépenses mensuelles</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card dashnum-card dashnum-card-small overflow-hidden bg-success text-white">
+      <span class="round bg-primary small"></span>
+      <span class="round bg-primary big"></span>
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center">
+          <div class="avtar avtar-lg bg-light-warning">
+            <i class="text-dark ti ti-credit-card"></i>
+          </div>
+          <div class="ms-2">
+            <h4 class="text-dark mb-1">{{ sale_today - tva_today | number:'1.0-0'}} {{devise}} <i
+                class="ti ti-arrow-up-right-circle opacity-50"></i></h4>
+            <p class="mb-0 opacity-50 text-sm text-dark">Recette globale HT journalière</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card dashnum-card dashnum-card-small overflow-hidden bg-warning text-dark">
+      <span class="round bg-warning small"></span>
+      <span class="round bg-warning big"></span>
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center">
+          <div class="avtar avtar-lg bg-light-warning">
+            <i class="text-warning ti ti-credit-card"></i>
+          </div>
+          <div class="ms-2">
+            <h4 class="text-dark mb-1">{{tva_today | number:'1.0-0'}} {{devise}} <i
+                class="ti ti-arrow-up-right-circle opacity-50"></i></h4>
+            <p class="mb-0 opacity-50 text-sm">TVA globale journalière collectée</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-xl-7 col-md-12">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <!-- Title Section -->
+        <div class="row mb-4">
+          <div class="col">
+            <h4 class="mb-0">📊 Recette journalière / Boutique & Entrepôt</h4>
+          </div>
+        </div>
+
+        <!-- Highlighted Top Performer -->
+        <div class="rounded bg-light p-3 border mb-4">
+          <div class="row align-items-center">
+            <div class="col">
+              <h5 class="mb-1 text-primary">
+                {{ highestOrdersToday?.nameWh || '—' }}
+              </h5>
+              <small class="text-muted">
+                Site de vente le plus performant aujourd’hui </small>
+            </div>
+            <div class="col-auto text-end">
+              <h4 class="mb-0">
+                {{ highestOrdersToday?.total_orders_today | number:'1.0-0' }} {{ devise }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="table-wrapper border rounded">
+          <app-spinners *ngIf="isLoadingWhStor" message="Chargement ..."></app-spinners>
+          <div *ngIf="!isLoadingWhStor" class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th></th>
+                  <th>Point de vente</th>
+                  <th>Vente du jour</th>
+                  <th>Évolution</th>
+                  <th>Total avoir journalier</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (sumOrder of tableCurrentSale; track sumOrder) {
+                <tr>
+                  <td>
+                    <i *ngIf="sumOrder?.total_orders_today > sumOrder?.total_orders_yesterday"
+                      class="fas fa-caret-up text-success fs-5"></i>
+                    <i *ngIf="sumOrder?.total_orders_today < sumOrder?.total_orders_yesterday"
+                      class="fas fa-caret-down text-danger fs-5"></i>
+                  </td>
+                  <td class="text-wrap">
+                    <a style="color: black;" [routerLink]="['/list-orders-warehouse', sumOrder?.id]">
+                      {{ sumOrder?.nameWh }}
+                    </a>
+                  </td>
+                  <td>{{ sumOrder?.total_orders_today | number:'1.0-0' }} {{ devise }}</td>
+                  <td>
+                    <span *ngIf="sumOrder?.total_orders_yesterday > 0">
+                      <span *ngIf="sumOrder?.total_orders_today < sumOrder?.total_orders_yesterday"
+                        class="badge bg-danger">
+                        -{{ ((sumOrder?.total_orders_yesterday - sumOrder?.total_orders_today) /
+                        sumOrder?.total_orders_yesterday * 100) | number:'1.0-1' }}%
+                      </span>
+                      <span *ngIf="sumOrder?.total_orders_today > sumOrder?.total_orders_yesterday"
+                        class="badge bg-success">
+                        +{{ ((sumOrder?.total_orders_today - sumOrder?.total_orders_yesterday) /
+                        sumOrder?.total_orders_yesterday * 100) | number:'1.0-1' }}%
+                      </span>
+                      <span *ngIf="sumOrder?.total_orders_today === sumOrder?.total_orders_yesterday"
+                        class="badge bg-secondary">=</span>
+                    </span>
+                    <span *ngIf="sumOrder?.total_orders_yesterday === 0" class="text-muted">N/A</span>
+                  </td>
+                  <td>{{ sumOrder?.total_credit_today | number:'1.0-0' }} {{ devise }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-5 col-md-12">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <!-- Title & Filters -->
+        <div class="row mb-4">
+          <div class="col">
+            <h4 class="mb-3">🏆 Top 10 des clients du mois</h4>
+            <div class="row g-3 align-items-end">
+              <div class="col-lg-4 col-md-6">
+                <label for="startDate1" class="form-label">📅 Date début</label>
+                <input [(ngModel)]="startDateClient" name="startDat" type="date" class="form-control form-control-sm"
+                  id="startDate1">
+              </div>
+
+              <div class="col-lg-4 col-md-6">
+                <label for="endDate2" class="form-label">📅 Date de fin</label>
+                <input [(ngModel)]="endDateClient" name="endDat" type="date" class="form-control form-control-sm"
+                  id="endDate2">
+              </div>
+
+              <div class="col-lg-4 col-md-6">
+                <button title="Filtrer" (click)="filterBestClients()" type="button"
+                  class="btn btn-success btn-sm rounded w-100">
+                  <i class="ti ti-filter me-1"></i> Filtrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlighted Client -->
+        <div class="rounded p-3 bg-light border mb-4">
+          <div class="row align-items-center">
+            <div class="col">
+              <h5 class="mb-1 text-primary">{{ highestBestClient?.name || '—' }}</h5>
+              <small class="text-muted">Client ayant effectué l’achat le plus important</small>
+            </div>
+            <div class="col-auto text-end">
+              <h4 class="mb-0">{{ highestBestClient?.total_achats | number:'1.0-0' }} {{ devise }}</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top 10 Clients Table -->
+        <div class="table-wrapper border rounded">
+          <app-spinners *ngIf="isLoadingClient" message="Chargement ..."></app-spinners>
+          <div *ngIf="!isLoadingClient" class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Client</th>
+                  <th>Téléphone</th>
+                  <th>Total Achats</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (clientOrder of topBestClients; track clientOrder) {
+                <tr>
+                  <td class="text-wrap">{{ clientOrder?.name }}</td>
+                  <td class="text-wrap">{{ clientOrder?.phone }}</td>
+                  <td>{{ clientOrder?.total_achats | number:'1.0-0' }} {{ devise }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-6 col-md-12">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <!-- Title -->
+        <div class="mb-4">
+          <h5 class="mb-1">📊 Chiffre d'affaire réel / Boutique ou Entrepôt</h5>
+          <small>Il s’agit du montant effectivement présent en caisse, correspondant à l’écart entre les sommes
+            encaissées et les montants remboursés au titre des factures d’avoir.</small>
+          <!-- <small class="text-muted">Analyse des tendances de vente selon la période choisie</small> -->
+        </div>
+
+        <!-- Filters -->
+        <div class="row g-3 mb-4 align-items-end">
+          <div class="col-lg-4 col-md-6">
+            <label for="startDate1" class="form-label">📅 Date de début</label>
+            <input [(ngModel)]="startDateWhStor" name="startDat" type="date" id="startDate1"
+              class="form-control form-control-sm" />
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <label for="endDate2" class="form-label">📅 Date de fin</label>
+            <input [(ngModel)]="endDateWhStor" name="endDat" type="date" id="endDate2"
+              class="form-control form-control-sm" />
+          </div>
+
+          <div class="col-lg-4 col-md-12">
+            <button type="button" title="Filtrer" (click)="filterRevenueWhStore()"
+              class="btn btn-success btn-sm rounded w-100">
+              <i class="ti ti-filter me-1"></i> Filtrer
+            </button>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <app-spinners *ngIf="isLoadingSell" message="Chargement ..."></app-spinners>
+        <div *ngIf="!isLoadingSell" class="bg-light rounded p-3">
+          <div id="chart">
+            <apx-chart *ngIf="chartOptions?.series?.length" [series]="chartOptions?.series"
+              [chart]="chartOptions?.chart" [dataLabels]="chartOptions?.dataLabels"
+              [plotOptions]="chartOptions?.plotOptions" [yaxis]="chartOptions?.yaxis" [xaxis]="chartOptions?.xaxis"
+              [legend]="chartOptions?.legend" [colors]="chartOptions?.colors" [grid]="chartOptions?.grid"></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-6 col-md-12">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <!-- Title -->
+        <div class="row mb-4">
+          <div class="col">
+            <h4 class="mb-1">🏆 Top 10 des articles les plus vendus</h4>
+            <p class="text-muted mb-0 small">Il s’agit des quantités réellement vendues, correspondant à la différence
+              entre les quantités écoulées et celles retournées dans le cadre d’avoirs.</p>
+          </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row g-3 mb-4">
+
+          <!-- Choisir magasin : pleine largeur sur mobile -->
+          <div class="col-12 col-lg-3 col-md-6">
+            <label for="whStoreSelect" class="form-label">Choisir magasin</label>
+            <select name="whStor" [(ngModel)]="idWhstore" id="whStoreSelect" class="form-select form-select-sm">
+              <option value="0">Choisir...</option>
+              <option *ngFor="let item of warehouses" [value]="item?.id">
+                {{ item?.nameWh }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Date début : 6 sur mobile -->
+          <div class="col-6 col-lg-3 col-md-6">
+            <label for="startDate1" class="form-label">📅 Date de début</label>
+            <input [(ngModel)]="startDate" name="startDat" type="date" class="form-control form-control-sm"
+              id="startDate1">
+          </div>
+
+          <!-- Date fin : 6 sur mobile -->
+          <div class="col-6 col-lg-3 col-md-6">
+            <label for="endDate2" class="form-label">📅 Date de fin</label>
+            <input [(ngModel)]="endDate" name="endDat" type="date" class="form-control form-control-sm" id="endDate2">
+          </div>
+
+          <!-- Bouton filtrer : pleine largeur sur mobile -->
+          <div class="col-12 col-lg-3 col-md-6 d-flex align-items-end">
+            <button (click)="filterTopProducts()" title="Filtrer" type="submit"
+              class="btn btn-success w-100 rounded btn-sm">
+              <i class="ti ti-filter me-1"></i> Filtrer
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Chart Section -->
+        <div class="row">
+          <div class="col-12">
+            <app-spinners *ngIf="isLoadingProduct" message="Chargement ..."></app-spinners>
+            <div *ngIf="!isLoadingProduct" class="p-3 rounded bg-light border">
+              <apx-chart *ngIf="chartOptions5?.series?.length" [series]="chartOptions5?.series"
+                [chart]="chartOptions5?.chart" [labels]="chartOptions5?.labels"
+                [responsive]="chartOptions5?.responsive"></apx-chart>
+              <div *ngIf="!chartOptions5?.series?.length" class="text-center text-muted py-5">
+                <i class="ti ti-chart-pie fs-1 mb-2 d-block"></i>
+                <p class="mb-0">Aucune donnée à afficher pour cette période.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- [ sample-page ] end -->
+</div>

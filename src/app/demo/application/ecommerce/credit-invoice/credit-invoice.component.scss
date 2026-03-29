@@ -1,0 +1,649 @@
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 7px 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    .card>.card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* ── FILTRES ── */
+    .row.g-3.align-items-end.mb-4 {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px !important;
+        margin: 0 0 12px !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+
+        >[class*="col-"] {
+            width: 100% !important;
+            flex: none !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+
+        /* Recherche + Boutique pleine largeur */
+        .col-12.col-md-3 {
+            grid-column: 1 / -1 !important;
+        }
+
+        /* Dates : col-6 restent côte à côte (grid naturel) */
+
+        /* Valider pleine largeur */
+        .col-6.col-md-2 {
+            grid-column: 1 / -1 !important;
+
+            .btn-success {
+                background: #2e7d32 !important;
+                color: #fff !important;
+                border: none !important;
+                border-radius: 8px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                width: 100% !important;
+                padding: 10px !important;
+            }
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+    }
+
+    /* ── CACHER TABLE ── */
+    .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE AVOIRS ── */
+    .mobile-credit-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .credit-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px 16px;
+    }
+
+    .credit-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .credit-nber {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .credit-client {
+        font-size: 11px;
+        color: #7a9ab8;
+        margin-top: 2px;
+    }
+
+    .badge-total {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 0.5px solid #a5d6a7;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .badge-partial {
+        background: #fff8e1;
+        color: #8a6200;
+        border: 0.5px solid #ffe082;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .credit-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #f0f7ff;
+        border: 0.5px solid #cce0f5;
+        border-radius: 20px;
+        padding: 3px 8px;
+        font-size: 11px;
+        color: #2c4f70;
+        margin-bottom: 8px;
+        white-space: nowrap;
+    }
+
+    .credit-amounts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .amt-block {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 8px;
+        padding: 7px 10px;
+        text-align: center;
+    }
+
+    .amt-lbl {
+        font-size: 9px;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .amt-val {
+        font-size: 13px;
+        font-weight: 700;
+        font-family: 'DM Mono', monospace;
+        display: block;
+
+        &.total {
+            color: #0d1b2a;
+        }
+
+        &.rest {
+            color: #e53935;
+        }
+    }
+
+    .credit-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-act {
+        flex: 1;
+        border-radius: 8px;
+        padding: 9px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 0.5px solid;
+
+        &.btn-view {
+            background: #e3f2fd;
+            color: #1565C0;
+            border-color: #90caf9;
+        }
+
+        &.btn-print {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #a5d6a7;
+        }
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODALS BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+        flex-wrap: wrap !important;
+        gap: 6px;
+
+        h5,
+        h1 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+
+        small {
+            font-size: 11px !important;
+            color: #7a9ab8 !important;
+        }
+
+        .badge {
+            font-size: 10px !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 14px !important;
+        max-height: calc(95vh - 140px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL DÉTAILS AVOIR (creditModal) ── */
+    #creditModal .modal-body {
+        .row {
+            flex-direction: column !important;
+        }
+
+        .col-md-7,
+        .col-md-5 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .card {
+            border-radius: 12px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            box-shadow: none !important;
+        }
+
+        .card-body {
+            padding: 14px !important;
+        }
+
+        /* Client + Magasin */
+        .row.mb-3 {
+            flex-direction: row !important;
+
+            .col-md-6 {
+                width: 50% !important;
+                flex: 0 0 50% !important;
+                padding: 0 4px !important;
+            }
+
+            .col-md-6:first-child {
+                padding-left: 0 !important;
+            }
+
+            .col-md-6.text-end {
+                padding-right: 0 !important;
+            }
+
+            p {
+                font-size: 12px !important;
+            }
+        }
+
+        /* Tables articles */
+        .table-responsive {
+            display: block !important;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 0.5px solid #e6f0fa !important;
+
+            .table {
+                min-width: unset !important;
+            }
+
+            thead th {
+                font-size: 10px !important;
+                padding: 7px !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                border: none !important;
+            }
+
+            tbody td {
+                font-size: 11px !important;
+                padding: 7px 8px !important;
+                border: none !important;
+                border-bottom: 0.5px solid #e6f0fa !important;
+            }
+        }
+
+        /* Badges montants */
+        .d-flex.flex-column.flex-md-row.gap-2.mt-3 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 6px !important;
+
+            .badge {
+                border-radius: 8px !important;
+                padding: 8px !important;
+                font-size: 11px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+        }
+
+        /* Échelonnement */
+        h6.fw-semibold.mb-3 {
+            font-size: 13px !important;
+            margin-top: 16px !important;
+        }
+
+        .border.rounded-3.p-3 {
+            border: 0.5px solid #e6f0fa !important;
+            border-radius: 10px !important;
+            padding: 12px !important;
+            background: #f8fbff !important;
+
+            strong {
+                font-size: 12px !important;
+            }
+
+            small {
+                font-size: 11px !important;
+            }
+
+            .small {
+                font-size: 11px !important;
+            }
+        }
+
+        /* Inputs paiement */
+        .row .col-4 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+            padding: 0 4px !important;
+
+            &:first-child {
+                padding-left: 0 !important;
+            }
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+    }
+
+    /* ── MODAL CRÉER AVOIR (exampleModal) ── */
+    #exampleModal .modal-body {
+        .row.g-3.mb-3 {
+            .col-md-4 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .row {
+                margin: 0 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 4px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &[readonly] {
+                background: #f8fbff !important;
+                color: #7a9ab8 !important;
+            }
+        }
+
+        /* Table articles à sélectionner */
+        .table-responsive {
+            display: block !important;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 0.5px solid #e6f0fa !important;
+
+            .table {
+                min-width: unset !important;
+            }
+
+            thead th {
+                font-size: 10px !important;
+                padding: 7px !important;
+                background: #f8fbff !important;
+                border-bottom: 0.5px solid #e6f0fa !important;
+            }
+
+            tbody td {
+                font-size: 11px !important;
+                padding: 7px 8px !important;
+                border: none !important;
+                border-bottom: 0.5px solid #e6f0fa !important;
+            }
+        }
+
+        /* Switch + badge */
+        .d-flex.align-items-center.gap-2.my-3 {
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+
+            .col-md-4 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                padding: 0 !important;
+            }
+        }
+
+        /* Méthode remboursement */
+        .row .col-2 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+            padding: 0 4px !important;
+
+            &:nth-child(odd) {
+                padding-left: 0 !important;
+            }
+        }
+
+        textarea.form-control {
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+        }
+    }
+
+    /* Footer modal créer avoir */
+    #exampleModal .modal-footer {
+        .badge.bg-success {
+            font-size: 13px !important;
+        }
+    }
+
+    /* ── MODAL IMPRESSION (modalCreditInvoice0023) ── */
+    #modalCreditInvoice0023 .modal-body {
+        .row.mb-3 {
+            flex-direction: column !important;
+
+            .col-md-6,
+            .col-md-6.text-end {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                text-align: left !important;
+                padding: 0 !important;
+            }
+        }
+
+        .table-responsive {
+            display: block !important;
+
+            thead th {
+                font-size: 10px !important;
+                padding: 7px !important;
+            }
+
+            tbody td {
+                font-size: 11px !important;
+                padding: 7px !important;
+            }
+        }
+
+        .row .col-md-6.text-end {
+            text-align: left !important;
+        }
+    }
+
+    .modal-lg .modal-content {
+        max-height: 95vh !important;
+    }
+
+    .modal-lg .modal-body {
+        max-height: calc(95vh - 140px) !important;
+    }
+}

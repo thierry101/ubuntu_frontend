@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AnKeCRM</string>
+    <string name="title_activity_main">AnKe</string>
+    <string name="package_name">com.digTrans.AnKe</string>
+    <string name="custom_url_scheme">com.digTrans.AnKe</string>
+</resources>

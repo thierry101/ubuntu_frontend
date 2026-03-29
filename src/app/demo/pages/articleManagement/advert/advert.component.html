@@ -1,0 +1,300 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🏷️ Publicités
+            </h5>
+            <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#exampleModalAdvert">
+                ➕ Publicité
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Messages WhatsApp disponibles</label>
+                    <div class="input-group input-group-sm mb-3">
+                        <input type="number" [value]="nberWhatsappMsg" readonly class="form-control">
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalBuySmsWhatsapp" type="button"
+                            id="button-addon2">Acheter</button>
+                    </div>
+                </div>
+            </div>
+            <app-spinners *ngIf="isLoading" message="Chargement des pubs ..."></app-spinners>
+            <!-- Search and Info -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                    <app-search-list [searchTerm]="searchTerm"
+                        (searchChange)="onSearchChange($event)"></app-search-list>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-info-subtle text-dark fw-semibold">
+                        Nombre de promotions : {{pagination?.nberItems | number}}
+                    </span>
+                </div>
+            </div>
+            <ng-container *ngIf="!isLoading">
+                <div class="border rounded p-3 mb-3" *ngFor="let item of all_advertising">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+                            <h5 class="mb-1">{{ item?.name }}</h5>
+                            <h6 class="text-muted">{{ item?.header_msg }}</h6>
+
+                            <p class="mb-0" style="white-space: pre-line;">
+                                {{ item?.message }}
+                            </p>
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            <!-- Bouton envoyer -->
+                            <button class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalSendWhatsapp"
+                                (click)="fetchClientAdvertising(1, item?.id)">
+                                <i class="ti ti-send"></i>
+                            </button>
+
+                            <!-- Bouton supprimer -->
+                            <button class="btn btn-sm btn-danger" (click)="deleteCatalogue(item?.id)">
+                                <i class="ti ti-trash"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </ng-container>
+
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalAdvert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Créer une publicité</h1>
+                <button type="button" class="btn-close" id="closeAdvertModal" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+
+                    <!-- FORMULAIRE -->
+                    <div class="col-md-7">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Configuration de la publicité</h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nom de la publicité</label>
+                                    <input type="text" class="form-control form-control-sm" name="nameAdvert"
+                                        [(ngModel)]="nameAdvertising" placeholder="Ex: Promo été">
+                                    <small class="text-danger fw-semibold">{{ errors?.nameAdvertising }}</small>
+                                </div>
+
+                                <hr>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Entête</label>
+                                    <input type="text" [(ngModel)]="headerMsg" class="form-control form-control-sm"
+                                        placeholder="Ex: Nouveau catalogue disponible" name="headerMsg">
+                                    <small class="text-danger fw-semibold">{{ errors?.headerMsg }}</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Message</label>
+                                    <textarea class="form-control" rows="5" [(ngModel)]="contentMsg" name="contentMsg">
+                                        placeholder="Rédigez le message qui sera envoyé aux clients..."></textarea>
+                                    <small class="text-danger fw-semibold">{{ errors?.contentMsg }}</small>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <app-submit-spinner [loading]="isSaving" label="Enregister"
+                                        icon="ti ti-refresh me-1" cssClass="btn btn-primary btn-sm mt-2"
+                                        (clicked)="saveAdvertising()">
+                                    </app-submit-spinner>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- PREVIEW -->
+                    <div class="col-md-5">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white">
+                                <h6 class="mb-0">Aperçu du message</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="promo-card">
+                                    <div class="promo-body">
+                                        <h5 class="promo-title mb-3">
+                                            {{headerMsg}}
+                                        </h5>
+                                        <p class="mb-2">{{headerContent}} <strong>Nom client</strong>,</p>
+
+                                        <p class="mb-2">
+                                            {{contentMsg}}
+                                        </p>
+
+                                        <p class="mb-3">
+                                            {{footer1Msg}}
+                                        </p>
+
+                                        <p class="text-muted small">
+                                            {{footerContent}}
+                                        </p>
+
+                                        <div
+                                            class="promo-footer d-flex justify-content-between align-items-center mt-3">
+                                            <small class="text-muted">© ankecrm.com – Tous droits réservés</small>
+                                            <small class="text-muted">{{currentTime | date:'HH:mm'}}</small>
+                                        </div>
+
+                                    </div>
+                                    <a href="#" class="promo-button">
+                                        <i class="bi bi-box-arrow-up-right"></i> Voir catalogue
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalSendWhatsapp" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Liste des clients</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span class="text-danger text-center">{{errors?.nberWhatsapp}}</span>
+                <!-- Barre d'actions -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0 16px;">
+                    <span style="font-size: 12px; color: #5a7a99;">
+                        {{ selectedClients.size }} / 50 sélectionné(s)
+                    </span>
+                    <div style="display: flex; gap: 8px;">
+                        <button (click)="selectAll()" [disabled]="selectedClients.size === 50"
+                            style="font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid #1565C0; color: #1565C0; background: #fff; cursor: pointer;">
+                            Tout sélectionner
+                        </button>
+                        <button (click)="deselectAll()"
+                            style="font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid #ccc; color: #5a7a99; background: #fff; cursor: pointer;">
+                            Tout désélectionner
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Liste clients -->
+                <div *ngFor="let client of all_clients" (click)="toggleClient(client.id)"
+                    [style.background]="selectedClients.has(client.id) ? '#f0f7ff' : '#fff'" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+                    border-bottom: 0.5px solid #e6f0fa; border-radius: 8px;
+                    cursor: pointer; transition: background 0.15s;">
+
+                    <input type="checkbox" [checked]="selectedClients.has(client.id)" (click)="$event.stopPropagation()"
+                        (change)="toggleClient(client.id)" [disabled]="isDisabled(client.id)"
+                        style="width: 16px; height: 16px; accent-color: #1565C0; cursor: pointer; flex-shrink: 0;">
+
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <span style="font-size: 14px; font-weight: 500; color: #0d1b2a;">{{ client.name }}</span>
+                        <span style="font-size: 12px; color: #5a7a99;">{{ client.phone }}</span>
+                    </div>
+
+                </div>
+
+                <!-- Message limite atteinte -->
+                <p *ngIf="selectedClients.size === 50"
+                    style="text-align: center; font-size: 12px; color: #e65100; margin-top: 12px;">
+                    Limite de 50 utilisateurs atteinte.
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModalPub002" class="btn-sm btn btn-secondary"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner [loading]="isSend" label="Envoyer" icon="ti ti-refresh me-1"
+                    cssClass="btn btn-primary btn-sm mt-2" (clicked)="sendClient()">
+                </app-submit-spinner>
+                <!-- <button (click)="sendClient()" type="button" class="btn-sm btn btn-primary">Envoyer</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalBuySmsWhatsapp" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Achat message whatsapp pour les publicités</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label for="inputActualQty4" class="form-label">Quantité actuelle</label>
+                        <input type="number" [value]="nberWhatsappMsg" readonly class="form-control form-control-sm"
+                            id="inputActualQty4">
+                    </div>
+                    <div class="col-8">
+                        <label for="inputBuyQty4" class="form-label">Quantité à acheter</label>
+                        <input (ngModelChange)="calculateTotal($event)" [(ngModel)]="quantity" name="actualQty"
+                            type="number" class="form-control form-control-sm" id="inputBuyQty4">
+                    </div>
+                    <div class="col-4" *ngIf="adminSetting$ | async as settingAdmin">
+                        <label for="inputUnitPrice4" class="form-label">P.U</label>
+                        <div class="input-group input-group-sm mb-3">
+                            <input [(ngModel)]="unitPrice" name="unitPrice" readonly type="number" class="form-control"
+                                [value]="settingAdmin?.pub_whatsapp">
+                            <span class="input-group-text" id="basic-addon2">{{devise}}</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputTotal4" class="form-label">Total</label>
+                        <div class="input-group input-group-sm mb-3">
+                            <input [(ngModel)]="total" name="total" type="number" readonly class="form-control">
+                            <span class="input-group-text" id="basic-addon2">{{devise}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary btn-sm">Valider l'achat</button>
+            </div>
+        </div>
+    </div>
+</div>

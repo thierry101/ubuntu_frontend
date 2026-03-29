@@ -1,0 +1,312 @@
+<div class="">
+    <div class="card border-0 shadow-sm">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                📦 Catalogue numérique
+            </h5>
+            <button (click)="resetFormCatalog()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#modalCatalogProd">
+                ➕ Article
+            </button>
+        </div>
+        <!-- BODY -->
+        <div class="card-body">
+            <app-spinners *ngIf="isLoading" message="Chargement des articles ..."></app-spinners>
+            <div class="col-12 col-md-5">
+                <app-search-list [searchTerm]="searchTermCatalog"
+                    (searchChange)="onSearchChangeStock($event)"></app-search-list>
+            </div>
+            <div class="table-responsive mt-2" *ngIf="!isLoading">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Image</th>
+                            <th scope="col">Article</th>
+                            <th scope="col">Prix de vente</th>
+                            <th scope="col">En solde ?</th>
+                            <th scope="col">Pourcentage réduction</th>
+                            <th scope="col">Prix de solde</th>
+                            <th scope="col">Statut</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let product of all_catalogs; trackBy: trackByProductId">
+                            <td class="text-center">
+                                <img [src]="product?.article?.imageFront | image" alt="image"
+                                    class="rounded-circle shadow-sm" width="45" height="45" />
+                            </td>
+                            <td class="text-center" class="text-wrap text-break">
+                                {{ product?.article?.name || '—' }}</td>
+                            <td class="text-center" class="text-wrap text-break">
+                                {{ product?.sell_price || 0 | number:'1.0-0' }} {{devise}} </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch">
+                                    <input disabled class="form-check-input" type="checkbox" role="switch"
+                                        id="switchCheckChecked" [checked]="product?.is_sold">
+                                    <label *ngIf="product?.is_sold" class="form-check-label"
+                                        for="switchCheckChecked">Oui</label>
+                                    <label *ngIf="!product?.is_sold" class="form-check-label"
+                                        for="switchCheckChecked">Non</label>
+                                </div>
+                            </td>
+                            <td class="text-center"> {{product?.percentag_sold || 0}} </td>
+                            <td class="text-center">
+                                {{product?.sold_price | number:'1.0-0' }} {{devise}} </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch">
+                                    <input (click)="changeStatut($event, product?.id)" class="form-check-input"
+                                        type="checkbox" role="switch" id="switchCheckChecked"
+                                        [checked]="product?.showProduct">
+                                    <label *ngIf="product?.showProduct" class="form-check-label"
+                                        for="switchCheckChecked">Actif</label>
+                                    <label *ngIf="!product?.showProduct" class="form-check-label"
+                                        for="switchCheckChecked">Inactif</label>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button (click)="fillModal(product)"
+                                    class="btn btn-outline-warning btn-sm rounded-circle" data-bs-toggle="modal"
+                                    data-bs-target="#modalCatalogProd" title="Modifier">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+
+                                <button (click)="deleteProduct(product)"
+                                    class="btn btn-outline-danger btn-sm rounded-circle mx-1" title="Supprimer">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- LISTE MOBILE -->
+            <div class="mobile-catalog-list d-block d-md-none mt-2" *ngIf="!isLoading">
+
+                <div *ngIf="!all_catalogs?.length" style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                    Aucun article dans le catalogue
+                </div>
+
+                <div *ngFor="let product of all_catalogs; trackBy: trackByProductId" class="prod-card">
+
+                    <div class="prod-img">
+                        <img [src]="product?.article?.imageFront | image" alt="image">
+                    </div>
+
+                    <div class="prod-body">
+                        <div class="prod-name">{{ product?.article?.name || '—' }}</div>
+
+                        <div class="prod-prices">
+                            <span class="prod-price">
+                                {{ product?.sell_price || 0 | number:'1.0-0' }} {{ devise }}
+                            </span>
+                            <span *ngIf="product?.is_sold" class="prod-price-sold">
+                                {{ (product?.sell_price / (1 - product?.percentag_sold / 100)) | number:'1.0-0' }} {{
+                                devise }}
+                            </span>
+                            <span *ngIf="product?.is_sold" class="prod-pct">
+                                -{{ product?.percentag_sold }}%
+                            </span>
+                        </div>
+
+                        <div class="prod-meta">
+                            <span [ngClass]="product?.showProduct ? 'badge-active' : 'badge-inactive'">
+                                {{ product?.showProduct ? '✓ Actif' : '○ Inactif' }}
+                            </span>
+                            <span *ngIf="product?.is_sold" class="badge-solde">🏷 En solde</span>
+                        </div>
+
+                        <div class="prod-actions">
+                            <button class="btn-prod-edit" (click)="fillModal(product)" data-bs-toggle="modal"
+                                data-bs-target="#modalCatalogProd">
+                                ✏️ Modifier
+                            </button>
+                            <button class="btn-prod-del" (click)="deleteProduct(product)">
+                                🗑 Supprimer
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCatalogProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">{{titleModal}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" (click)="clickOutsideModal()">
+                <div class="card-body">
+                    <form class="row g-4" [formGroup]="formCatalog">
+                        <!-- Article Selector -->
+                        <div class="col-md-6">
+                            <label for="articleSelect" class="form-label fw-semibold">Article</label>
+                            <app-selected id="articleSelect" [placeholder]="'Choisir l\'article...'"
+                                [disabled]="editProduct" [(searchTerm)]="searchTerm" [results]="all_products"
+                                [displayField]="'name'" [error]="errors?.product" [showResults]="!!all_products?.length"
+                                (search)="searchProduct($event)" (select)="selectProduct($event)">
+                            </app-selected>
+                        </div>
+
+                        <!-- Image Chooser -->
+                        <div class="col-md-3 col-6 d-flex align-items-end">
+                            <label class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fa fa-image me-1"></i> Choisir une image
+                                <input type="file" hidden (change)="onImageSelected($event)" accept="image/*" />
+                            </label>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="col-md-3 text-center">
+                            <div *ngIf="previewUrl" class="border rounded p-2 bg-light shadow-sm">
+                                <img [src]="previewUrl | image" alt="Preview" class="img-fluid rounded"
+                                    style="max-height: 120px;">
+                            </div>
+                            <small class="text-danger">{{ errors?.mainImg }}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="inputSellPrice4" class="form-label">Prix de vente</label>
+                            <input (input)="calculSoldPrice()" type="number" min="0" formControlName="sellPrice"
+                                class="form-control form-control-sm" id="inputSellPrice4">
+                            <small class="text-danger">{{ errors?.sell_price }}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="inputEmail4" class="form-label">Article en solde ?</label>
+                            <div class="form-check form-switch">
+                                <input formControlName="isSold" class="form-check-input" type="checkbox" role="switch"
+                                    id="switchCheckChecked" [checked]="formCatalog.get('isSold')?.value">
+                                <label *ngIf="formCatalog.get('isSold')?.value" class="form-check-label"
+                                    for="switchCheckChecked">Oui</label>
+                                <label *ngIf="!formCatalog.get('isSold')?.value" class="form-check-label"
+                                    for="switchCheckChecked">Non</label>
+                            </div>
+                        </div>
+                        <div *ngIf="formCatalog.get('isSold')?.value" class="col-md-3">
+                            <label for="inputPercetagSold4" class="form-label">Pourcentage solde</label>
+                            <input (input)="calculSoldPrice()" type="number" formControlName="percentagSold"
+                                class="form-control form-control-sm" id="inputPercetagSold4">
+                            <small class="text-danger">{{ errors?.percentage_sold }}</small>
+                        </div>
+                        <div *ngIf="formCatalog.get('isSold')?.value" class="col-md-3">
+                            <label for="inputPercetagSold4" class="form-label">Montant après réduction</label>
+                            <input readonly type="number" formControlName="amountSold"
+                                class="form-control form-control-sm" id="inputPercetagSold4">
+                            <small class="text-danger">{{ errors?.sold_price }}</small>
+                        </div>
+
+                        <!-- Couleurs -->
+                        <div class="col-md-6 col-12">
+                            <label for="inputColor" class="form-label fw-semibold">Couleurs</label>
+                            <ng-select class="ng-select-sm w-100" formControlName="colors" [multiple]="true"
+                                id="inputColor" [clearable]="true" [closeOnSelect]="false"
+                                placeholder="Sélectionnez une ou plusieurs couleurs...">
+                                @for (color of all_colors; track color?.id) {
+                                <ng-option [value]="color">{{ color?.name }}</ng-option>
+                                }
+                            </ng-select>
+                            <small class="text-danger">{{ errors?.colors }}</small>
+                        </div>
+
+                        <!-- Tailles -->
+                        <div class="col-md-6 col-12">
+                            <label for="inputSize" class="form-label fw-semibold">Tailles disponibles</label>
+                            <div class="input-group input-group-sm sizes-input-group">
+                                <select class="form-select form-select-sm" id="inputSizeCategory"
+                                    formControlName="selectSize" (change)="selectedSizesBasedName()">
+                                    <option value="0">Choisir une catégorie...</option>
+                                    <option *ngFor="let item of all_sizes" [value]="item?.name">
+                                        {{ item?.name }}
+                                    </option>
+                                </select>
+                                <div class="form-control p-0">
+                                    <ng-select *ngIf="selected_sizes" class="ng-select-sm border-0 w-100"
+                                        formControlName="c_sizes" [multiple]="true" [clearable]="true"
+                                        [closeOnSelect]="false" placeholder="Sélectionner les tailles...">
+                                        <ng-option *ngFor="let siz of selected_sizes" [value]="siz?.value">
+                                            {{ siz?.name }}
+                                        </ng-option>
+                                    </ng-select>
+                                </div>
+                            </div>
+                            <small class="text-danger">{{ errors?.sizes }}</small>
+                            <small class="text-muted d-block mt-1">
+                                Choisissez d'abord une catégorie, puis sélectionnez plusieurs tailles.
+                            </small>
+                        </div>
+
+                        <!-- Autres images -->
+                        <div class="col-md-3">
+                            <label class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fa fa-image me-1"></i> Choisir d'autres images
+                                <input type="file" hidden (change)="onMultipleImagesSelected($event)" accept="image/*"
+                                    multiple />
+                            </label>
+                        </div>
+                        <div class="col-md-9">
+                            <!-- Preview thumbnails -->
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <div *ngFor="let img of multiplePreviewUrls; let i = index" class="position-relative">
+                                    <img [src]="img | image" class="rounded shadow-sm border"
+                                        style="width: 90px; height: 90px; object-fit: cover;">
+                                    <button type="button"
+                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0"
+                                        (click)="removePreviewImage(i)">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <ng-container *ngIf="errors?.otherImgs">
+                                <small *ngFor="let error of errors?.otherImgs" class="text-danger">{{ error }}</small>
+                            </ng-container>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-12">
+                            <label for="description" class="form-label fw-semibold">Description</label>
+                            <quill-editor formControlName="description" placeholder="Décrivez brièvement l'article...">
+                            </quill-editor>
+                            <small class="text-danger">{{errors?.description}}</small>
+                        </div>
+
+                        <!-- Statut -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Statut de l'article</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="articleStatus"
+                                    formControlName="stateProd">
+                                <label class="form-check-label" for="articleStatus">
+                                    {{ formCatalog.get('stateProd')?.value ? 'Actif' : 'Inactif' }}
+                                </label>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModalCatlog003" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner *ngIf="!editCatalog" [loading]="isSaving" label="Enregistrer"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-outline-primary btn-sm" (clicked)="saveProduct()">
+                </app-submit-spinner>
+
+                <app-submit-spinner *ngIf="editCatalog" [loading]="isSaving" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-outline-warning btn-sm" (clicked)="saveEditProduct()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>

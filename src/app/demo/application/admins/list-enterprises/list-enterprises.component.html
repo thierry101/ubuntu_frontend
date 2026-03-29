@@ -1,0 +1,194 @@
+<div class="container mt-2">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="ti ti-building me-2"></i> Liste des entreprises
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <!-- 🔍 Search -->
+            <div class="col-12 col-md-5 mb-3">
+                <label class="form-label fw-semibold small text-muted">🔍 Recherchez une facture</label>
+                <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                </app-search-list>
+            </div>
+
+            <!-- ⏳ Loading Spinner -->
+            <app-spinners *ngIf="isLoading" message="⏳ Chargement des factures ..."></app-spinners>
+
+            <div *ngIf="!isLoading && companies" class="row g-3">
+                <!-- Loop through companies -->
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12" *ngFor="let company of companies">
+                    <div class="card company-card border-0 shadow-sm">
+                        <div
+                            class="card-header bg-light d-flex justify-content-between align-items-start flex-wrap p-2">
+                            <div>
+                                <h6 class="text-primary fw-bold mb-1">
+                                    <i class="ti ti-briefcase me-1"></i> {{ company?.nameEtprise }}
+                                </h6>
+                                <small class="text-muted d-block">
+                                    Créé le {{ company?.date_add | date: 'dd MMM y':'':'fr-FR' }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    Dernière mise à jour le
+                                    {{ company?.last_update_info?.last_updated_at | date: 'dd MMM y':'':'fr-FR' }}
+                                    <!-- ({{company?.last_update_info?.last_updated_table}}) -->
+                                </small>
+                            </div>
+                            <span class="badge px-2 py-1"
+                                [ngClass]="company?.state_setting ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                                {{ company?.state_setting ? 'Actif' : 'Inactif' }}
+                            </span>
+                        </div>
+
+                        <div class="card-body p-3">
+                            <ul class="list-unstyled mb-3 small">
+                                <li><strong>RCCM:</strong> {{ company?.rccm || '—' }}</li>
+                                <li><strong>NIU:</strong> {{ company?.niu || '—' }}</li>
+                                <li><strong>Pays:</strong> {{ company?.country }}</li>
+                                <li><strong>Ville:</strong> {{ company?.city }}</li>
+                                <li><strong>Email:</strong> {{ company?.email || '—' }}</li>
+                                <li><strong>Téléphone:</strong> {{ company?.phone }}</li>
+                                <li><strong>Devise:</strong> {{ company?.devise || '—' }}</li>
+                                <li><strong>Items / page:</strong> {{ company?.itemNber || '—' }}</li>
+                            </ul>
+
+                            <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
+                                <div class="setting-pill" *ngFor="let opt of [
+                { key: 'yesWhSecond', label: 'Magasin secondaire', icon: 'ti ti-clock' },
+                { key: 'grantAgencyToSell', label: 'Vente par agences', icon: 'ti ti-building-store' },
+                { key: 'stockVerif', label: 'Double vérif. stock', icon: 'ti ti-checkup-list' },
+                { key: 'expiredProd', label: 'Retrait auto', icon: 'ti ti-alert-triangle' },
+                { key: 'defective', label: 'Validation rébus', icon: 'ti ti-bug' }
+              ]" [ngClass]="company[opt.key] ? 'active' : ''">
+                                    <i [class]="opt.icon"></i> {{ opt.label }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#modalPaymentEtprise" (click)="viewDetails(company, 1)">
+                                    <i class="ti ti-eye me-1"></i> Voir
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" (click)="editCompany(company)">
+                                    <i class="ti ti-pencil me-1"></i> Modifier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                    [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                    (pageChange)="onPageChange($event)">
+                </app-set-pagination>
+            </div>
+
+            <ng-container *ngIf="!isLoading && (!companies || companies.length === 0)">
+                <div class="alert alert-info text-center mt-3">
+                    Aucune entreprise trouvée.
+                </div>
+            </ng-container>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalPaymentEtprise" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Liste des factures</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <small class="text-danger text-center">{{errors?.invoice}}</small>
+            <small class="text-danger">{{errors?.idEnterprise}}</small>
+            <div class="modal-body">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="formGroupExampleInput" class="form-label">Générer une facture</label>
+                        <div class="input-group">
+                            <input [(ngModel)]="monthInvoice" type="month" class="form-control form-control-sm"
+                                aria-label="Recipient’s username" aria-describedby="button-addon2">
+                            <app-submit-spinner [loading]="isSaving" label="Générer" icon="ti ti-refresh me-1"
+                                cssClass="btn btn-outline-secondary btn-sm" (clicked)="generateInvoice()">
+                            </app-submit-spinner>
+                        </div>
+                        <small class="text-danger">{{errors?.monthInvoice}}</small>
+                    </div>
+                </div>
+
+                <div *ngIf="payments && payments.length > 0; else noData">
+                    <small class="text-danger">{{errors?.invoice_del}}</small>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle table-sm">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Facture</th>
+                                    <th>C.A mois</th>
+                                    <th>Montant dû</th>
+                                    <th>Statut paiement</th>
+                                    <th>Mois</th>
+                                    <th>Date limite</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of payments; let i = index">
+                                    <td>
+                                        <strong>{{ p?.invoice_number }}</strong>
+                                    </td>
+                                    <td>{{ p?.total_amount | number: '1.0-0' }} {{deviseCurrentEnterprise}} </td>
+                                    <td>{{ p?.amount_to_pay | number: '1.0-0' }} {{deviseCurrentEnterprise}} </td>
+                                    <td>
+                                        <span class="badge" [ngClass]="{
+                                            'bg-warning text-dark': p?.status_payment === 'En attente de paiement',
+                                            'bg-success': p?.status_payment === 'Payée',
+                                            'bg-secondary': p?.status_payment === 'Vérification en cours',
+                                            'bg-danger': p?.status_payment === 'En retard'}">
+                                            {{ p?.status_payment }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{ (p?.year_invoice + '-' + p?.month_invoice + '-01')
+                                        | date:'MMM y':'':'fr-FR'}}
+                                    </td>
+                                    <td>
+                                        {{ p?.end_date_to_pay | date: 'dd MMM y':'':'fr-FR' }}
+                                    </td>
+                                    <td>
+                                        <button (click)="deleteInvoice(p)"
+                                            class="btn btn-outline-danger btn-sm rounded-circle shadow-sm"
+                                            title="Payer">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <app-set-pagination [currentPage]="paginationInvoice?.currentPage"
+                        [totalPages]="paginationInvoice?.nber_pages" [previousPage]="paginationInvoice?.previousPage"
+                        [nextPage]="paginationInvoice?.nextPage" (pageChange)="onPageChangeInvoice($event)">
+                    </app-set-pagination>
+                </div>
+
+                <!-- Empty state -->
+                <ng-template #noData>
+                    <div class="text-center text-muted py-4">
+                        <i class="ti ti-file-invoice ti-2x d-block mb-2"></i>
+                        <p class="mb-0">Aucune facture trouvée pour cette entreprise.</p>
+                    </div>
+                </ng-template>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>

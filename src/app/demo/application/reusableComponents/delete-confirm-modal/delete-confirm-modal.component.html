@@ -1,0 +1,40 @@
+<div class="modal-content rounded-3">
+    <div class="modal-header bg-danger text-white">
+        <h6 class="modal-title">{{ title }}</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"
+            (click)="closeModal()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <small class="text-danger small">{{ errors?.product }}</small>
+
+        <p class="text-muted small mb-2">
+            ⚠️ <strong>NB :</strong> La suppression est
+            <span class="text-danger fw-bold">irréversible</span>.
+        </p>
+
+        <p>
+            {{ confirmMessage }}
+            <span class="badge bg-danger-subtle text-danger-emphasis px-2 py-1 fw-semibold">{{ wordToType }}</span>
+            ci-dessous :
+        </p>
+
+        <div *ngIf="errors?.permission" class="alert alert-danger">{{ errors?.permission }}</div>
+
+        <input [(ngModel)]="wordCheck" type="text" class="form-control form-control-sm border border-danger mt-3"
+            [placeholder]="'Tapez ici : ' + wordToType" />
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" id="closeModalDelete01" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal"
+            (click)="closeModal()">
+            Annuler
+        </button>
+
+        <button type="button" (click)="deleteStock()" [disabled]="wordCheck !== wordToType"
+            class="btn btn-danger btn-sm">
+            Supprimer définitivement
+        </button>
+    </div>
+</div>

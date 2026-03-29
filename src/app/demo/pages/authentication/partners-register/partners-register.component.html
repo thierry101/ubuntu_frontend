@@ -1,0 +1,97 @@
+<div class="auth-main">
+    <div class="auth-wrapper v1">
+        <div class="auth-form">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h2 class="text-secondary"><b>Salut, Bienvenue</b></h2>
+                                <h4>Devenez partenaire</h4>
+                            </div>
+                            <app-logo></app-logo>
+                        </div>
+                    </div>
+
+                    <h5 class="my-4 d-flex justify-content-center"> Demander à être partenaire </h5>
+                    <form [formGroup]="loginPartnerForm" class="row g-3" (ngSubmit)="onSubmit()">
+                        <div class="col-md-12">
+                            <label for="inputEmail4" class="form-label">Adresse email</label>
+                            <input formControlName="email" type="email" class="form-control form-control-sm"
+                                id="inputEmail4" placeholder="Adresse email">
+                            <span class="text-danger"> {{errors?.email}} </span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputName4" class="form-label">Nom</label>
+                            <input formControlName="name" type="text" class="form-control form-control-sm"
+                                id="inputName4" placeholder="Nom">
+                            <span class="text-danger"> {{errors?.name}} </span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputSurname4" class="form-label">Prénom</label>
+                            <input formControlName="surname" type="text" class="form-control form-control-sm"
+                                id="inputSurname4" placeholder="Prénom">
+                            <span class="text-danger"> {{errors?.surname}} </span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputCountry" class="form-label"><b>Pays</b> {{country_emoji}}</label>
+                            <select (change)="choiceCountry()" formControlName="country" id="inputCountry"
+                                class="form-select form-select-sm">
+                                <option value="0">Choisir ...</option>
+                                <option *ngFor="let country of countries" [value]="country?.name">{{country?.name}}
+                                </option>
+                            </select>
+                            <span class="text-danger"> {{errors?.country}} </span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputCity" class="form-label"><b>Ville</b></label>
+                            <select formControlName="city" id="inputCity" class="form-select form-select-sm">
+                                <option value="0">Choisir ...</option>
+                                <option *ngFor="let city of cities">{{city?.name}}</option>
+                            </select>
+                            <span class="text-danger"> {{errors?.city}} </span>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputPhoneEtprise4" class="form-label"><b>Numéro de téléphone</b></label>
+                            <div class="row">
+                                <div class="col-3">
+                                    <input placeholder="Code pays" formControlName="code" readonly type="text"
+                                        value="{{country_phone_code}}" class="form-control form-control-sm"
+                                        id="Code_phone">
+                                </div>
+                                <div class="col-9">
+                                    <input formControlName="phone" placeholder="Numéro de téléphone" type="tel"
+                                        class="form-control form-control-sm" id="inputPhoneEtprise4">
+                                    <span class="text-danger"> {{errors?.phone}} </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button [disabled]="isLoading" class="btn btn-secondary">
+                                <span *ngIf="!isLoading">
+                                    Envoyer
+                                </span>
+                                <div *ngIf="isLoading" class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
+                        </div>
+                    </form>
+                    <hr />
+                    <h5 class="d-flex justify-content-center align-items-center gap-2 mt-4 text-muted">
+                        <span>Vous n'avez pas de compte&nbsp;?</span>
+                        <a [routerLink]="['/register']" class="fw-semibold text-primary text-decoration-none">
+                            Créer un compte
+                        </a>
+                        <span class="mx-1">ou</span>
+                        <a [routerLink]="['/login']" class="fw-semibold text-success text-decoration-none btn-sm">
+                            Se connecter
+                        </a>
+                    </h5>
+
+                </div>
+            </div>
+        </div>
+        <app-my-theme></app-my-theme>
+    </div>
+</div>

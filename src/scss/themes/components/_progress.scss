@@ -1,0 +1,12 @@
+// ============================
+//     Progress css start
+// ============================
+
+.progress {
+  overflow: visible;
+
+  .progress-bar {
+    border-radius: $progress-border-radius;
+  }
+}
+// Progress css end

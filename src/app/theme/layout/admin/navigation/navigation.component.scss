@@ -1,0 +1,30 @@
+/* ── LOGO SIZES ── */
+
+/* Logo grand format (sidebar ouverte) */
+.logo.logo-lg {
+    width: 140px !important;
+    height: 40px !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+}
+
+/* Logo petit format (sidebar réduite) */
+.logo.logo-sm {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 767px) {
+    .logo.logo-lg {
+        width: 120px !important;
+        height: 34px !important;
+    }
+
+    .logo.logo-sm {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}

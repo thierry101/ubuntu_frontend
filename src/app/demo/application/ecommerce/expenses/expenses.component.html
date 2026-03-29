@@ -1,0 +1,376 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0 fw-semibold">💰 Dépenses</h5>
+                <button (click)="resetRegisterExpensive()" type="button"
+                    class="btn btn-light btn-sm fw-semibold shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    ➕ Dépense
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- LEFT: Types de dépenses -->
+                <div *ngIf="hasHandleExpenses || role==='Admin'" class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                        <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+                            <h6 class="mb-0 fw-semibold">Types de dépenses</h6>
+                            <button (click)="resetForm()" type="button" class="btn btn-primary btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#modalExpensive">
+                                <i class="ti ti-plus me-1"></i> Créer
+                            </button>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <small class="text-danger p-3 pb-0 d-block">{{ errors?.expenseDelete }}</small>
+                            <app-spinners *ngIf="loading" message="Chargement ..."></app-spinners>
+
+                            <!-- TABLE DESKTOP -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="border-0">Nom dépense</th>
+                                            <th class="border-0 text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of arrayExpensives">
+                                            <td class="text-wrap">{{ item?.name }}</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-warning btn-sm rounded-circle me-1"
+                                                    data-bs-toggle="modal" data-bs-target="#modalExpensive"
+                                                    (click)="editExpensive(item)" title="Modifier">
+                                                    <i class="ti ti-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm rounded-circle"
+                                                    (click)="deleteExpensive(item)" title="Supprimer">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="arrayExpensives.length === 0 && !loading">
+                                            <td colspan="2" class="text-center text-muted">Aucun type de dépense</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- LISTE MOBILE TYPES -->
+                            <div class="mobile-types-list d-block d-md-none">
+                                <div *ngIf="arrayExpensives.length === 0 && !loading"
+                                    style="padding:16px;text-align:center;color:#7a9ab8;font-size:13px">
+                                    Aucun type de dépense
+                                </div>
+                                <div *ngFor="let item of arrayExpensives" class="type-row">
+                                    <span class="type-name">{{ item?.name }}</span>
+                                    <div class="type-actions">
+                                        <button class="btn-type-icon edit" data-bs-toggle="modal"
+                                            data-bs-target="#modalExpensive" (click)="editExpensive(item)">✏️</button>
+                                        <button class="btn-type-icon del" (click)="deleteExpensive(item)">🗑</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Dépenses -->
+                <div [ngClass]="hasHandleExpenses || role==='Admin' ? 'col-md-9' : 'col-md-12'">
+                    <div class="card border-0 shadow-sm rounded-3">
+
+                        <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+                            <h6 class="mb-0 fw-semibold">Saisie des dépenses</h6>
+                            <span class="badge bg-primary-subtle text-dark fs-6">
+                                Total : {{ totalExpense | number:'1.0-0' }} {{ devise }}
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- FILTRES -->
+                            <div class="row g-3 align-items-end">
+
+                                <!-- Recherche -->
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-semibold">🔍 Recherche</label>
+                                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChange($event)">
+                                    </app-search-list>
+                                </div>
+
+                                <!-- Période -->
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-semibold">📆 Période</label>
+                                    <div class="input-group input-group-sm">
+                                        <input [(ngModel)]="startDate" type="month" class="form-control">
+                                        <input [(ngModel)]="endDate" type="month" class="form-control">
+                                        <button (click)="filterStock()" class="btn btn-primary">
+                                            OK
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Magasin -->
+                                <!-- Remplacez les deux blocs col-6 par ceci -->
+                                <div class="col-12 col-md-5">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
+
+                                        <div *ngIf="hasHandleExpenses || role==='Admin' || role === 'Daf'">
+                                            <label class="form-label fw-semibold">🏬 Magasin</label>
+                                            <select [(ngModel)]="idWhStore" (change)="filterByWhStore()"
+                                                class="form-select form-select-sm">
+                                                <option value="0">Choisissez...</option>
+                                                <option *ngFor="let item of warehouses" [value]="item?.id">
+                                                    {{ item?.nameWh }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="d-none d-md-block">
+                                            <label class="form-label fw-semibold">🧩 Colonnes</label>
+                                            <app-columns-selected [columns]="columns"
+                                                (toggle)="toggleColumnVisibility($event)">
+                                            </app-columns-selected>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-12 col-md-2 ms-auto">
+                                    <div class="dropdown w-100">
+                                        <button class="btn btn-outline-secondary btn-sm w-100 dropdown-toggle"
+                                            type="button" data-bs-toggle="dropdown">
+                                            Export
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a (click)="exportAllToPDF()" class="dropdown-item">📄 PDF</a>
+                                            </li>
+                                            <li>
+                                                <a (click)="exportAllItemToExcel()" class="dropdown-item">📊 Excel</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+                            <!-- TABLE DESKTOP -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table *ngIf="!isLoading" class="table table-hover align-middle table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th *ngIf="isVisible('expense')">Dépense</th>
+                                            <th *ngIf="isVisible('dateExpense')">Mois</th>
+                                            <th *ngIf="isVisible('amount')">Montant</th>
+                                            <ng-container *ngIf="role === 'Admin' || hasHandleExpenses">
+                                                <th *ngIf="isVisible('whStor')">Magasin</th>
+                                            </ng-container>
+                                            <th *ngIf="isVisible('description')">Description</th>
+                                            <th *ngIf="isVisible('attachment')">Pièce jointe</th>
+                                            <th *ngIf="isVisible('action')">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of all_expensives trackBy trackByExpensiveId">
+                                            <td *ngIf="isVisible('expense')" class="text-wrap">{{ item?.expense?.name ||
+                                                '—' }}</td>
+                                            <td *ngIf="isVisible('dateExpense')">
+                                                {{ item?.dateExpense | date: 'MMMM yyyy' : undefined : 'fr' || '—' }}
+                                            </td>
+                                            <td *ngIf="isVisible('amount')">{{ item?.amount | number:'1.0-0' }} {{
+                                                devise }}</td>
+                                            <ng-container *ngIf="role === 'Admin' || hasHandleExpenses">
+                                                <td *ngIf="isVisible('whStor')" class="text-wrap">{{
+                                                    item?.warehouse?.nameWh || '—' }}</td>
+                                            </ng-container>
+                                            <td *ngIf="isVisible('description')" class="text-wrap">{{ item?.description
+                                                || '—' }}</td>
+                                            <td *ngIf="isVisible('attachment')">
+                                                <button *ngIf="item?.attachement" class="btn btn-outline-primary btn-sm"
+                                                    (click)="downloadFile(item?.attachement)">
+                                                    <i class="ti ti-download me-1"></i>Télécharger
+                                                </button>
+                                                <span *ngIf="!item?.attachement" class="text-muted">—</span>
+                                            </td>
+                                            <td *ngIf="isVisible('action')" class="text-center">
+                                                <button (click)="deletePermission(item?.id)"
+                                                    class="btn btn-outline-danger btn-sm rounded-circle"
+                                                    title="Supprimer">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="all_expensives?.length === 0 && !isLoading">
+                                            <td class="text-center text-muted">Aucune dépense enregistrée</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- LISTE MOBILE DÉPENSES -->
+                            <div class="mobile-expense-list d-block d-md-none" *ngIf="!isLoading">
+
+                                <div *ngIf="all_expensives?.length === 0"
+                                    style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                                    Aucune dépense enregistrée
+                                </div>
+
+                                <div *ngFor="let item of all_expensives trackBy trackByExpensiveId"
+                                    class="expense-card">
+
+                                    <div class="expense-top">
+                                        <span class="expense-name">{{ item?.expense?.name || '—' }}</span>
+                                        <span class="expense-amount">{{ item?.amount | number:'1.0-0' }} {{ devise
+                                            }}</span>
+                                    </div>
+
+                                    <div class="expense-meta">
+                                        <span class="meta-pill">
+                                            📅 {{ item?.dateExpense | date: 'MMMM yyyy' : undefined : 'fr' }}
+                                        </span>
+                                        <span class="meta-pill" *ngIf="item?.warehouse?.nameWh">
+                                            🏪 {{ item?.warehouse?.nameWh }}
+                                        </span>
+                                    </div>
+
+                                    <div class="expense-desc" *ngIf="item?.description">
+                                        {{ item?.description }}
+                                    </div>
+
+                                    <div class="expense-actions">
+                                        <button *ngIf="item?.attachement" class="btn-download"
+                                            (click)="downloadFile(item?.attachement)">
+                                            📎 Télécharger
+                                        </button>
+                                        <button class="btn-del-exp" (click)="deletePermission(item?.id)">
+                                            🗑 Supprimer
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- PAGINATION -->
+                            <div class="mt-3">
+                                <app-set-pagination [currentPage]="pagination?.currentPage"
+                                    [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                                    [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                                </app-set-pagination>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL : CRÉER / MODIFIER TYPE DE DÉPENSE ── -->
+<div class="modal fade" id="modalExpensive" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">{{ modalTitle }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="inputNameExpensive4" class="form-label fw-semibold">Nom de la dépense</label>
+                    <input [(ngModel)]="name" type="text" id="inputNameExpensive4" class="form-control form-control-sm">
+                    <div class="text-danger small mt-1" *ngIf="errors?.name">{{ errors?.name }}</div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button *ngIf="!edit_expensive" (click)="createExpensive()" class="btn btn-primary btn-sm">
+                    Enregistrer
+                </button>
+                <button *ngIf="edit_expensive" (click)="saveEditExpensive()" class="btn btn-warning btn-sm">
+                    Modifier
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL : ENREGISTRER UNE DÉPENSE ── -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">{{ modalTitleSave }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form [formGroup]="formExpensiv" class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Type de dépense</label>
+                        <ng-select class="ng-select-sm" formControlName="idExpensive">
+                            @for (expense of arrayExpensives2; track expense?.id) {
+                            <ng-option [value]="expense?.id">{{ expense?.name }}</ng-option>
+                            }
+                        </ng-select>
+                        <small class="text-danger">{{ errors?.expense }}</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Montant</label>
+                        <input type="number" formControlName="amount" min="0" class="form-control form-control-sm">
+                        <small class="text-danger">{{ errors?.amount }}</small>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea formControlName="description" class="form-control form-control-sm"
+                            placeholder="Commentaire..." rows="3"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Mois de la dépense</label>
+                        <input type="month" formControlName="dateExpense" class="form-control form-control-sm">
+                        <small class="text-danger">{{ errors?.dateExpense }}</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="ti ti-paperclip me-1"></i> Pièce jointe
+                        </label>
+                        <input #fileInput type="file" class="form-control form-control-sm" id="inputAttachement2"
+                            (change)="uploadFile($event)">
+                        <small class="form-text text-muted">Formats : PDF, JPG, PNG — max 5MB</small>
+                        <small class="text-danger">{{ errors?.attachment }}</small>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button (click)="saveNewExpense()" type="button" class="btn btn-primary btn-sm">
+                    Enregistrer
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

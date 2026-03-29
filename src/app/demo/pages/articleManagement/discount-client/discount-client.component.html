@@ -1,0 +1,235 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🎟️ Coupons clients
+            </h5>
+            <button type="button" (click)="resetForm()" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#exampleModalCoupon">
+                ➕ Coupon client
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- Search and Info -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                    <app-search-list [searchTerm]="searchTermCoup" (searchChange)="onSearchChange($event)">
+                    </app-search-list>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-info-subtle text-dark fw-semibold">
+                        Nombre de coupons : {{ pagination?.nberItems }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement des coupons ..."></app-spinners>
+
+            <!-- Table -->
+            <div class="table-responsive" *ngIf="!isLoading">
+                <div class="text-danger fw-semibold mb-2" *ngIf="errors?.permission">{{ errors?.permission }}</div>
+
+                <table class="table table-hover align-middle table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nom client</th>
+                            <th>Code Réduction</th>
+                            <th>Montant / Pourcentage</th>
+                            <th>Date d'expiration</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let item of all_Discounts; trackBy: trackByDiscountId">
+                            <td class="text-start">{{ item?.client?.name || '—' }}</td>
+                            <td class="fw-semibold text-primary">{{ item?.codeDiscount || '—' }}</td>
+                            <td>
+                                <ng-container [ngSwitch]="item?.typeDiscount">
+                                    <span *ngSwitchCase="'percentage'">{{ item?.percentage }}%</span>
+                                    <span *ngSwitchCase="'amount'">{{ item?.amtDiscount | number:'1.0-0' }} {{ devise
+                                        }}</span>
+                                    <span *ngSwitchDefault>—</span>
+                                </ng-container>
+                            </td>
+                            <td>{{ item?.expirationDate | date:'d MMMM y':'':'fr-FR' }}</td>
+                            <td>
+                                <span *ngIf="item?.alreadyUse"
+                                    class="badge bg-success-subtle text-success fw-semibold px-3 py-1 rounded-pill">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Utilisé
+                                </span>
+                                <span *ngIf="!item?.alreadyUse"
+                                    class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1 rounded-pill">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Non utilisé
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button (click)="deleteThePromotion(item)"
+                                    class="btn btn-outline-danger btn-sm rounded-circle" title="Supprimer">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="all_Discounts.length === 0 && !isLoading">
+                            <td colspan="6" class="text-center text-muted">Aucun coupon trouvé</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-coupon-list d-block d-md-none" *ngIf="!isLoading">
+
+                <div *ngIf="all_Discounts.length === 0" class="empty">
+                    Aucun coupon trouvé
+                </div>
+
+                <div *ngFor="let item of all_Discounts; trackBy: trackByDiscountId" class="coupon-card">
+
+                    <div class="coupon-top">
+                        <div>
+                            <div class="coupon-client">{{ item?.client?.name || '—' }}</div>
+                            <div class="coupon-code">{{ item?.codeDiscount || '—' }}</div>
+                        </div>
+                        <span [ngClass]="item?.alreadyUse ? 'badge-used' : 'badge-unused'">
+                            {{ item?.alreadyUse ? '✓ Utilisé' : '✕ Non utilisé' }}
+                        </span>
+                    </div>
+
+                    <!-- Montant ou pourcentage -->
+                    <div class="coupon-amount">
+                        <ng-container [ngSwitch]="item?.typeDiscount">
+                            <span *ngSwitchCase="'percentage'">-{{ item?.percentage }}%</span>
+                            <span *ngSwitchCase="'amount'">{{ item?.amtDiscount | number:'1.0-0' }} {{ devise }}</span>
+                            <span *ngSwitchDefault>—</span>
+                        </ng-container>
+                    </div>
+
+                    <div class="coupon-meta">
+                        <span class="meta-pill exp" *ngIf="item?.expirationDate">
+                            📅 Exp : {{ item?.expirationDate | date:'d MMM y':'':'fr-FR' }}
+                        </span>
+                    </div>
+
+                    <button class="btn-del-coupon" (click)="deleteThePromotion(item)">
+                        🗑 Supprimer
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Create Coupon -->
+<div class="modal fade" id="exampleModalCoupon" tabindex="-1" aria-hidden="true" (click)="clearTableClient()">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">
+                    🎟️ Créer un coupon client
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form class="row g-3">
+                    <!-- Client -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Client</label>
+                        <app-selected [placeholder]="'Sélectionnez un client...'" [(searchTerm)]="searchTerm"
+                            [results]="all_Clients" [displayField]="'name'" [error]="errors?.provider"
+                            [showResults]="!!all_Clients?.length" (search)="searchProduct($event)"
+                            (select)="selectProduct($event)">
+                        </app-selected>
+                        <small class="text-danger">{{ errors?.idClient }}</small>
+                    </div>
+
+                    <!-- Téléphone -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Téléphone</label>
+                        <input readonly type="tel" name="phone" [(ngModel)]="phone"
+                            class="form-control form-control-sm" />
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input readonly type="email" name="email" [(ngModel)]="email"
+                            class="form-control form-control-sm" />
+                    </div>
+
+                    <!-- Code du coupon -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Code du coupon</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" [(ngModel)]="couponCode"
+                                placeholder="Cliquez sur générer un code" name="codeClient" />
+                            <button (click)="generateDiscount()" class="btn btn-outline-primary" type="button">
+                                Générer
+                            </button>
+                        </div>
+                        <small class="text-danger">{{ errors?.codeDiscount }}</small>
+                    </div>
+
+                    <!-- Type de réduction -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Type de réduction</label>
+                        <select name="typeDisc" [(ngModel)]="typeDiscount" class="form-select form-select-sm">
+                            <option value="choisir">Choisir...</option>
+                            <option value="percentage">Pourcentage</option>
+                            <option value="amount">Montant</option>
+                        </select>
+                        <small class="text-danger">{{ errors?.typeDiscount }}</small>
+                    </div>
+
+                    <!-- Pourcentage -->
+                    <div *ngIf="typeDiscount === 'percentage'" class="col-md-6">
+                        <label class="form-label fw-semibold">Pourcentage</label>
+                        <input name="percent" [(ngModel)]="percentage" type="number"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.percentage }}</small>
+                    </div>
+
+                    <!-- Montant -->
+                    <div *ngIf="typeDiscount === 'amount'" class="col-md-6">
+                        <label class="form-label fw-semibold">Montant</label>
+                        <input name="amount" [(ngModel)]="amtDiscount" type="number"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.amtDiscount }}</small>
+                    </div>
+
+                    <!-- Date d’expiration -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date d’expiration</label>
+                        <input name="expDate" [(ngModel)]="expiredDate" type="date"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.expDate }}</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button id="closeModalDisc0222" type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    Fermer
+                </button>
+                <button (click)="saveCouponClient()" type="button" class="btn btn-primary btn-sm">
+                    Enregistrer le coupon
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

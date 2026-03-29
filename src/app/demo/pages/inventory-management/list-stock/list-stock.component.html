@@ -1,0 +1,361 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📦 Gestion du stock</h5>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- FILTRES / ACTIONS -->
+            <div class="row mb-3 align-items-center">
+
+                <div class="col-md-4">
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <div class="col-md-3 d-none d-md-block">
+                    <app-columns-selected [columns]="columns" (toggle)="toggleColumnVisibility($event)">
+                    </app-columns-selected>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="button" (click)="showModalAddItemTransfert()"
+                        class="btn btn-info btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+                        data-bs-toggle="modal" data-bs-target="#exampleModalTransfert003">
+                        🧺 Panier de transfert
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-primary btn-sm w-100 dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            📤 Exporter
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" (click)="exportAllItemToExcel()">📘
+                                    En Excel</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" (click)="exportAllToPDF()">📄 En
+                                    PDF</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <app-spinners *ngIf="loadingDetail" message="⏳ Chargement des détails ...">
+            </app-spinners>
+
+            <!-- TABLE DESKTOP -->
+            <div class="table-responsive d-none d-md-block" *ngIf="!loadingDetail">
+                <table class="table table-hover align-middle table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th *ngIf="isColumnVisible('product')">🏷️ Désignation</th>
+                            <th *ngIf="isColumnVisible('refStock')">🔢 Référence stock</th>
+                            <th *ngIf="isColumnVisible('quantity')">📦 Quantité</th>
+                            <th *ngIf="isColumnVisible('sellPrice')">💶 Prix de vente</th>
+                            <th *ngIf="isColumnVisible('expireDate')">📅 Date d'expiration</th>
+                            <th *ngIf="isColumnVisible('actions')">⚙️ Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of all_stock">
+                            <td class="text-wrap" *ngIf="isColumnVisible('product')">
+                                <span *ngIf="the_date > item?.stockWhStore?.expDate && item?.quantity > 0"
+                                    class="badge bg-warning-subtle text-warning me-1">⚠️ Expiré</span>
+                                {{ item?.stockWhStore?.product?.name || '—' }}
+                            </td>
+                            <td *ngIf="isColumnVisible('refStock')">
+                                {{ item?.stockWhStore?.indiceStock || '—' }}
+                            </td>
+                            <td *ngIf="isColumnVisible('quantity')">{{ item?.quantity || '—' }}</td>
+                            <td *ngIf="isColumnVisible('sellPrice')">
+                                {{ item?.sellPrice || 0 | number }} {{ devise }}
+                            </td>
+                            <td *ngIf="isColumnVisible('expireDate')">
+                                {{ item?.stockWhStore?.expDate | date:'dd MMMM yyyy':undefined:'fr' || '—' }}
+                            </td>
+                            <td class="text-center" *ngIf="isColumnVisible('actions')">
+                                <button class="btn btn-outline-info btn-sm rounded-circle" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalTransfertProd0004" (click)="getDetailOfProduct(item)"
+                                    title="Transférer">
+                                    <i class="ti ti-transfer-in"></i>
+                                </button>
+                                <button title="Définir prix de vente"
+                                    class="btn btn-outline-warning btn-sm rounded-circle mx-1" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalTransfertProd0004" (click)="setSellPrice(item)">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-dark btn-sm rounded-circle" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalTransfertProd0004" (click)="reportDefectiveItems(item)"
+                                    title="Déclarer en rébu">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5 *ngIf="all_stock.length === 0 && !loadingDetail">
+                    <span class="text-center text-muted">📭 Aucun article trouvé</span>
+                </h5>
+            </div>
+
+            <!-- LISTE MOBILE STOCK -->
+            <div class="mobile-stock-list d-block d-md-none" *ngIf="!loadingDetail">
+
+                <div *ngIf="all_stock.length === 0" style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                    📭 Aucun article trouvé
+                </div>
+
+                <div *ngFor="let item of all_stock" class="stock-card">
+
+                    <div class="stock-top">
+                        <div>
+                            <div class="stock-name">
+                                {{ item?.stockWhStore?.product?.name || '—' }}
+                            </div>
+                            <div class="stock-ref">
+                                {{ item?.stockWhStore?.indiceStock || '—' }}
+                            </div>
+                        </div>
+                        <span *ngIf="the_date > item?.stockWhStore?.expDate && item?.quantity > 0" class="badge-exp">⚠️
+                            Expiré</span>
+                    </div>
+
+                    <div class="stock-meta">
+                        <div class="meta-block">
+                            <span class="meta-lbl">Quantité</span>
+                            <span class="meta-val">{{ item?.quantity || '—' }}</span>
+                        </div>
+                        <div class="meta-block">
+                            <span class="meta-lbl">Prix vente</span>
+                            <span class="meta-val price">
+                                {{ item?.sellPrice || 0 | number }} {{ devise }}
+                            </span>
+                        </div>
+                        <div class="meta-block">
+                            <span class="meta-lbl">Expiration</span>
+                            <span class="meta-val" style="font-size:10px">
+                                {{ item?.stockWhStore?.expDate | date:'dd/MM/yy':'':'fr' || '—' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="stock-actions">
+                        <button class="btn-act btn-transfer" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="getDetailOfProduct(item)">
+                            🔁 Transférer
+                        </button>
+                        <button class="btn-act btn-edit" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="setSellPrice(item)">
+                            ✏️ Prix
+                        </button>
+                        <button class="btn-act btn-defect" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="reportDefectiveItems(item)">
+                            🗑 Rébu
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PAGINATION -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PANIER TRANSFERT -->
+<div class="modal fade" id="exampleModalTransfert003" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3" (click)="clickOutsideModalAddItem()">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🧺 Panier de transfert</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Sélection entrepôt -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">🏬 Choisir entrepôt/boutique</label>
+                        <app-selected [placeholder]="'Choisir entrepôt/boutique'" [(searchTerm)]="searchTermWhStor"
+                            [results]="all_warehouses_stores" [displayField]="'nameWh'" [error]="errors?.product"
+                            [showResults]="!!all_warehouses_stores?.length" (search)="searchWhStore($event)"
+                            (select)="selectWhStore($event)">
+                        </app-selected>
+                        <small class="text-danger">{{ errors?.idWHStore }}</small>
+                    </div>
+                </div>
+
+                <!-- TABLE DESKTOP panier -->
+                <div class="table-responsive d-none d-md-block">
+                    <small class="text-danger">{{ errors?.itemsTransfert }}</small>
+                    <table class="table table-hover align-middle table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>🏷️ Désignation</th>
+                                <th>🔖 Référence article</th>
+                                <th>📦 Référence stock</th>
+                                <th>🔢 Quantité</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of itemsToTransfert">
+                                <td class="text-start">{{ item?.lotWhStock?.product?.name || '—' }}</td>
+                                <td>{{ item?.lotWhStock?.product?.code || '—' }}</td>
+                                <td>{{ item?.lotWhStock?.indiceStock || '—' }}</td>
+                                <td>{{ item?.quantity || '—' }}</td>
+                                <td class="text-center">
+                                    <button (click)="deleteItemToTransfert(item?.id)"
+                                        class="btn btn-outline-danger btn-sm rounded-circle" title="Supprimer">
+                                        ❌
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="itemsToTransfert.length === 0">
+                                <td colspan="5" class="text-center text-muted">
+                                    📭 Aucun article dans le panier
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- LISTE MOBILE panier -->
+                <div class="mobile-basket-list d-block d-md-none">
+                    <small class="text-danger">{{ errors?.itemsTransfert }}</small>
+
+                    <div *ngIf="itemsToTransfert.length === 0"
+                        style="text-align:center;padding:20px;color:#7a9ab8;font-size:13px">
+                        📭 Aucun article dans le panier
+                    </div>
+
+                    <div *ngFor="let item of itemsToTransfert" class="basket-card">
+                        <div class="basket-info">
+                            <div class="basket-name">
+                                {{ item?.lotWhStock?.product?.name || '—' }}
+                            </div>
+                            <div class="basket-ref">
+                                {{ item?.lotWhStock?.indiceStock || '—' }}
+                            </div>
+                        </div>
+                        <span class="basket-qty">×{{ item?.quantity }}</span>
+                        <button class="btn-del-basket" (click)="deleteItemToTransfert(item?.id)">❌</button>
+                    </div>
+                </div>
+
+                <!-- Pagination panier -->
+                <app-set-pagination [currentPage]="paginationTransf?.currentPage"
+                    [totalPages]="paginationTransf?.nber_pages" [previousPage]="paginationTransf?.previousPage"
+                    [nextPage]="paginationTransf?.nextPage" (pageChange)="onPageChangeTransf($event)">
+                </app-set-pagination>
+
+            </div>
+
+            <div class="modal-footer">
+                <button id="closeModalTransfert001" type="button" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">
+                    ❌ Fermer
+                </button>
+                <app-submit-spinner [loading]="isSaving" label="Valider" icon="ti ti-refresh me-1"
+                    cssClass="btn btn-outline-primary btn-sm" (clicked)="confirmTransfertItem()">
+                </app-submit-spinner>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ACTIONS PRODUIT -->
+<div class="modal fade" id="exampleModalTransfertProd0004" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">⚙️ {{ titleModal }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <small class="text-danger">{{ errors?.product }}</small>
+
+                <div class="alert alert-info py-2 mb-3">
+                    <strong>📦 Quantité actuelle :</strong>
+                    <span class="badge bg-primary">{{ detailProd?.quantity || '—' }}</span>
+                </div>
+
+                <form class="row g-3">
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">🏷️ Désignation</label>
+                        <input readonly [(ngModel)]="detailProd.name" type="text" name="nameP"
+                            class="form-control form-control-sm">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">🔖 Référence du stock</label>
+                        <input readonly [(ngModel)]="detailProd.referenceStock" name="ref" type="text"
+                            class="form-control form-control-sm">
+                    </div>
+
+                    <div *ngIf="!setSellingPrice" class="col-12">
+                        <label class="form-label fw-semibold">🔢 Quantité</label>
+                        <input [(ngModel)]="detailProd.quanty" name="qty" type="number"
+                            class="form-control form-control-sm">
+                        <small class="text-danger">{{ errors?.quanty }}</small>
+                    </div>
+
+                    <div *ngIf="defectiveItem" class="col-12">
+                        <label class="form-label fw-semibold">⚠️ État</label>
+                        <select [(ngModel)]="setBadge" name="t_badge" class="form-select form-select-sm">
+                            <option value="expired">🕒 Expiré</option>
+                            <option value="bad">💢 Défectueux</option>
+                        </select>
+                    </div>
+
+                    <div *ngIf="setSellingPrice" class="col-12">
+                        <label class="form-label fw-semibold">💶 Prix de vente</label>
+                        <input min="0" [(ngModel)]="sellingPricing" name="sellPrice" type="number"
+                            class="form-control form-control-sm">
+                        <small class="text-danger">{{ errors?.sellingPrice }}</small>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="closeModalAddItem" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    ❌ Fermer
+                </button>
+                <app-submit-spinner *ngIf="!setSellingPrice && !defectiveItem" [loading]="isSaving" label="Ajouter"
+                    icon="ti ti-valid me-1" cssClass="btn btn-outline-info btn-sm" (clicked)="addItemToTransfert()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="setSellingPrice && !defectiveItem" [loading]="isSaving" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-outline-warning btn-sm"
+                    (clicked)="setTheSellingPrice()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="defectiveItem" [loading]="isSaving" label="Valider" icon="ti ti-refresh me-1"
+                    cssClass="btn btn-outline-info btn-sm" (clicked)="validDefectiveItem()">
+                </app-submit-spinner>
+            </div>
+
+        </div>
+    </div>
+</div>

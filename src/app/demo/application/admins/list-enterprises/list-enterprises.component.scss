@@ -1,0 +1,87 @@
+.company-card {
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+    background-color: #fff;
+    min-height: 100%;
+}
+
+.company-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.company-card .card-header {
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+}
+
+.company-card .list-unstyled li {
+    margin-bottom: 4px;
+}
+
+.setting-pill {
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #f8f9fa;
+    transition: 0.2s;
+}
+
+.setting-pill.active {
+    background-color: #e6f4ea;
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.setting-pill i {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 767.98px) {
+    .company-card {
+        margin-bottom: 1rem;
+    }
+}
+
+.setting-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* ✅ two items per line */
+    gap: 0.5rem;
+    /* space between pills */
+    justify-items: center;
+}
+
+.setting-pill {
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    color: #777;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+    transition: 0.2s;
+    width: 100%;
+}
+
+.setting-pill.active {
+    background-color: #e6f4ea;
+    border-color: #28a745;
+    color: #28a745;
+}
+
+@media (max-width: 576px) {
+    .setting-grid {
+        grid-template-columns: 1fr;
+        /* stack vertically on small screens */
+    }
+}

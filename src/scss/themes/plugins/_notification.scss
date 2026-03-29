@@ -1,0 +1,219 @@
+.alert-dismissable .close,
+.alert-dismissible .close {
+  color: inherit;
+  text-shadow: none;
+}
+@-webkit-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+.alert-inverse {
+  background-color: #333;
+  border-color: transparent;
+  color: #fff;
+
+  .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: #fff;
+    text-shadow: none;
+  }
+
+  .alert-link {
+    color: #e6e6e6;
+  }
+}
+
+.growl-animated {
+  &.alert-inverse {
+    box-shadow: 0 0 5px rgba(51, 51, 51, 0.5);
+  }
+
+  &.alert-info {
+    box-shadow: 0 0 5px transparentize($primary, 0.5);
+  }
+
+  &.alert-success {
+    box-shadow: 0 0 5px transparentize($success, 0.5);
+  }
+
+  &.alert-warning {
+    box-shadow: 0 0 5px transparentize($warning, 0.5);
+  }
+
+  &.alert-danger {
+    box-shadow: 0 0 5px transparentize($danger, 0.5);
+  }
+}
+
+[data-notify='progressbar'] {
+  margin-bottom: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+}
+.notifier-container {
+  z-index: 1029;
+  font-family: $font-family-sans-serif;
+  width: 400px;
+  max-width: 98%;
+  top: 15px;
+}
+.notifier {
+  padding: calc(#{$card-spacer-y} - 5px) calc(#{$card-spacer-x} - 5px);
+  border-radius: $border-radius;
+  .notifier-title {
+    font-size: $h5-font-size;
+    font-weight: $headings-font-weight;
+    margin-bottom: 2px;
+  }
+  .notifier-body {
+    font-size: $font-size-base;
+  }
+  .notifier-img {
+    .img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  .notifier-close {
+    &:focus,
+    &:hover {
+      color: $danger;
+      background: transparent;
+    }
+  }
+}
+.notifier {
+  @each $color, $value in $theme-colors {
+    &.#{$color} {
+      border-left-color: $value;
+    }
+  }
+}
+
+.btn-black {
+  color: #f8f8f8;
+  background-color: #2d2d2d;
+  border-color: #000000;
+  &:hover {
+    color: #fff;
+    background-color: #000000;
+    border-color: #000000;
+  }
+}
+
+.btn-blue {
+  color: #f8f8f8;
+  background-color: #2095f2;
+  border-color: #1a80d1;
+  &:hover {
+    color: #fff;
+    background-color: #1a80d1;
+    border-color: #1a80d1;
+  }
+}
+
+.btn-teal {
+  color: #f8f8f8;
+  background-color: #009587;
+  border-color: #018175;
+  &:hover {
+    color: #fff;
+    background-color: #018175;
+    border-color: #018175;
+  }
+}
+
+.switch-wrapper {
+  width: 100%;
+}
+
+.switch-group-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 5px 0 10px;
+}
+
+.cmn-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  padding: 2px;
+  width: 60px;
+  height: 30px;
+  visibility: hidden;
+
+  + label {
+    display: block;
+    position: relative;
+    padding: 2px;
+    width: 60px;
+    height: 30px;
+    cursor: pointer;
+    outline: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &::before,
+    &::after {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      color: #fff;
+      font-family: 'Roboto Slab', serif;
+      font-size: 20px;
+      text-align: center;
+      line-height: 30px;
+    }
+
+    &::before {
+      background-color: #dddddd;
+      content: attr(data-off);
+      transition: transform 0.5s;
+      backface-visibility: hidden;
+    }
+
+    &::after {
+      background-color: #8ce196;
+      content: attr(data-on);
+      transition: transform 0.5s;
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+    }
+  }
+
+  &:checked {
+    + label {
+      &::before {
+        transform: rotateY(180deg);
+      }
+
+      &::after {
+        transform: rotateY(0);
+      }
+    }
+  }
+}

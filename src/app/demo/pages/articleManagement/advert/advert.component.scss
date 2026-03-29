@@ -1,0 +1,456 @@
+/* ── STYLES DE BASE ── */
+.promo-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.promo-body {
+    padding: 20px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.promo-title {
+    font-weight: bold;
+    color: #1a2b3c;
+    margin-bottom: 15px;
+}
+
+.promo-footer {
+    margin-top: 20px;
+    color: #888;
+    font-size: 0.85rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.promo-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    background-color: #f8f9fa;
+    color: #00aaff;
+    text-decoration: none;
+    font-weight: 500;
+    border-top: 1px solid #eee;
+    transition: background 0.2s;
+
+    &:hover {
+        background-color: #f0f7ff;
+        text-decoration: none;
+    }
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 7px 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── BARRE MESSAGES WHATSAPP ── */
+    .row>.col-md-4 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        padding: 0 !important;
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .input-group {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+
+            .form-control {
+                border: none !important;
+                border-radius: 0 !important;
+                background: #f8fbff !important;
+                font-size: 13px !important;
+            }
+
+            .btn-outline-secondary {
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 0 14px !important;
+            }
+        }
+    }
+
+    /* ── SEARCH ROW ── */
+    .row.mb-3.align-items-center {
+        flex-wrap: wrap !important;
+        gap: 10px 0;
+
+        .col-md-6 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .col-md-6.text-end {
+            text-align: left !important;
+
+            .badge {
+                background: #e3f2fd !important;
+                color: #1565C0 !important;
+                border: 0.5px solid #90caf9;
+                border-radius: 8px !important;
+                font-size: 11px !important;
+                padding: 5px 10px !important;
+            }
+        }
+    }
+
+    /* ── CARTES PUBLICITÉS ── */
+    .border.rounded.p-3.mb-3 {
+        border: 0.5px solid #d0e4f7 !important;
+        border-radius: 12px !important;
+        padding: 0 !important;
+        overflow: hidden;
+        background: #fff;
+
+        /* Contenu du message */
+        >.d-flex.justify-content-between {
+            flex-direction: column !important;
+            padding: 14px 16px;
+            gap: 12px;
+
+            /* Nom + header + message */
+            >div:first-child {
+                h5 {
+                    font-size: 14px !important;
+                    font-weight: 600 !important;
+                    color: #0d1b2a !important;
+                    margin-bottom: 4px !important;
+                }
+
+                h6 {
+                    font-size: 12px !important;
+                    color: #1565C0 !important;
+                    margin-bottom: 6px !important;
+                }
+
+                p {
+                    font-size: 12px !important;
+                    color: #5a7a99 !important;
+                    line-height: 1.5 !important;
+                }
+            }
+
+            /* Boutons */
+            >.d-flex.gap-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+                padding: 0 0 4px;
+                border-top: 0.5px solid #e6f0fa;
+                padding-top: 12px;
+
+                .btn-sm.btn-success {
+                    background: #e8f5e9 !important;
+                    color: #2e7d32 !important;
+                    border: 0.5px solid #a5d6a7 !important;
+                    border-radius: 8px !important;
+                    font-size: 12px !important;
+                    font-weight: 500 !important;
+                    padding: 9px !important;
+                    width: 100% !important;
+                }
+
+                .btn-sm.btn-danger {
+                    background: #fff0f0 !important;
+                    color: #e53935 !important;
+                    border: 0.5px solid #ffd0d0 !important;
+                    border-radius: 8px !important;
+                    font-size: 12px !important;
+                    font-weight: 500 !important;
+                    padding: 9px !important;
+                    width: 100% !important;
+                }
+            }
+        }
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ══════════════════════════════
+     MODALS BOTTOM SHEET
+  ══════════════════════════════ */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        h1 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 16px !important;
+        max-height: calc(95vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        padding-bottom: calc(12px + 55px) !important;
+        /* 70px = hauteur bottom nav */
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL CRÉER PUBLICITÉ — deux colonnes → empilées ── */
+    #exampleModalAdvert .modal-body {
+        padding: 14px !important;
+
+        .row.g-4 {
+            flex-direction: column !important;
+        }
+
+        .col-md-7,
+        .col-md-5 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .card {
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            border: 0.5px solid #d0e4f7 !important;
+        }
+
+        .card-header {
+            background: #f8fbff !important;
+            padding: 12px 14px !important;
+
+            h5,
+            h6 {
+                font-size: 13px !important;
+            }
+        }
+
+        .card-body {
+            padding: 14px !important;
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        textarea.form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+    }
+
+    /* ── MODAL LISTE CLIENTS ── */
+    #exampleModalSendWhatsapp .modal-body {
+        padding: 14px !important;
+    }
+
+    /* ── MODAL ACHAT WHATSAPP ── */
+    #exampleModalBuySmsWhatsapp .modal-body {
+        .row.g-2 {
+
+            .col-12,
+            .col-8,
+            .col-4 {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .col-8 {
+                width: 60% !important;
+                flex: 0 0 60% !important;
+                padding-right: 6px !important;
+            }
+
+            .col-4 {
+                width: 40% !important;
+                flex: 0 0 40% !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            box-shadow: none !important;
+        }
+
+        .input-group {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+
+            .form-control {
+                border: none !important;
+                border-radius: 0 !important;
+            }
+
+            .input-group-text {
+                background: #f0f7ff !important;
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                font-size: 12px !important;
+            }
+        }
+    }
+
+    .modal-lg .modal-content {
+        max-height: 95vh !important;
+    }
+
+    .modal-lg .modal-body {
+        max-height: calc(95vh - 80px) !important;
+    }
+}

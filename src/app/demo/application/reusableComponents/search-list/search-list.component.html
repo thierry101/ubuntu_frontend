@@ -1,0 +1,9 @@
+<div class="row align-items-center g-2">
+    <div class="col-12">
+        <div class="form-search position-relative">
+            <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted small"></i>
+            <input (input)="searchItem()" name="search" [(ngModel)]="searchTerm" type="search"
+                class="form-control form-control-sm ps-5" placeholder="Rechercher ..." />
+        </div>
+    </div>
+</div>

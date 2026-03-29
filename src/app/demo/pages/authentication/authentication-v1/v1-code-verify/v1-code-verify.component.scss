@@ -1,0 +1,237 @@
+/* ══════════════════════════════════════
+   OTP VERIFICATION — COULEURS GLOBALES
+══════════════════════════════════════ */
+
+/* ── FOND ── */
+.auth-main {
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0f7ff 100%) !important;
+}
+
+/* ── CARD ── */
+.auth-form .card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(21, 101, 192, 0.12) !important;
+}
+
+/* ── TITRES ── */
+.auth-form h2.text-secondary {
+    color: #0d1b2a !important;
+}
+
+.auth-form h4.text-muted {
+    color: #7a9ab8 !important;
+    font-size: 14px !important;
+}
+
+/* ── DESCRIPTION EMAIL ── */
+.auth-form p.f-14 {
+    color: #7a9ab8 !important;
+    font-size: 13px !important;
+    text-align: center !important;
+    margin-bottom: 8px !important;
+}
+
+/* ── INPUTS OTP ── */
+.auth-form .d-flex.justify-content-between input[type="text"] {
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 12px !important;
+    background: #f8fbff !important;
+    color: #1565C0 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    font-family: 'DM Mono', monospace !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s, box-shadow 0.15s !important;
+    caret-color: #1565C0 !important;
+
+    &:focus {
+        border-color: #1565C0 !important;
+        background: #e8f4ff !important;
+        box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12) !important;
+        outline: none !important;
+    }
+}
+
+/* ── BOUTON CONFIRMER ── */
+.auth-form .btn-primary {
+    background: #1565C0 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 14px rgba(21, 101, 192, 0.25) !important;
+
+    &:hover {
+        background: #1256a8 !important;
+    }
+
+    &:active {
+        transform: scale(0.98) !important;
+    }
+}
+
+/* ── MESSAGE ANTI-SPAM ── */
+.auth-form h5.d-flex.justify-content-center {
+    color: #7a9ab8 !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    font-weight: 400 !important;
+    margin-bottom: 8px !important;
+}
+
+/* ── OU ── */
+.auth-form h5.text-center {
+    color: #b0c8e0 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+}
+
+/* ── BOUTON RENVOYER ── */
+.auth-form .btn-outline-secondary {
+    background: #f8fbff !important;
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 10px !important;
+    color: #7a9ab8 !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+
+    &:hover:not(:disabled) {
+        background: #e8f4ff !important;
+        border-color: #90caf9 !important;
+        color: #1565C0 !important;
+    }
+
+    &:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+    }
+}
+
+/* ── HR ── */
+.auth-form hr {
+    border-color: #e6f0fa !important;
+}
+
+/* ── ERREURS ── */
+.auth-form .text-danger {
+    font-size: 12px !important;
+    color: #c62828 !important;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── FOND ── */
+    .auth-main {
+        min-height: 100vh !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+    }
+
+    .auth-wrapper.v1 {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+    }
+
+    .auth-form {
+        width: 100% !important;
+        max-width: 420px !important;
+        padding: 0 !important;
+    }
+
+    /* ── CARD ── */
+    .auth-form .card {
+        margin-top: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .auth-form .card-body {
+        padding: 28px 24px !important;
+    }
+
+    /* ── HEADER ── */
+    .auth-form .row .d-flex.justify-content-between {
+        align-items: flex-start !important;
+        margin-bottom: 12px !important;
+
+        h2 {
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            margin-bottom: 2px !important;
+        }
+
+        h4 {
+            font-size: 13px !important;
+        }
+
+        app-logo {
+
+            img,
+            svg {
+                width: 44px !important;
+                height: 44px !important;
+            }
+        }
+    }
+
+    /* ── DESCRIPTION ── */
+    .auth-form .d-flex.justify-content-center p.f-14 {
+        font-size: 13px !important;
+        margin-bottom: 20px !important;
+        padding: 0 4px !important;
+    }
+
+    /* ── INPUTS OTP ── */
+    .auth-form .d-flex.justify-content-between[formGroup] {
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+
+        input[type="text"] {
+            /* carré parfait selon la largeur dispo */
+            width: calc((100% - 48px) / 6) !important;
+            height: calc((100% - 48px) / 6) !important;
+            aspect-ratio: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 20px !important;
+            border-radius: 10px !important;
+        }
+    }
+
+    /* ── BOUTON CONFIRMER ── */
+    .auth-form .d-grid.mt-4 .btn-primary {
+        padding: 13px !important;
+        font-size: 14px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+    }
+
+    /* ── HR ── */
+    .auth-form hr {
+        margin: 20px 0 !important;
+    }
+
+    /* ── MESSAGE ANTI-SPAM ── */
+    .auth-form h5.d-flex.justify-content-center {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+        padding: 0 8px !important;
+    }
+
+    /* ── BOUTON RENVOYER ── */
+    .auth-form .d-grid.mt-4 .btn-outline-secondary {
+        padding: 13px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+    }
+}

@@ -1,0 +1,118 @@
+/* ── MENU CARD BASE ── */
+.menu-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    text-decoration: none !important;
+    border: none !important;
+
+    .menu-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+
+    .menu-label {
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1.3;
+    }
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* ── COULEURS PERSONNALISÉES ── */
+.bg-teal {
+    background-color: #20c997 !important;
+}
+
+.bg-indigo {
+    background-color: #6610f2 !important;
+}
+
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+
+.bg-primary-subtle {
+    background-color: #e0ecff !important;
+}
+
+.bg-secondary-subtle {
+    background-color: #f0f0f0 !important;
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+    }
+
+    /* ── CARD BODY ── */
+    .card-body {
+        padding: 12px !important;
+    }
+
+    /* ── GRILLE 2 COLONNES ── */
+    .row.g-4>[class*="col-"] {
+        width: 50% !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding: 6px !important;
+    }
+
+    /* ── MENU CARDS COMPACTES ── */
+    .menu-card {
+        height: 110px !important;
+        padding: 14px 10px !important;
+        border-radius: 12px !important;
+        gap: 6px !important;
+
+        &:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        &:active {
+            transform: scale(0.97) !important;
+            opacity: 0.9 !important;
+        }
+
+        .menu-icon {
+            font-size: 24px !important;
+            margin-bottom: 0 !important;
+        }
+
+        .menu-label {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            line-height: 1.3 !important;
+        }
+    }
+
+    /* ── ALERT NO ACCESS ── */
+    .alert-warning {
+        border-radius: 12px !important;
+        font-size: 13px !important;
+        padding: 16px !important;
+    }
+}

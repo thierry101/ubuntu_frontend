@@ -1,0 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+
+@Component({
+  selector: 'app-home-clients-promotion',
+  standalone: true,
+  imports: [SharedModule, RouterModule],
+  templateUrl: './home-clients-promotion.component.html',
+  styleUrl: './home-clients-promotion.component.scss'
+})
+export class HomeClientsPromotionComponent implements OnInit {
+  userInfo: any;
+  permissions: string[] = [];
+  role: string = '';
+
+  all_roles: string[] = ['Admin', 'siteAdmin', 'Agent', 'Agency'];
+
+  constructor(private authService: AuthService) { }
+
+  ngOnInit(): void {
+    this.userInfo = this.authService.getRole;
+    this.role = this.userInfo?.role;
+
+
+    this.authService.getPermissions().subscribe({
+      next: (res: any) => {
+        this.permissions = res?.result ?? [];
+      },
+      error: err => {
+        console.error("❌ Failed to load permissions:", err);
+      }
+    });
+  }
+
+  hasAnyAccess(): boolean {
+    return (
+      this.all_roles.includes(this.role) ||
+      ['handle_clients', 'handle_promotion', 'handle_discount_client'].some(p => this.permissions?.includes(p))
+    );
+  }
+}

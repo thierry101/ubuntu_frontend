@@ -1,0 +1,218 @@
+<div class="container-fluid">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+
+            <!-- Top Row: Search + Cart -->
+            <div class="row align-items-center g-2 mb-4">
+
+                <!-- Search -->
+                <div class="col-12 col-md-6">
+                    <app-search-list [searchTerm]="searchTerm"
+                        (searchChange)="onSearchChange($event)"></app-search-list>
+                </div>
+
+                <!-- Actions -->
+                <div class="col-12 col-md-6 d-flex flex-wrap justify-content-end gap-2">
+                    <!-- Scanner QR Code -->
+                    <button *ngIf="isMobileApp"
+                        class="btn btn-info btn-sm rounded d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-md-grow-0"
+                        (click)="onBarcodeScanned()">
+                        <i class="ti ti-qrcode"></i>
+                        <span>Code barres</span>
+                    </button>
+
+                    <!-- Voir le panier -->
+                    <a [routerLink]="['/checkout']"
+                        class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center gap-2 shadow-sm flex-grow-1 flex-md-grow-0">
+                        <i class="ti ti-shopping-cart"></i>
+                        <span>Voir le panier</span>
+                    </a>
+
+                </div>
+
+            </div>
+            <!-- Error Messages -->
+            <div class="text-danger mb-2" *ngIf="errors?.permission">{{ errors.permission }}</div>
+            <div class="text-danger mb-2" *ngIf="errors?.product">{{ errors.product }}</div>
+            <div class="text-danger mb-2" *ngIf="errors?.quantity">{{ errors.quantity }}</div>
+            <div class="text-danger mb-2" *ngIf="errors?.qtyCart">Spécifiez la quantité</div>
+            <div class="text-danger mb-2" *ngIf="errors?.sellingPrice">Prix de vente non défini</div>
+
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- Products Grid -->
+            <div *ngIf="!isLoading && all_products?.length > 0" class="row g-3 mb-2">
+                <div class="col-6 col-md-4 col-lg-2" *ngFor="let product of all_products; trackBy: trackByProduct">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100 product-card">
+
+                        <!-- Stock Badge -->
+                        <div class="px-3 pt-3 d-flex justify-content-between align-items-center">
+                            <small *ngIf="getExpDate(product)" class="mb-0 text-muted fw-semibold">
+                                <b>Exp : {{getExpDate(product) | date:'dd MMM. yyyy':'':'fr-FR'}}</b></small>
+                            <span class="badge bg-secondary">{{ product?.quantity }} </span>
+                        </div>
+
+                        <!-- Product Image & Promotion -->
+                        <div class="position-relative">
+                            <span *ngIf="product.active_promotion || product?.stockWhStore?.active_promotion"
+                                class="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill shadow-sm z-1">
+                                -{{ product?.active_promotion?.percentage ||
+                                product?.stockWhStore?.active_promotion?.percentage }}%
+                            </span>
+                            <img src="{{ getProductName(product)?.imageFront | image }}"
+                                class="card-img-top object-fit-cover responsive-img" alt="{{ product?.product?.name }}">
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body d-flex flex-column p-3">
+
+                            <!-- Product Name -->
+                            <p class="card-title fw-semibold text-truncate mb-1" style="font-size: 12px;">
+                                {{ getProductName(product)?.name }}
+                                <small class="text-muted d-block fw-normal">
+                                    {{ product?.indiceStock || product?.stockWhStore?.indiceStock }}
+                                </small>
+                            </p>
+
+                            <!-- Original Price if Promotion -->
+                            <ng-container *ngIf="product.active_promotion">
+                                <small class="text-decoration-line-through text-danger" style="font-size: 11px;">
+                                    {{ product.sellPrice | number:'1.0-0' }} {{ devise }}
+                                </small>
+                            </ng-container>
+
+                            <!-- Price Input & Quantity -->
+                            <form (ngSubmit)="addTocartItem(product)" class="d-flex flex-column gap-2 mt-2">
+                                <div class="input-group input-group-sm">
+                                    <input [readOnly]="!editSoldPrice" type="text" class="form-control form-control-sm"
+                                        [(ngModel)]="product.sold_the_price" name="soldPrice">
+                                    <span class="input-group-text">{{ devise }}</span>
+                                </div>
+
+                                <div class="input-group input-group-sm quantity-control">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        (click)="decreaseQty(product)">−</button>
+                                    <input type="text" [(ngModel)]="product.qty" name="qty"
+                                        class="form-control text-center" style="max-width: 50px;">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        (click)="increaseQty(product)">+</button>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 rounded" style="font-size: 12px;">
+                                    Ajouter
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!isLoading && all_products?.length === 0" class="row g-3 mb-2">
+                <h5 class="text-center">Aucun article disponible</h5>
+            </div>
+
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Button trigger modal -->
+<button type="button" hidden id="launchModalAddCart" class="btn btn-primary" data-bs-toggle="modal"
+    data-bs-target="#exampleModalAddProd">
+    Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalAddProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Détail article</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedProduct">
+
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100 product-card">
+
+                    <!-- Stock Badge -->
+                    <div class="px-3 pt-3 d-flex justify-content-between align-items-center">
+                        <small *ngIf="getExpDate(selectedProduct)" class="mb-0 text-muted fw-semibold">
+                            <b>Exp : {{ getExpDate(selectedProduct) | date:'dd MMM. yyyy':'':'fr-FR'}}</b>
+                        </small>
+                        <span class="badge bg-secondary">{{ selectedProduct?.quantity }}</span>
+                    </div>
+
+                    <!-- Product Image & Promotion -->
+                    <div class="position-relative">
+                        <span
+                            *ngIf="selectedProduct?.active_promotion || selectedProduct?.stockWhStore?.active_promotion"
+                            class="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill shadow-sm z-1">
+                            -{{ selectedProduct?.active_promotion?.percentage ||
+                            selectedProduct?.stockWhStore?.active_promotion?.percentage }}%
+                        </span>
+                        <img src="{{ getProductName(selectedProduct)?.imageFront | image }}"
+                            class="card-img-top object-fit-cover responsive-img"
+                            alt="{{ selectedProduct?.product?.name }}">
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column p-3">
+
+                        <!-- Product Name -->
+                        <p class="card-title fw-semibold text-truncate mb-1" style="font-size: 12px;">
+                            {{ getProductName(selectedProduct)?.name }}
+                            <small class="text-muted d-block fw-normal">
+                                {{ selectedProduct?.indiceStock || selectedProduct?.stockWhStore?.indiceStock }}
+                            </small>
+                        </p>
+
+                        <!-- Original Price if Promotion -->
+                        <ng-container *ngIf="selectedProduct?.active_promotion">
+                            <small class="text-decoration-line-through text-danger" style="font-size: 11px;">
+                                {{ selectedProduct.sellPrice | number:'1.0-0' }} {{ devise }}
+                            </small>
+                        </ng-container>
+
+                        <!-- Price Input & Quantity -->
+                        <!-- <form (ngSubmit)="addTocartItem(selectedProduct)" class="d-flex flex-column gap-2 mt-2"> -->
+                        <form (ngSubmit)="addTocartItem(selectedProduct)" class="d-flex flex-column gap-2 mt-2">
+
+                            <div class="input-group input-group-sm">
+                                <input [readOnly]="!editSoldPrice" type="text" class="form-control form-control-sm"
+                                    [(ngModel)]="selectedProduct.sold_the_price" name="soldPrice">
+                                <span class="input-group-text">{{ devise }}</span>
+                            </div>
+
+                            <div class="input-group input-group-sm quantity-control">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    (click)="decreaseQty(selectedProduct)">−</button>
+                                <input type="text" [(ngModel)]="selectedProduct.qty" name="qty"
+                                    class="form-control text-center" style="max-width: 50px;">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    (click)="increaseQty(selectedProduct)">+</button>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 rounded" style="font-size: 12px;">
+                                Ajouter
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" hidden id="closeModal0092" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
+</div>

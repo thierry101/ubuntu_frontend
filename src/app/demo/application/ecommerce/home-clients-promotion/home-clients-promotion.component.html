@@ -1,0 +1,62 @@
+<div class="" *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📦 Clients et promotions</h5>
+            <!-- <span class="badge bg-light text-dark px-3 py-2">{{ role | roleName | titlecase }}</span> -->
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Manage clients -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_clients')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-clients']" class="menu-card btn w-100 bg-warning text-dark">
+                        <div class="menu-icon">🧑‍🤝‍🧑💰</div>
+                        <div class="menu-label">Clients & achats</div>
+                    </a>
+                </div>
+
+                <!-- Manage promotions -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_promotion')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/setting-promotion']" class="menu-card btn w-100 bg-dark text-white">
+                        <div class="menu-icon">🎯📢</div>
+                        <div class="menu-label">Récompense client</div>
+                    </a>
+                </div>
+
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_promotion')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/promotion']" class="menu-card btn w-100 bg-success text-white">
+                        <div class="menu-icon">🎯📢</div>
+                        <div class="menu-label">Créer des promotions</div>
+                    </a>
+                </div>
+
+                <!-- Manage client discounts -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_discount_client')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/discount-client']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">🎟️💳</div>
+                        <div class="menu-label">Coupons Client</div>
+                    </a>
+                </div>
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_advertising')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/advertising-promotion']" class="menu-card btn w-100 bg-primary text-white">
+                        <div class="menu-icon">📈</div>
+                        <div class="menu-label">Publicités</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

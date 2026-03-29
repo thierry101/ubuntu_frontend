@@ -1,0 +1,398 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0 d-flex align-items-center">
+                <span class="me-2 fs-5">📊</span>
+                Historique des ventes
+            </h5>
+            <button (click)="resetFilter()" class="btn btn-light btn-sm d-flex align-items-center">
+                🔄 Reset
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- FILTRES -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-12 col-md">
+                            <label class="form-label fw-semibold small text-muted">
+                                <i class="ti ti-search me-1"></i> Recherche
+                            </label>
+                            <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                            </app-search-list>
+                        </div>
+
+                        <div class="col-6 col-md">
+                            <label class="form-label fw-semibold small text-muted">
+                                <i class="ti ti-folder2-open me-1"></i> Type
+                            </label>
+                            <select [(ngModel)]="typeTrans" (change)="filterByType()"
+                                class="form-select form-select-sm">
+                                <option value="0">Tous</option>
+                                <option *ngFor="let item of allTypes" [value]="item?.value">
+                                    {{ item?.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div *ngIf="role === 'Admin' || role === 'Daf'" class="col-6 col-md">
+                            <label class="form-label fw-semibold small text-muted">
+                                <i class="ti ti-shop me-1"></i> Magasin
+                            </label>
+                            <select (change)="filterWhStore()" [(ngModel)]="selectWhShop"
+                                class="form-select form-select-sm">
+                                <option value="0">Tous</option>
+                                <option *ngFor="let item of warehouses" [value]="item?.id">
+                                    {{ item?.nameWh }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-semibold small text-muted">
+                                📅 Période
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <input type="date" [(ngModel)]="startDate" class="form-control">
+                                <input type="date" [(ngModel)]="endDate" class="form-control">
+                                <button class="btn btn-primary" type="button" (click)="filterStock()">
+                                    <i class="ti ti-check"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md" *ngIf="[0, '0', 'sell', 'exchange'].includes(typeTrans)">
+                            <label class="form-label fw-semibold small text-muted">
+                                <i class="ti ti-credit-card me-1"></i> Paiement
+                            </label>
+                            <select [(ngModel)]="paymentSelected" (change)="returnPayment()"
+                                class="form-select form-select-sm">
+                                <option value="0">Tous</option>
+                                <ng-container *ngFor="let item of typePayments">
+                                    <option *ngIf="role === 'Admin' || role === 'Daf'" [value]="item?.value">
+                                        {{ item?.name }}
+                                    </option>
+                                    <option *ngIf="getTypePayments?.[item?.value] && role !== 'Admin'"
+                                        [value]="item?.value">
+                                        {{ item?.name }}
+                                    </option>
+                                </ng-container>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div *ngIf="[0, '0', 'sell', 'exchange'].includes(typeTrans) && !isLoading" class="row g-3 mb-4">
+
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="card bg-success text-white border-0 shadow-sm">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 small">Revenu Total 💵</h6>
+                                    <h5 class="fw-bold mb-0">
+                                        {{ collect_day | number:'1.0-0' }} {{ devise }}
+                                    </h5>
+                                    <p class="text-white-50 mb-0 small">
+                                        TVA collectée : {{ collect_day_tva | number:'1.0-0' }} {{ devise }}
+                                    </p>
+                                </div>
+                                <i class="ti ti-coin-euro fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="card bg-info text-white border-0 shadow-sm">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 small">Moyen de paiement ({{ returnPayment() }}) 🗓️</h6>
+                                    <h5 class="fw-bold mb-0">
+                                        {{ collect_day_rangeDate | number:'1.0-0' }} {{ devise }}
+                                    </h5>
+                                    <p class="text-white-50 mb-0 small">
+                                        Période du {{ startDate | date:'dd/MM/yyyy' }} -
+                                        {{ endDate | date:'dd/MM/yyyy' }}
+                                    </p>
+                                </div>
+                                <i class="ti ti-wallet2 fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <app-spinners *ngIf="isLoading" message="⏳ Chargement des historiques ..."></app-spinners>
+
+            <!-- TABLES -->
+            <div *ngIf="!isLoading" class="row g-4">
+
+                <!-- COMMANDES -->
+                <div class="col-12 col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                        <div
+                            class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+                            <span *ngIf="[0, '0', 'sell', 'exchange'].includes(typeTrans)" class="fw-semibold">
+                                🛒 Commandes ({{ pagination?.nberItems }})
+                            </span>
+                            <span *ngIf="typeTrans === 'gift'" class="fw-semibold">
+                                🎁 Dons ({{ pagination?.nberItems }})
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- TABLE DESKTOP -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover align-middle table-bordered text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>📅 Date</th>
+                                            <th>🧾 Numéro</th>
+                                            <th>🧾 Type</th>
+                                            <th *ngIf="role === 'Admin' || role === 'Daf'">🏬 Boutique / Entrepôt</th>
+                                            <th>👤 Client</th>
+                                            <th>⚙️ Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of all_orders; trackBy: trackByOderId"
+                                            [ngClass]="{ 'table-active': item?.id === order_to_print?.id }">
+                                            <td class="text-wrap">
+                                                {{ item?.created_at | date: 'dd/MM/yyyy à HH:mm' : '': 'fr' || '—' }}
+                                            </td>
+                                            <td><strong>{{ item?.nberInvoice || '—' }}</strong></td>
+                                            <td><strong>{{ getNameTypeOrder(item?.typeOrder) || '—' }}</strong></td>
+                                            <td class="text-wrap" *ngIf="role === 'Admin' || role === 'Daf'">
+                                                {{ item?.warehouse?.nameWh || '—' }}
+                                            </td>
+                                            <td class="text-wrap text-start">{{ item?.client?.name || '—' }}</td>
+                                            <td class="text-center">
+                                                <button (click)="viewItems(item?.id)"
+                                                    class="btn btn-outline-primary btn-sm rounded-circle"
+                                                    title="Voir facture">
+                                                    <i class="ti ti-eye"></i>
+                                                </button>
+                                                <button (click)="deleteInvoice(item)" data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModalDelete"
+                                                    class="btn btn-outline-danger btn-sm rounded-circle mx-1"
+                                                    title="Supprimer facture">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="all_orders?.length === 0">
+                                            <td [attr.colspan]="role === 'Admin' || role === 'Daf' ? 6 : 5"
+                                                class="text-center text-muted">
+                                                🚫 Aucune commande trouvée
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- LISTE MOBILE COMMANDES -->
+                            <div class="mobile-orders-list d-block d-md-none">
+
+                                <div *ngIf="all_orders?.length === 0"
+                                    style="text-align:center;padding:20px;color:#7a9ab8;font-size:13px">
+                                    🚫 Aucune commande trouvée
+                                </div>
+
+                                <div *ngFor="let item of all_orders; trackBy: trackByOderId" class="order-card-mobile"
+                                    [class.active]="item?.id === order_to_print?.id">
+
+                                    <div class="ocm-top">
+                                        <div>
+                                            <div class="ocm-nber">{{ item?.nberInvoice || '—' }}</div>
+                                            <div class="ocm-type">{{ getNameTypeOrder(item?.typeOrder) || '—' }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="ocm-date">
+                                                {{ item?.created_at | date:'dd/MM/yyyy HH:mm':'':'fr' }}
+                                            </div>
+                                            <div class="ocm-wh" *ngIf="role === 'Admin' || role === 'Daf'">
+                                                {{ item?.warehouse?.nameWh || '—' }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="ocm-client">👤 {{ item?.client?.name || '—' }}</div>
+
+                                    <div class="ocm-actions">
+                                        <button class="btn-ocm-view" (click)="viewItems(item?.id)">
+                                            👁 Voir
+                                        </button>
+                                        <button class="btn-ocm-del" (click)="deleteInvoice(item)" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModalDelete">
+                                            🗑
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- PAGINATION -->
+                            <div class="mt-3">
+                                <app-set-pagination [currentPage]="pagination?.currentPage"
+                                    [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                                    [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                                </app-set-pagination>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DÉTAILS -->
+                <div class="col-12 col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                        <div class="card-header bg-light border-0 d-flex align-items-center justify-content-between">
+                            <span class="fw-semibold">📋 Détails de la commande</span>
+                            <button *ngIf="all_items?.length > 0" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                class="btn btn-outline-primary btn-sm rounded-circle" title="Imprimer">
+                                <i class="ti ti-printer"></i> 🖨️
+                            </button>
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- TABLE DESKTOP -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover align-middle table-bordered text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>📦 Article</th>
+                                            <th>🔢 Quantité</th>
+                                            <th>💶 P.U</th>
+                                            <th>💰 Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let product of all_items">
+                                            <td class="text-wrap">{{ product?.product?.product || '—' }}</td>
+                                            <td>{{ product?.quantity | number:'1.0-0' }}</td>
+                                            <td>{{ product?.sold_price | number:'1.0-0' }} {{ devise }}</td>
+                                            <td>{{ product?.total_price | number:'1.0-0' }} {{ devise }}</td>
+                                        </tr>
+                                        <tr *ngIf="all_items?.length === 0">
+                                            <td colspan="4" class="text-center text-muted">
+                                                📭 Aucun détail à afficher
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- LISTE MOBILE DÉTAILS -->
+                            <div class="mobile-details-list d-block d-md-none">
+
+                                <div *ngIf="all_items?.length === 0"
+                                    style="text-align:center;padding:20px;color:#7a9ab8;font-size:13px">
+                                    📭 Sélectionnez une commande
+                                </div>
+
+                                <div *ngFor="let product of all_items" class="detail-row-mobile">
+                                    <div class="dr-name">{{ product?.product?.product || '—' }}</div>
+                                    <div class="dr-qty">×{{ product?.quantity | number:'1.0-0' }}</div>
+                                    <div class="dr-total">
+                                        {{ product?.total_price | number:'1.0-0' }} {{ devise }}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FORMAT IMPRESSION -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🖨️ Format d'impression</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check mb-3">
+                    <input data-bs-toggle="modal" data-bs-target="#exampleModalInvoice" class="form-check-input"
+                        type="radio" name="radioDefault" id="radioDefault1">
+                    <label class="form-check-label" for="radioDefault1">🧾 Impression 80mm</label>
+                </div>
+                <div class="form-check">
+                    <input data-bs-toggle="modal" data-bs-target="#exampleModalBigFormat" class="form-check-input"
+                        type="radio" name="radioDefault" id="radioDefault2">
+                    <label class="form-check-label" for="radioDefault2">📄 Impression A4</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    ❌ Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FACTURE A4 -->
+<div class="modal fade" id="exampleModalBigFormat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">📄 Facture A4</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <app-big-invoice [order_printed]="order_to_print" [item_of_deposit]="item_of_deposit">
+                </app-big-invoice>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FACTURE 80mm -->
+<div class="modal fade" id="exampleModalInvoice" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🧾 Facture 80/50mm</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <app-smal-invoice [order_printed]="order_to_print" [item_of_deposit]="item_of_deposit">
+                </app-smal-invoice>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SUPPRESSION -->
+<div class="modal fade" id="exampleModalDelete" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <app-delete-confirm-modal [title]="'🗑️ Suppression de facture'"
+            [confirmMessage]="'Pour confirmer la suppression de cette facture, veuillez taper le mot'"
+            [wordToType]="'facture'" [errors]="errors" (deleteConfirmed)="deleteStock()">
+        </app-delete-confirm-modal>
+    </div>
+</div>

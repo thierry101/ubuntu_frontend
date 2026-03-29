@@ -1,0 +1,228 @@
+<div class="container">
+    <div class="card border-0 shadow-sm rounded-3">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
+            <h5 class="mb-0">📊 Mouvement de stock</h5>
+            <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                <button (click)="printReport()" class="btn btn-light btn-sm">🖨️ Imprimer</button>
+                <button (click)="resetChoice()" class="btn btn-outline-light btn-sm">♻️ Réinitialiser</button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div (click)="clickOutsideModalAddItem()" class="card-body">
+
+            <!-- ── FILTRES ── -->
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-md-3 col-6">
+                    <label class="form-label fw-semibold">Désignation</label>
+                    <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTermP"
+                        [results]="all_products" [displayField]="'indiceStock'" [error]="errors?.product"
+                        [showResults]="!!all_products?.length" (search)="searchProduct($event)"
+                        (select)="selectProduct($event)">
+                    </app-selected>
+                </div>
+                <!-- Date début + Date fin sur la même ligne -->
+                <div class="col-12 col-md-6 px-0">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+
+                        <div>
+                            <label class="form-label fw-semibold">Date de début</label>
+                            <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
+                        </div>
+
+                        <div>
+                            <label class="form-label fw-semibold">Date de fin</label>
+                            <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-2 col-6">
+                    <label class="form-label">Type de mouvement</label>
+                    <select [(ngModel)]="typeOfMvt" name="mvt" class="form-select form-select-sm">
+                        <option value="0">Choisir...</option>
+                        <option *ngFor="let item of listMvts" value="{{item?.value}}">{{item?.name}}</option>
+                    </select>
+                </div>
+                <div class="col-md-1 col-12 d-flex flex-wrap gap-2">
+                    <button (click)="filterStock()" class="btn btn-primary btn-sm flex-fill">Valider</button>
+                </div>
+            </div>
+
+            <!-- ── RAPPORT ── -->
+            <div id="print-section">
+
+                <!-- Rapport header -->
+                <div class="card bg-light-subtle mb-4 border-start border-4 border-primary">
+                    <div class="card-body py-3">
+                        <div class="row text-center text-md-start align-items-center">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <h5 class="mb-0 text-primary fw-bold">{{ userInfo?.whStor }}</h5>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div *ngIf="startDate && endDate" class="text-muted small">
+                                    <strong>Période :</strong><br />
+                                    {{ startDate | date: 'd MMMM y' }} – {{ endDate | date: 'd MMMM y' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+                <div *ngIf="!isLoading">
+
+                    <!-- Article sélectionné -->
+                    <h6 *ngIf="searchTermP" class="fw-semibold mb-3">
+                        Article : <span class="text-primary">{{ nameProduct }}</span>,
+                        indice : <span class="text-primary">{{ searchTermP }}</span>
+                    </h6>
+
+                    <!-- Badges résumé -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill">
+                            🧪 Défectueux : <strong>{{ bad_quantity }}</strong>
+                        </span>
+                        <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2 rounded-pill">
+                            ⏰ Expiré : <strong>{{ expired_quantity }}</strong>
+                        </span>
+                        <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">
+                            🎁 Don : <strong>{{ gift_quantity }}</strong>
+                        </span>
+                        <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-2 rounded-pill">
+                            💰 Vendu : <strong>{{ sell_quantity }}</strong>
+                        </span>
+                        <span
+                            class="badge bg-secondary-subtle text-secondary border border-secondary px-3 py-2 rounded-pill">
+                            ❌ Perte : <strong>{{ lost_quantity }}</strong>
+                        </span>
+                    </div>
+
+                    <!-- ── TABLE DESKTOP (cachée sur mobile) ── -->
+                    <div class="table-responsive mb-3 d-none d-md-block">
+                        <table class="table table-hover align-middle table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Nom article (Indice)</th>
+                                    <th>Type de mouvement</th>
+                                    <th>De</th>
+                                    <th>À</th>
+                                    <th>Quantité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of all_stocks_mvments; trackBy: trackById">
+                                    <td class="text-wrap">{{ item?.created_at | date: 'd MMMM y à HH:mm' }}</td>
+                                    <td class="text-wrap">{{ item?.product?.product || '—' }} ({{
+                                        item?.product?.indiceStock }})</td>
+                                    <td>{{ item?.move_type || '—' }}</td>
+                                    <td>
+                                        <ng-container *ngIf="item?.from_warehouse">Magasin : {{
+                                            item?.from_warehouse?.nameWh }}</ng-container>
+                                        <ng-container *ngIf="item?.from_provider">Fournisseur : {{
+                                            item?.from_provider?.name }}</ng-container>
+                                        <ng-container *ngIf="item?.from_client">Client : {{ item?.from_client?.name
+                                            }}</ng-container>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="item?.to_warehouse">Magasin : {{ item?.to_warehouse?.nameWh
+                                            }}</ng-container>
+                                        <ng-container *ngIf="item?.to_Client">Client : {{ item?.to_Client?.name
+                                            }}</ng-container>
+                                        <ng-container *ngIf="item?.to_trash">{{ item?.to_trash }}</ng-container>
+                                    </td>
+                                    <td><strong>{{ item?.quantity | number }}</strong></td>
+                                </tr>
+                                <tr *ngIf="all_stocks_mvments.length === 0">
+                                    <td colspan="6" class="text-center text-muted">Aucun mouvement trouvé</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ── LISTE MOBILE (cachée sur desktop) ── -->
+                    <div class="d-block d-md-none mb-3">
+
+                        <div *ngIf="all_stocks_mvments.length === 0"
+                            style="text-align:center;padding:40px;color:#7a9ab8;font-size:13px">
+                            Aucun mouvement trouvé
+                        </div>
+
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <div *ngFor="let item of all_stocks_mvments; trackBy: trackById" class="mvt-card">
+
+                                <!-- TOP : nom + quantité -->
+                                <div class="mvt-top">
+                                    <div style="flex:1;min-width:0">
+                                        <div class="mvt-product">{{ item?.product?.product || '—' }}</div>
+                                        <div class="mvt-ref">{{ item?.product?.indiceStock }}</div>
+                                    </div>
+                                    <div>
+                                        <span class="mvt-qty-lbl">Quantité</span>
+                                        <span class="mvt-qty">{{ item?.quantity | number }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- TYPE BADGE -->
+                                <span class="mvt-type" [ngClass]="{
+                  'sell':     item?.move_type === 'vente',
+                  'transfer': item?.move_type === 'transfert',
+                  'defect':   item?.move_type === 'défectueux',
+                  'gift':     item?.move_type === 'don',
+                  'lost':     item?.move_type === 'perte',
+                  'entry':    item?.move_type === 'entrée'
+                }">{{ item?.move_type || '—' }}</span>
+
+                                <!-- FLUX DE → À -->
+                                <div class="mvt-flow">
+                                    <div class="mvt-node">
+                                        <span class="mvt-node-lbl">De</span>
+                                        <span class="mvt-node-val">
+                                            <ng-container *ngIf="item?.from_warehouse">{{ item?.from_warehouse?.nameWh
+                                                }}</ng-container>
+                                            <ng-container *ngIf="item?.from_provider">{{ item?.from_provider?.name
+                                                }}</ng-container>
+                                            <ng-container *ngIf="item?.from_client">{{ item?.from_client?.name
+                                                }}</ng-container>
+                                            <ng-container
+                                                *ngIf="!item?.from_warehouse && !item?.from_provider && !item?.from_client">—</ng-container>
+                                        </span>
+                                    </div>
+                                    <span class="mvt-arrow">→</span>
+                                    <div class="mvt-node">
+                                        <span class="mvt-node-lbl">À</span>
+                                        <span class="mvt-node-val">
+                                            <ng-container *ngIf="item?.to_warehouse">{{ item?.to_warehouse?.nameWh
+                                                }}</ng-container>
+                                            <ng-container *ngIf="item?.to_Client">{{ item?.to_Client?.name
+                                                }}</ng-container>
+                                            <ng-container *ngIf="item?.to_trash">{{ item?.to_trash }}</ng-container>
+                                            <ng-container
+                                                *ngIf="!item?.to_warehouse && !item?.to_Client && !item?.to_trash">—</ng-container>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- DATE -->
+                                <div class="mvt-date">{{ item?.created_at | date: 'd MMMM y à HH:mm' }}</div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ── PAGINATION ── -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>

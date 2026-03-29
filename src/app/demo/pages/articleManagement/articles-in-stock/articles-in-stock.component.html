@@ -1,0 +1,166 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
+            <h5 class="mb-0">
+                📦 Stock par point de vente
+            </h5>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- Search -->
+            <div class="row g-3 align-items-center mb-3">
+                <!-- Error Message -->
+                <div class="col-12">
+                    <small class="text-danger">{{ errors?.warehouse }}</small>
+                </div>
+
+                <!-- Search -->
+                <div class="col-12 col-md-4">
+                    <label for="search-input" class="form-label mb-1">Recherche</label>
+                    <app-search-list id="search-input" [searchTerm]="searchTerm"
+                        (searchChange)="onSearchChange($event)"></app-search-list>
+                </div>
+
+                <!-- Warehouse Selector -->
+                <div class="col-12 col-md-3" *ngIf="role==='Admin' || userHasPermission">
+                    <label class="form-label mb-1">Choisir boutique/entrepôt</label>
+                    <div class="input-group input-group-sm flex-wrap">
+                        <select (change)="getNameWhStore()" [(ngModel)]="idWhStoreSelected" id="inputState"
+                            class="form-select">
+                            <option value="0">Choisir...</option>
+                            <option *ngFor="let item of warehouses" [value]="item?.id">
+                                {{ item?.nameWh }}
+                            </option>
+                        </select>
+                        <button (click)="filterStockInWhStore()" class="btn btn-primary" type="button">
+                            Valider
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Columns Selector -->
+                <div class="col-6 col-md-3 d-flex flex-column d-none d-md-block">
+                    <label class="form-label mb-1">&nbsp;</label>
+                    <app-columns-selected [columns]="columns"
+                        (toggle)="toggleColumnVisibility($event)"></app-columns-selected>
+                </div>
+
+                <!-- Export Dropdown -->
+                <div class="col-6 col-md-2 text-start text-md-end">
+                    <label class="form-label mb-1 d-none d-md-block">&nbsp;</label>
+                    <div class="dropdown w-100 w-md-auto">
+                        <button class="btn btn-light btn-sm dropdown-toggle w-100 w-md-auto" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Exporter
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a (click)="exportAllToPDF()" class="dropdown-item" href="javascript:void(0)">En PDF</a>
+                            </li>
+                            <li>
+                                <a (click)="exportAllItemToExcel()" class="dropdown-item" href="javascript:void(0)">En
+                                    Excel</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- Table -->
+            <div class="table-responsive" *ngIf="!isLoading">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th *ngIf="isVisible('category')">Catégorie</th>
+                            <th *ngIf="isVisible('subCategory')">Sous-catégorie</th>
+                            <th *ngIf="isVisible('name')">Désignation</th>
+                            <th *ngIf="isVisible('total_quantity')">Quantité</th>
+                            <th *ngIf="isVisible('quantityWarning')">Quantité alerte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let product of all_products trackBy: trackByProductId"
+                            [ngClass]="{'table-danger': product?.quantityWarning > product?.total_quantity}">
+
+                            <td class="text-wrap" *ngIf="isVisible('category')">
+                                {{ product?.category?.name || '—' }}
+                            </td>
+
+                            <td *ngIf="isVisible('subCategory')">
+                                {{ product?.subCategory?.name || '—' }}
+                            </td>
+
+                            <td class="text-wrap text-break" *ngIf="isVisible('name')">
+                                {{ product?.name || '—' }}
+                            </td>
+
+                            <td *ngIf="isVisible('total_quantity')">
+                                {{ product?.total_quantity | number:'1.0-0':'fr' }}
+                            </td>
+
+                            <td *ngIf="isVisible('quantityWarning')">
+                                {{ product?.quantityWarning | number:'1.0-0':'fr' }}
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="all_products.length === 0 && !isLoading">
+                            <td [attr.colspan]="columns.length" class="text-center text-muted">Aucun produit trouvé</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- LISTE MOBILE -->
+            <div class="mobile-wh-stock-list" style="display:none" *ngIf="!isLoading">
+
+                <div *ngIf="all_products.length === 0"
+                    style="text-align:center;padding:40px;color:#7a9ab8;font-size:13px">
+                    Aucun produit trouvé
+                </div>
+
+                <div *ngFor="let product of all_products trackBy: trackByProductId" class="prod-card"
+                    [class.stock-alert]="product?.quantityWarning > product?.total_quantity">
+
+                    <div class="prod-left">
+                        <div class="prod-name">{{ product?.name || '—' }}</div>
+                        <div class="prod-tags">
+                            <span *ngIf="product?.category" class="tag tag-cat">
+                                {{ product?.category?.name }}
+                            </span>
+                            <span *ngIf="product?.subCategory" class="tag tag-sub">
+                                {{ product?.subCategory?.name }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="prod-right">
+                        <div class="qty-label">Quantité</div>
+                        <div class="qty-main" [class.alert-qty]="product?.quantityWarning > product?.total_quantity">
+                            {{ product?.total_quantity | number:'1.0-0':'fr' }}
+                        </div>
+
+                        <!-- Stock suffisant -->
+                        <div class="qty-warning-lbl" *ngIf="product?.quantityWarning <= product?.total_quantity">
+                            Alerte : {{ product?.quantityWarning | number:'1.0-0':'fr' }}
+                        </div>
+
+                        <!-- Stock insuffisant -->
+                        <div class="qty-alert-lbl" *ngIf="product?.quantityWarning > product?.total_quantity">
+                            ⚠️ Alerte : {{ product?.quantityWarning | number:'1.0-0':'fr' }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Pagination -->
+                <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                    [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                    (pageChange)="onPageChange($event)">
+                </app-set-pagination>
+            </div>
+        </div>
+    </div>

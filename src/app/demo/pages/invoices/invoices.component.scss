@@ -1,0 +1,117 @@
+.payment-section {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.payment-title h5 {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.payment-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.payment-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid #dcdcdc;
+    background: #fff;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+.payment-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.payment-btn img.payment-logo {
+    width: 28px;
+    height: 28px;
+}
+
+/* Active Selected Style */
+.btn-check:checked+.payment-btn {
+    border: 2px solid #0d6efd;
+    background: #e7f0ff;
+    box-shadow: 0 4px 12px rgba(0, 80, 255, 0.25);
+}
+
+/* Payment type colors */
+.payment-wave {
+    border-color: #1e90ff;
+}
+
+.payment-momo {
+    border-color: #ffcc00;
+}
+
+.payment-orange {
+    border-color: #ff6600;
+}
+
+.payment-instructions {
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.upload-box {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.25s;
+}
+
+.upload-label:hover {
+    background: #004ccc;
+}
+
+.preview-container {
+    margin-top: 15px;
+}
+
+.preview-image {
+    max-width: 40%;
+    height: 40%;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-preview {
+    margin-top: 15px;
+}
+
+.pdf-box {
+    padding: 12px 16px;
+    background: #f1f1f1;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    border: 1px solid #dcdcdc;
+    cursor: pointer;
+}
+
+.pdf-box:hover {
+    background: #eaeaea;
+}

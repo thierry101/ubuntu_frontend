@@ -1,0 +1,490 @@
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-primary {
+            background: #fff !important;
+            color: #1565C0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 7px 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 10px !important;
+    }
+
+    /* ── SUPPRIMER LES CARDS IMBRIQUÉES ── */
+    .card-body>.card,
+    .card-body>.card>.card-body>.container-fluid>.card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+    }
+
+    .card-body>.card>.card-body,
+    .container-fluid {
+        padding: 0 !important;
+    }
+
+    /* ── FILTRES ── */
+    .row.g-3.align-items-end {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px !important;
+        margin: 0 0 12px !important;
+        gap: 10px 0 !important;
+
+        /* Tous les champs pleine largeur par défaut */
+        .col-12.col-md-3,
+        .col-12.col-md-4,
+        .col-12.col-md-2 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        /* Période : dates côte à côte dans input-group */
+        .col-12.col-md-4 .input-group {
+            grid-template-columns: 1fr 1fr auto !important;
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+            gap: 0;
+
+            .form-control {
+                border: none !important;
+                border-radius: 0 !important;
+                border-right: 0.5px solid #d0e4f7 !important;
+                padding: 9px 8px !important;
+                font-size: 12px !important;
+                min-height: 40px !important;
+            }
+
+            .btn-outline-primary {
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 0 12px !important;
+                white-space: nowrap;
+            }
+        }
+
+        /* Entrepôt select + OK */
+        .col-12.col-md-3 .input-group {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+
+            .form-select {
+                border: none !important;
+                border-radius: 0 !important;
+                min-height: 40px !important;
+            }
+
+            .btn-outline-primary {
+                border: none !important;
+                border-left: 0.5px solid #d0e4f7 !important;
+                border-radius: 0 !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 0 14px !important;
+            }
+        }
+
+        /* Export */
+        .col-12.col-md-2 .btn {
+            background: #f0f7ff !important;
+            color: #1565C0 !important;
+            border: 0.5px solid #cce0f5 !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            width: 100% !important;
+        }
+    }
+
+    /* ── CACHER LA TABLE ── */
+    .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE ── */
+    .mobile-adj-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .adj-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 13px 15px;
+    }
+
+    .adj-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 8px;
+    }
+
+    .adj-product {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .adj-indice {
+        font-size: 10px;
+        font-family: 'DM Mono', monospace;
+        color: #7a9ab8;
+        margin-top: 2px;
+    }
+
+    .adj-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+
+        &.add {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 0.5px solid #a5d6a7;
+        }
+
+        &.sub {
+            background: #fff0f0;
+            color: #e53935;
+            border: 0.5px solid #ffd0d0;
+        }
+    }
+
+    .adj-quantities {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .qty-block {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 8px;
+        padding: 7px 8px;
+        text-align: center;
+    }
+
+    .qty-block-lbl {
+        font-size: 9px;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .qty-block-val {
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'DM Mono', monospace;
+        display: block;
+
+        &.neutral {
+            color: #1a2e42;
+        }
+
+        &.add {
+            color: #2e7d32;
+        }
+
+        &.sub {
+            color: #e53935;
+        }
+
+        &.after {
+            color: #1565C0;
+        }
+    }
+
+    .adj-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 6px;
+    }
+
+    .meta-pill {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        background: #f0f7ff;
+        border: 0.5px solid #cce0f5;
+        border-radius: 20px;
+        padding: 3px 8px;
+        font-size: 10px;
+        color: #2c4f70;
+        white-space: nowrap;
+    }
+
+    .adj-reason {
+        font-size: 11px;
+        color: #5a7a99;
+        font-style: italic;
+        padding: 6px 10px;
+        background: #f8fbff;
+        border-radius: 7px;
+        border-left: 3px solid #1565C0;
+        margin-top: 2px;
+    }
+
+    .adj-date {
+        font-size: 10px;
+        color: #aab8cc;
+        font-family: 'DM Mono', monospace;
+        margin-top: 6px;
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODAL BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        .modal-title {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 16px !important;
+        max-height: calc(95vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        padding-bottom: calc(12px + 50px) !important;
+        /* 70px = hauteur bottom nav */
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── FORMULAIRE MODAL ── */
+    .modal-body form {
+
+        .col-lg-4,
+        .col-md-6,
+        .col-lg-3,
+        .col-lg-6,
+        .col-md-12 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        h6 {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            min-height: 42px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+
+            &:disabled,
+            &.bg-light {
+                background: #f8fbff !important;
+                color: #7a9ab8 !important;
+            }
+        }
+
+        /* Input group quantité actuelle */
+        .input-group {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+
+            .input-group-text {
+                background: #f0f7ff !important;
+                border: none !important;
+                border-right: 0.5px solid #d0e4f7 !important;
+                font-size: 12px !important;
+                color: #1565C0 !important;
+            }
+
+            .form-control {
+                border: none !important;
+                border-radius: 0 !important;
+                min-height: 42px !important;
+            }
+        }
+
+        /* Section ajustement */
+        .p-3.rounded-3.bg-light.border {
+            background: #f8fbff !important;
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 12px !important;
+            padding: 14px !important;
+        }
+    }
+}

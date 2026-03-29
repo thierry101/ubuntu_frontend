@@ -1,0 +1,76 @@
+@if (!item.hidden) {
+  <!-- Horizontal Layout -->
+  @if (currentLayout === 'horizontal') {
+    <li (mouseenter)="navCollapse($event)" data-username="Berry dashboard" class="nav-item coded-hasmenu" [routerLinkActive]="['active']">
+      <a [routerLinkActive]="['active']" href="javascript:" class="nav-link">
+        <ng-container *ngTemplateOutlet="itemContent"></ng-container>
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent"></ng-container>
+    </li>
+  }
+
+  <!-- Vertical Layout -->
+  @if (currentLayout === 'vertical') {
+    <li data-username="Berry dashboard" class="nav-item coded-hasmenu" [routerLinkActive]="['active']">
+      <a [routerLinkActive]="['active']" href="javascript:" class="nav-link" (click)="navCollapse($event)">
+        <ng-container *ngTemplateOutlet="itemContent"></ng-container>
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent"></ng-container>
+    </li>
+  }
+
+  <!-- Compact Layout -->
+  @if (currentLayout === 'compact') {
+    <li
+      data-username="Berry dashboard"
+      class="nav-item coded-hasmenu"
+      [routerLinkActive]="['active']"
+      placement="'top'"
+      (click)="subMenuCollapse(item)"
+    >
+      <a href="javascript:" class="nav-link">
+        <ng-container *ngTemplateOutlet="itemContent"></ng-container>
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent"></ng-container>
+    </li>
+  }
+
+  <ng-template #itemContent>
+    @if (item.icon) {
+      <span class="coded-micon">
+        <i class="{{ item.icon }}"></i>
+      </span>
+    }
+    <span class="coded-mtext">
+      {{ item.title | translate }}
+      @if (item.badge && themeLayout === 'horizontal') {
+        <span class="badge label" [ngClass]="item.badge.type!">
+          {{ item.badge.title }}
+        </span>
+      }
+    </span>
+    @if (item.badge && themeLayout === 'vertical') {
+      <span class="coded-badge label" [ngClass]="item.badge.type!">
+        {{ item.badge.title }}
+      </span>
+    }
+    @if (item.badge && themeLayout === 'compact') {
+      <span class="coded-badge label" [ngClass]="item.badge.type!">
+        {{ item.badge.title }}
+      </span>
+    }
+  </ng-template>
+  <ng-template #subMenuContent>
+    <ul class="coded-submenu" [routerLinkActive]="['active']" [ngClass]="item.classes!">
+      @for (item of item.children; track item) {
+        @if (item.type === 'group') {
+          <app-nav-group [item]="item"></app-nav-group>
+        } @else if (item.type === 'collapse') {
+          <app-nav-collapse [item]="item"></app-nav-collapse>
+        } @else if (item.type === 'item') {
+          <app-nav-item [item]="item"></app-nav-item>
+        }
+      }
+    </ul>
+  </ng-template>
+}

@@ -1,0 +1,96 @@
+<div class="ms-auto">
+  <ul class="list-unstyled d-flex align-items-center mb-0 gap-3">
+    <li
+      class="d-flex align-items-center justify-content-center px-3 py-1 rounded-pill bg-primary text-white fw-semibold small shadow-sm">
+      {{currentTime}}
+    </li>
+    <li class="pc-h-item d-none d-md-flex">
+      <a title="Calculatrice" data-bs-toggle="modal" data-bs-target="#exampleModalCalculator"
+        class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center text-primary">
+        Calculatrice 🔢
+      </a>
+    </li>
+    <li *ngIf="hasAccess || adminHasWarehouse" class="pc-h-item d-none d-md-flex">
+      <a routerLink="store-product" title="Espace de vente"
+        class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center text-primary">
+        Boutique
+        <i class="ti ti-building-store text-primary"></i>
+      </a>
+    </li>
+
+    <!-- Bouton plein écran -->
+    <li appToggleFullScreen class="pc-h-item d-none d-md-flex">
+      <a href="javascript:" title="Mode plein écran"
+        class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center">
+        <i class="feather icon-maximize fs-5 text-primary"></i>
+      </a>
+    </li>
+
+    <!-- Menu utilisateur -->
+    <li>
+      <div class="dropdown pc-h-item header-user-profile" ngbDropdown>
+        <a class="d-flex align-items-center gap-2 btn btn-outline-primary rounded-pill px-3 py-1 shadow-sm dropdown-toggle"
+          href="javascript:" ngbDropdownToggle>
+          <img [src]="imgProfile" alt="user-image" class="rounded-circle border border-2 border-primary shadow-sm"
+            style="width: 36px; height: 36px; object-fit: cover;" />
+          <span class="fw-semibold text-dark">
+            <i class="ti ti-settings text-primary"></i>
+          </span>
+        </a>
+
+        <!-- Dropdown -->
+        <div class="dropdown-menu dropdown-menu-end p-3 shadow-lg border-0 rounded-3" ngbDropdownMenu>
+
+          <!-- Infos utilisateur -->
+          <div class="dropdown-header text-center mb-3">
+            <h5 class="mb-1">Salut 👋</h5>
+            <p class="mb-1 text-muted small">{{userInfo?.email}}</p>
+            <span class="badge bg-primary rounded-pill">
+              {{getRoleName(userInfo?.role)}}
+            </span>
+            <div *ngIf="userInfo?.whStor" class="mt-1 small text-muted">
+              Point de vente : <span class="fw-semibold">{{userInfo?.whStor}}</span>
+            </div>
+          </div>
+
+          <hr class="my-2" />
+
+          <!-- Liens -->
+          <a [routerLink]="['/my-profile']"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded hover-bg-light">
+            <i class="ti ti-settings text-primary"></i>
+            <span>Mon compte</span>
+          </a>
+          <a *ngIf="hasAccessInvoice" [routerLink]="['/my-invoice']"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded hover-bg-light">
+            <i class="ti ti-file-invoice text-dark"></i>
+            <span>Facturation</span>
+          </a>
+          <a [routerLink]="['/faq']" target="_blank"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded hover-bg-light">
+            <i class="ti ti-question-mark text-info"></i>
+            <span>FAQ</span>
+          </a>
+          <a [routerLink]="['/private-policy']" target="_blank"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded hover-bg-light">
+            <i class="ti ti-shield-lock text-warning"></i>
+            <span>politique de confidentialité</span>
+          </a>
+          <a [routerLink]="['/contact-us']" target="_blank"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded hover-bg-light">
+            <i class="ti ti-phone-call text-success"></i>
+            <span>Nous écrire</span>
+          </a>
+          <a href="javascript:" (click)="logout()"
+            class="dropdown-item d-flex align-items-center gap-2 py-2 rounded text-danger hover-bg-light">
+            <i class="ti ti-logout"></i>
+            <span>Déconnexion</span>
+          </a>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+
+

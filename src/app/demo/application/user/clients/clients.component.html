@@ -1,0 +1,351 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                👥 Gestion des clients
+            </h5>
+            <button (click)="resetForm()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">
+                ➕ Client
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- Loading Spinners -->
+            <app-spinners *ngIf="isLoading" message="Chargement des clients ..."></app-spinners>
+            <app-spinners *ngIf="isLoadingProduct" message="Chargement ..."></app-spinners>
+
+            <div class="row">
+                <!-- Clients Table -->
+                <div class="col-md-7 col-12 mb-4">
+                    <!-- Search and Info -->
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-11 col-md-6">
+                            <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChange($event)">
+                            </app-search-list>
+                        </div>
+                        <div class="col-11 col-md-6 text-end mt-2 mt-md-0">
+                            <span class="badge bg-info-subtle text-dark fw-semibold">
+                                Nombre de clients : {{ pagination?.nberItems }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive" *ngIf="!isLoading">
+                        <table class="table table-hover align-middle table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Téléphone</th>
+                                    <th>Commandes</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of all_clients; trackBy: trackByUserId"
+                                    [ngClass]="{ 'table-active': item?.id === idClient }">
+                                    <td class="text-start"><a style="color: black;"
+                                            [routerLink]="['/detail-client', item?.id]">{{ item?.name || '—' }}</a></td>
+                                    <td>
+                                        <button *ngIf="item?.phone" class="btn btn-success btn-sm small-btn"
+                                            (click)="setPhoneNumber(item?.phone)" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModalWhatsapp">
+                                            {{item?.phone}} <i class="ti ti-brand-whatsapp"></i>
+                                        </button>
+                                        <span *ngIf="!item?.phone">-</span>
+                                    </td>
+
+                                    <td>{{ item?.paid_orders_count | number }}</td>
+                                    <td>
+                                        <h5>
+                                            <span class="badge badge-dynamic" [style.--badge-color]="item?.color">
+                                                {{item?.name_card}}
+                                            </span>
+                                        </h5>
+                                    </td>
+                                    <td class="text-center">
+                                        <button (click)="fillTheUser(item)" class="btn btn-outline-warning btn-icon"
+                                            data-bs-toggle="modal" data-bs-target="#exampleModal" title="Modifier">
+                                            <i class="ti ti-pencil"></i>
+                                        </button>
+
+                                        <button (click)="retrieveOrderClient(item)"
+                                            class="btn btn-outline-info btn-icon mx-1" title="Voir les articles">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+
+                                        <button (click)="deleteClient(item)" class="btn btn-outline-danger btn-icon"
+                                            title="Supprimer">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="all_clients.length === 0">
+                                    <td colspan="4" class="text-center text-muted">Aucun client trouvé</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mobile-client-list d-block d-md-none" *ngIf="!isLoading">
+
+                        <div *ngIf="all_clients.length === 0"
+                            style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                            Aucun client trouvé
+                        </div>
+
+                        <div *ngFor="let item of all_clients; trackBy: trackByUserId" class="client-card"
+                            [class.active]="item?.id === idClient">
+
+                            <div class="client-top">
+                                <div>
+                                    <a class="client-name" [routerLink]="['/detail-client', item?.id]">
+                                        {{ item?.name || '—' }}
+                                    </a>
+                                    <div class="client-orders">{{ item?.paid_orders_count | number }} commandes</div>
+                                </div>
+                                <span class="client-badge" [style.background]="item?.color || '#1565C0'">
+                                    {{ item?.name_card || '—' }}
+                                </span>
+                            </div>
+
+                            <div class="client-meta">
+                                <button *ngIf="item?.phone" class="phone-btn" (click)="setPhoneNumber(item?.phone)"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModalWhatsapp">
+                                    📞 {{ item?.phone }} 📱
+                                </button>
+                            </div>
+
+                            <div class="client-actions">
+                                <button class="btn-act btn-edit" (click)="fillTheUser(item)" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    ✏️ Modifier
+                                </button>
+                                <button class="btn-act btn-view" (click)="retrieveOrderClient(item)">
+                                    👁 Factures
+                                </button>
+                                <button class="btn-act btn-del" (click)="deleteClient(item)">
+                                    🗑
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Pagination -->
+                    <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                        [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                        (pageChange)="onPageChange($event)">
+                    </app-set-pagination>
+                </div>
+
+                <!-- Invoices + Filters -->
+                <div class="col-md-5 col-12">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">📋 Factures du client</h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Date Filters -->
+                            <form class="row g-2 mb-3">
+                                <div class="col-md-6 col-12">
+                                    <label for="inputStartDate" class="form-label fw-semibold">Date de début</label>
+                                    <input type="date" class="form-control form-control-sm" id="inputStartDate"
+                                        [(ngModel)]="startDate" name="startDate">
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <label for="inputEndDate" class="form-label fw-semibold">Date de fin</label>
+                                    <input type="date" class="form-control form-control-sm" id="inputEndDate"
+                                        [(ngModel)]="endDate" name="endDate">
+                                </div>
+                                <div class="col-12">
+                                    <button (click)="filterItems()" type="submit" class="btn btn-primary btn-sm w-100">
+                                        🔍 Rechercher
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Invoices Table -->
+                            <div class="table-responsive">
+                                <table *ngIf="list_items?.length > 0"
+                                    class="table table-hover align-middle table-bordered text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>N° facture</th>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of list_items"
+                                            [ngClass]="{ 'table-active': item?.id === idOrder }">
+                                            <td>{{ item?.nberInvoice || '—' }}</td>
+                                            <td>{{ item?.created_at | date:'dd/MM/yyyy' }}</td>
+                                            <td>{{ item?.amountToPay | number }} {{ devise }}</td>
+                                            <td class="text-center">
+                                                <button (click)="listProduct(item)" data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModalShowProduct"
+                                                    class="btn btn-outline-info btn-sm rounded-circle"
+                                                    title="Voir les articles">
+                                                    <i class="ti ti-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div *ngIf="list_items?.length === 0" class="text-center text-muted mt-3">
+                                    <i class="ti ti-info-circle me-1"></i> Aucune facture trouvée
+                                </div>
+                            </div>
+
+                            <div class="mobile-inv-list d-block d-md-none">
+
+                                <div *ngIf="list_items?.length === 0" class="inv-empty">
+                                    Aucune facture trouvée
+                                </div>
+
+                                <div *ngFor="let item of list_items" class="inv-mini"
+                                    [class.active]="item?.id === idOrder">
+                                    <div>
+                                        <div class="inv-mini-nber">{{ item?.nberInvoice || '—' }}</div>
+                                        <div class="inv-mini-date">{{ item?.created_at | date:'dd/MM/yyyy' }}</div>
+                                    </div>
+                                    <div class="inv-mini-amount">{{ item?.amountToPay | number }} {{ devise }}</div>
+                                    <button class="btn-inv-view" (click)="listProduct(item)" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalShowProduct">
+                                        👁
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Add / Edit Client -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">{{ titleModal }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" for="inputNameClient">Nom</label>
+                        <input name="name" [(ngModel)]="name" type="text" class="form-control form-control-sm"
+                            id="inputNameClient" required />
+                        <small class="text-danger">{{ errors?.name }}</small>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" for="inputEmailClient4">Email</label>
+                        <input name="email" [(ngModel)]="email" type="email" class="form-control form-control-sm"
+                            id="inputEmailClient4" />
+                        <small class="text-danger">{{ errors?.email }}</small>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" for="inputPhoneClient">Téléphone</label>
+                        <input name="phone" [(ngModel)]="phone" type="tel" class="form-control form-control-sm"
+                            id="inputPhoneClient" required />
+                        <small class="text-danger">{{ errors?.phone }}</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button id="closeModalCreate" type="button" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <button *ngIf="!editClient" (click)="saveClient()" type="button"
+                    class="btn btn-primary btn-sm">Enregistrer
+                </button>
+                <button *ngIf="editClient" (click)="saveEditClient()" type="button"
+                    class="btn btn-warning btn-sm">Mettre à
+                    jour</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Products List -->
+<div class="modal fade" id="exampleModalShowProduct" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">📦 Liste des articles</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Article</th>
+                                <th>Indice stock</th>
+                                <th>Qté</th>
+                                <th>P.U</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of list_products">
+                                <td class="text-start">{{ product?.product?.product_name || '—' }}</td>
+                                <td>{{ product?.product?.indiceStock || '—' }}</td>
+                                <td>{{ product?.quantity | number }}</td>
+                                <td>{{ product?.sold_price | number }} {{ devise }}</td>
+                                <td>{{ product?.total_price | number }} {{ devise }}</td>
+                            </tr>
+                            <tr *ngIf="list_products?.length === 0">
+                                <td colspan="5" class="text-center text-muted">Aucun article trouvé</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalWhatsapp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Envoyer un message Whatsapp</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating">
+                    <textarea class="form-control" [(ngModel)]="msgWhatsapp" id="floatingTextarea2"
+                        style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Message</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button (click)="sendWhatsapp()" type="button" class="btn btn-success btn-sm">Envoyer
+                    <i class="ti ti-brand-whatsapp"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

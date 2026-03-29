@@ -1,0 +1,467 @@
+/* ── STYLES DE BASE ── */
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── FILTRES / ACTIONS ── */
+    .row.mb-3.align-items-center {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin: 0 0 12px !important;
+
+        >[class*="col-"] {
+            width: 100% !important;
+            flex: none !important;
+            padding: 0 !important;
+        }
+
+        /* Search pleine largeur */
+        .col-md-4 {
+            grid-column: 1 / -1 !important;
+        }
+
+        /* Colonnes + Panier : côte à côte */
+        .col-md-3 {
+            grid-column: auto !important;
+        }
+
+        /* Export pleine largeur */
+        .col-md-2 {
+            grid-column: 1 / -1 !important;
+        }
+
+        .btn {
+            font-size: 12px !important;
+            padding: 9px 12px !important;
+            border-radius: 8px !important;
+            width: 100% !important;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+
+            .dropdown-item {
+                font-size: 12px !important;
+                padding: 10px 14px !important;
+            }
+        }
+    }
+
+    /* ── CACHER TABLE ── */
+    .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE STOCK ── */
+    .mobile-stock-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .stock-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 13px 15px;
+    }
+
+    .stock-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .stock-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+        flex: 1;
+    }
+
+    .stock-ref {
+        font-size: 10px;
+        color: #7a9ab8;
+        font-family: 'DM Mono', monospace;
+        margin-top: 2px;
+    }
+
+    .badge-exp {
+        background: #fff8e1;
+        color: #f9a825;
+        border: 0.5px solid #ffe082;
+        border-radius: 20px;
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .stock-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .meta-block {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 8px;
+        padding: 6px 8px;
+        text-align: center;
+    }
+
+    .meta-lbl {
+        font-size: 9px;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .meta-val {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0d1b2a;
+        font-family: 'DM Mono', monospace;
+        display: block;
+    }
+
+    .meta-val.price {
+        color: #1565C0;
+    }
+
+    .stock-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-act {
+        flex: 1;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border: 0.5px solid;
+
+        &.btn-transfer {
+            background: #e3f2fd;
+            color: #1565C0;
+            border-color: #90caf9;
+        }
+
+        &.btn-edit {
+            background: #fff8e1;
+            color: #8a6200;
+            border-color: #ffe082;
+        }
+
+        &.btn-defect {
+            background: #f5f5f5;
+            color: #424242;
+            border-color: #e0e0e0;
+        }
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODALS BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 92vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        h6 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 16px !important;
+        max-height: calc(92vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL PANIER TRANSFERT ── */
+    #exampleModalTransfert003 .modal-body {
+
+        .row.mb-3 {
+            margin: 0 0 12px !important;
+
+            .col-12 {
+                padding: 0 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        /* Table panier → mini cartes */
+        .table-responsive {
+            display: none !important;
+        }
+
+        .mobile-basket-list {
+            display: flex !important;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .basket-card {
+            background: #f8fbff;
+            border: 0.5px solid #e6f0fa;
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .basket-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .basket-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0d1b2a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .basket-ref {
+            font-size: 10px;
+            color: #7a9ab8;
+            font-family: 'DM Mono', monospace;
+            margin-top: 1px;
+        }
+
+        .basket-qty {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1565C0;
+            font-family: 'DM Mono', monospace;
+            flex-shrink: 0;
+        }
+
+        .btn-del-basket {
+            background: #fff0f0;
+            color: #e53935;
+            border: 0.5px solid #ffd0d0;
+            border-radius: 7px;
+            padding: 5px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+    }
+
+    /* ── MODAL ACTIONS PRODUIT ── */
+    #exampleModalTransfertProd0004 .modal-body {
+
+        .alert-info {
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            font-size: 12px !important;
+            border: 0.5px solid #90caf9 !important;
+            background: #e3f2fd !important;
+            color: #1565C0 !important;
+
+            .badge {
+                font-size: 11px !important;
+            }
+        }
+
+        form.row.g-3 {
+            margin: 0 !important;
+            gap: 10px !important;
+
+            .col-12 {
+                padding: 0 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+
+            &[readonly] {
+                background: #f8fbff !important;
+                color: #7a9ab8 !important;
+            }
+        }
+    }
+
+    .modal-lg .modal-content,
+    .modal-md .modal-content {
+        max-height: 92vh !important;
+    }
+
+    .modal-lg .modal-body,
+    .modal-md .modal-body {
+        max-height: calc(92vh - 130px) !important;
+    }
+}

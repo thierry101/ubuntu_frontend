@@ -1,0 +1,368 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🎛️ Ajuster les stocks
+            </h5>
+            <div class="d-flex gap-2">
+                <button type="button" *ngIf="userHasPermission" class="btn btn-primary btn-sm w-100"
+                    data-bs-toggle="modal" data-bs-target="#exampleModalAdjustStock">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    ➕ Ajustement
+                </button>
+
+
+                <!-- Panier de transfert Button -->
+                <!-- <button type="button" (click)="showModalAddItemTransfert()" class="btn btn-light btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#exampleModalTransfert003">
+                    🛒 Panier de transfert
+                </button> -->
+
+                <!-- Entrer en stock Button -->
+                <!-- <button type="button" (click)="resetForm()" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    ➕ Entrer en stock
+                </button> -->
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="card shadow-sm p-3">
+                <!-- Button trigger modal -->
+                <div class="container-fluid">
+                    <!-- Top Actions & Filters -->
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end">
+                                <!-- Search -->
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-semibold small">Recherche</label>
+                                    <app-search-list [searchTerm]="searchTerm"
+                                        (searchChange)="onSearchChangeStock($event)">
+                                    </app-search-list>
+                                </div>
+
+                                <!-- Date Filter -->
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-semibold small">Choisir la période</label>
+                                    <div class="input-group input-group-sm">
+                                        <input [(ngModel)]="startDate" type="date" class="form-control" />
+                                        <input [(ngModel)]="endDate" type="date" class="form-control" />
+                                        <button (click)="filterStock()" class="btn btn-outline-primary" type="button">
+                                            Filtrer
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Warehouse Filter -->
+                                <div *ngIf="role==='Admin' || userHasPermissionToView" class="col-12 col-md-3">
+                                    <label class="form-label fw-semibold small">
+                                        Boutique / Entrepôt
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <select (change)="getNameWhStore()" [(ngModel)]="selectWhShop"
+                                            class="form-select">
+                                            <option [ngValue]="0">Choisir...</option>
+                                            <option *ngFor="let item of warehouses" [ngValue]="item?.id">
+                                                {{item?.nameWh}}
+                                            </option>
+                                        </select>
+                                        <button (click)="filterByWhStore()" class="btn btn-outline-primary"
+                                            type="button">
+                                            OK
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-2">
+                                    <!-- Export Dropdown -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown">
+                                            📤 Exporter
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="javascript:void(0)"
+                                                    (click)="exportAllItemToExcel()">📊 En
+                                                    Excel</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0)"
+                                                    (click)="exportAllToPDF()">📄 En PDF</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spinner -->
+                    <app-spinners *ngIf="isLoading" message="Chargement ...">
+                    </app-spinners>
+
+                    <!-- Table -->
+                    <div *ngIf="!isLoading" class="card shadow-sm">
+                        <div class="card-body table-responsive">
+                            <table class="table table-sm table-striped table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th *ngIf="isColumnVisible('date')">Date</th>
+                                        <th *ngIf="isColumnVisible('user')">utilisateur</th>
+                                        <ng-container *ngIf="isColumnVisible('pos')">
+                                            <th *ngIf="userHasPermissionToView || role === 'Admin'">
+                                                Point de vente</th>
+                                        </ng-container>
+                                        <th *ngIf="isColumnVisible('product')">Article <br>
+                                            <small class="text-muted">
+                                                Indice stock</small>
+                                        </th>
+                                        <th *ngIf="isColumnVisible('qtyBefore')" class="text-center">Qté avant</th>
+                                        <th *ngIf="isColumnVisible('qtyAfter')" class="text-center">Qté après</th>
+                                        <th *ngIf="isColumnVisible('typeAdj')" class="text-center">Type</th>
+                                        <th *ngIf="isColumnVisible('qtyAdjust')" class="text-center">Qté ajustée</th>
+                                        <th *ngIf="isColumnVisible('reason')">Motif</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of allAdjustStocks">
+                                        <td *ngIf="isColumnVisible('date')">
+                                            {{item?.created_at | date:'d MMM y à HH:mm'}}
+                                        </td>
+                                        <td *ngIf="isColumnVisible('user')">
+                                            {{item?.user?.email}}
+                                        </td>
+                                        <ng-container *ngIf="isColumnVisible('pos')">
+                                            <td *ngIf="userHasPermissionToView || role === 'Admin'">
+                                                {{item?.warehouse?.nameWh}}
+                                            </td>
+                                        </ng-container>
+                                        <td *ngIf="isColumnVisible('product')" class="text-wrap">
+                                            {{item?.lotWhStock?.product?.name}}
+                                            <br>
+                                            <small class="text-muted">
+                                                {{item?.lotWhStock?.indiceStock}}
+                                            </small>
+                                        </td>
+                                        <td *ngIf="isColumnVisible('qtyBefore')" class="text-center">
+                                            {{item?.quantity_before}}
+                                        </td>
+                                        <td *ngIf="isColumnVisible('qtyAfter')" class="text-center">
+                                            {{item?.quantity_after}}
+                                        </td>
+                                        <td *ngIf="isColumnVisible('typeAdj')" class="text-center">
+                                            <span class="badge bg-info text-dark">
+                                                {{item?.type_adjust}}
+                                            </span>
+                                        </td>
+                                        <td *ngIf="isColumnVisible('qtyAdjust')" class="text-center fw-semibold">
+                                            {{item?.quantity_diff}}
+                                        </td>
+                                        <td *ngIf="isColumnVisible('reason')" class="text-wrap small">
+                                            {{item?.reason}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Empty State -->
+                            <div *ngIf="allAdjustStocks?.length === 0" class="text-center text-muted py-4">
+                                Aucun ajustement trouvé.
+                            </div>
+                        </div>
+                        <!-- LISTE MOBILE -->
+                        <div class="d-block d-md-none mobile-adj-list" *ngIf="!isLoading">
+
+                            <div *ngIf="allAdjustStocks?.length === 0" class="empty">
+                                Aucun ajustement trouvé.
+                            </div>
+
+                            <div *ngFor="let item of allAdjustStocks" class="adj-card">
+
+                                <div class="adj-top">
+                                    <div style="flex:1;min-width:0">
+                                        <div class="adj-product">{{ item?.lotWhStock?.product?.name }}</div>
+                                        <div class="adj-indice">{{ item?.lotWhStock?.indiceStock }}</div>
+                                    </div>
+                                    <span class="adj-type" [ngClass]="item?.type_adjust === 'addition' ? 'add' : 'sub'">
+                                        {{ item?.type_adjust === 'addition' ? '➕ Ajout' : '➖ Retrait' }}
+                                    </span>
+                                </div>
+
+                                <div class="adj-quantities">
+                                    <div class="qty-block">
+                                        <span class="qty-block-lbl">Avant</span>
+                                        <span class="qty-block-val neutral">{{ item?.quantity_before }}</span>
+                                    </div>
+                                    <div class="qty-block">
+                                        <span class="qty-block-lbl">Ajusté</span>
+                                        <span class="qty-block-val"
+                                            [ngClass]="item?.type_adjust === 'addition' ? 'add' : 'sub'">
+                                            {{ item?.type_adjust === 'addition' ? '+' : '-' }}{{ item?.quantity_diff }}
+                                        </span>
+                                    </div>
+                                    <div class="qty-block">
+                                        <span class="qty-block-lbl">Après</span>
+                                        <span class="qty-block-val after">{{ item?.quantity_after }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="adj-meta">
+                                    <span class="meta-pill" *ngIf="item?.user?.email">👤 {{ item?.user?.email }}</span>
+                                    <span class="meta-pill" *ngIf="item?.warehouse?.nameWh">🏪 {{
+                                        item?.warehouse?.nameWh }}</span>
+                                </div>
+
+                                <div class="adj-reason" *ngIf="item?.reason">{{ item?.reason }}</div>
+
+                                <div class="adj-date">{{ item?.created_at | date:'d MMM y à HH:mm' }}</div>
+
+                            </div>
+
+                        </div>
+                        <!-- Pagination -->
+                        <app-set-pagination [currentPage]="pagination?.currentPage"
+                            [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                            [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                        </app-set-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalAdjustStock" (click)="clickOutside()" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Ajuster les quantités de stock</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <app-spinners *ngIf="isLoadingProd" message="Chargement des articles ...">
+                    </app-spinners>
+                    <form [formGroup]="formAdjustQty">
+                        <!-- ================= PRODUCT INFORMATION ================= -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                Informations produit
+                            </h6>
+
+                            <div class="row g-3">
+
+                                <!-- Product Selector -->
+                                <div class="col-lg-4 col-md-6">
+                                    <label class="form-label fw-semibold small">
+                                        Désignation
+                                    </label>
+
+                                    <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTerm"
+                                        [results]="all_products" [displayFn]="displayProductFn"
+                                        [error]="errors?.id_stock" [showResults]="!!all_products?.length"
+                                        (search)="searchProduct($event)" (select)="selectProduct($event)">
+                                    </app-selected>
+                                </div>
+
+                                <!-- Product Name -->
+                                <div class="col-lg-4 col-md-6">
+                                    <label class="form-label fw-semibold small">
+                                        Nom de l'article
+                                    </label>
+
+                                    <input type="text" class="form-control form-control-sm bg-light"
+                                        [value]="productDetail?.name" disabled>
+                                </div>
+
+                                <!-- Current Quantity -->
+                                <div class="col-lg-4 col-md-6">
+                                    <label class="form-label fw-semibold small">
+                                        Quantité actuelle
+                                    </label>
+
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light fw-bold">
+                                            Stock
+                                        </span>
+                                        <input type="number" class="form-control text-center fw-bold bg-light"
+                                            [value]="productDetail?.actualQty" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <!-- ================= ADJUSTMENT SECTION ================= -->
+                        <div class="p-3 rounded-3 bg-light border">
+
+                            <h6 class="fw-bold text-secondary mb-3">
+                                Paramètres d'ajustement
+                            </h6>
+
+                            <div class="row g-3 align-items-end">
+
+                                <!-- Adjustment Type -->
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label fw-semibold small">
+                                        Type d'ajustement
+                                    </label>
+
+                                    <select class="form-select form-select-sm" formControlName="adjustmentType">
+                                        <option value="0">Sélectionner</option>
+                                        <option value="addition">➕ Ajouter au stock</option>
+                                        <option value="Soustraction">➖ Retirer du stock</option>
+                                    </select>
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ errors?.adjustmentType }}
+                                    </small>
+                                </div>
+
+                                <!-- Quantity -->
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label fw-semibold small">
+                                        Quantité
+                                    </label>
+
+                                    <input type="number" min="0" class="form-control form-control-sm text-center"
+                                        formControlName="qtyAdjust" placeholder="0">
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ errors?.qtyAdjust }}
+                                    </small>
+                                </div>
+
+                                <!-- Reason -->
+                                <div class="col-lg-6 col-md-12">
+                                    <label class="form-label fw-semibold small">
+                                        Motif
+                                    </label>
+
+                                    <input type="text" class="form-control form-control-sm" formControlName="reason"
+                                        placeholder="Ex: casse, inventaire, erreur de saisie...">
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ errors?.reason }}
+                                    </small>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeModalStock02" class="btn btn-secondary btn-sm"
+                        data-bs-dismiss="modal">Fermer</button>
+                    <app-submit-spinner [loading]="isSaving" label="Enregistrer" icon=""
+                        cssClass="btn btn-primary btn-sm" (clicked)="submitAdjustment()">
+                    </app-submit-spinner>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,206 @@
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="ti ti-users me-2"></i>Liste des partenaires</h5>
+            <!-- <button class="btn btn-light btn-sm" (click)="resetFormPartner()" data-bs-toggle="modal"
+                data-bs-target="#modalPartner001">
+                <i class="ti ti-plus"></i> Ajouter un partenaire
+            </button> -->
+        </div>
+
+        <!-- Loading Spinner -->
+        <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+        <div class="col-12 col-md-5 mb-3">
+            <label class="form-label fw-semibold small text-muted">🔍 Recherchez un partenaire</label>
+            <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+            </app-search-list>
+        </div>
+
+        <div *ngIf="!isLoading" class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Pays</th>
+                            <th>Ville</th>
+                            <th>Téléphone</th>
+                            <th>Nbre de clients</th>
+                            <th>Statut</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="all_partners?.length; else noData">
+                        <tr *ngFor="let p of all_partners; index as i; trackBy: trackById">
+                            <td>{{ i + 1 }}</td>
+                            <td>
+                                <strong>{{ p?.name }} {{ p?.surname }}</strong>
+                            </td>
+                            <td>{{ p?.email }}</td>
+                            <td>{{ p?.country }}</td>
+                            <td>{{ p?.city }}</td>
+                            <td>{{ p?.phone }}</td>
+                            <td>{{p?.nb_enterprises || 0 | number:'1.0-0'}}</td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2" [ngClass]="{
+                    'bg-success': p?.statut === 1,
+                    'bg-warning text-dark': p?.statut === 0, 'bg-danger text-dark': p?.statut === 2
+                    }">
+                                    <span *ngIf="p?.statut === 0"> En attente </span>
+                                    <span *ngIf="p?.statut === 1"> Approuvé </span>
+                                    <span *ngIf="p?.statut === 2">Refusé </span>
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button data-bs-toggle="modal" (click)="fillModal(p)" data-bs-target="#modalPartner001"
+                                    class="btn btn-outline-primary btn-sm me-1" title="Voir détails">
+                                    <i class="ti ti-eye"></i>
+                                </button>
+                                <button [disabled]="p?.nb_enterprises > 0" (click)="deletePartner(p?.id)" class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Template quand il n’y a pas de données -->
+                <ng-template #noData>
+                    <div class="text-center text-muted py-4">
+                        <i class="ti ti-users-off fs-2 mb-2 d-block"></i>
+                        <p class="mb-0">Aucun partenaire trouvé</p>
+                    </div>
+                </ng-template>
+            </div>
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalPartner001" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="exampleModalLabel">{{ titleModal }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex justify-content-center mb-4 gap-2">
+                    <input value="0" (click)="valueOfStatus($event)"
+                        [checked]="formPartner?.get('statutPartner')?.value === 0" type="radio" class="btn-check"
+                        name="statusOptions" id="waitingStatus" autocomplete="off">
+                    <label class="btn btn-outline-warning" for="waitingStatus">En attente</label>
+
+                    <input value="1" (click)="valueOfStatus($event)"
+                        [checked]="formPartner?.get('statutPartner')?.value === 1" type="radio" class="btn-check"
+                        name="statusOptions" id="approvedStatus" autocomplete="off">
+                    <label class="btn btn-outline-success" for="approvedStatus">Approuvé</label>
+
+                    <input value="2" (click)="valueOfStatus($event)"
+                        [checked]="formPartner?.get('statutPartner')?.value === 2" type="radio" class="btn-check"
+                        name="statusOptions" id="refusedStatus" autocomplete="off">
+                    <label class="btn btn-outline-danger" for="refusedStatus">Refusé</label>
+                    <small class="text-danger" *ngIf="errors?.statut_partner">Sélectionner une option différente de En
+                        attente</small>
+                </div>
+                <form class="row g-3" [formGroup]="formPartner">
+                    <div class="col-md-6">
+                        <label class="form-label">Nom</label>
+                        <input formControlName="name" type="text" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.name}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Prénom</label>
+                        <input formControlName="surname" type="text" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.surname}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input formControlName="email" type="email" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.email}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Téléphone</label>
+                        <input formControlName="phone" type="tel" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.phone}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Pays</label>
+                        <select class="form-select form-select-sm" formControlName="country" (change)="choiceCountry()">
+                            <option value="0">Choisir un pays...</option>
+                            <option *ngFor="let country of countries" [value]="country?.name">{{ country?.name }}
+                            </option>
+                        </select>
+                        <small class="text-danger">{{errors?.country}}</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Ville</label>
+                        <select class="form-select form-select-sm" formControlName="city">
+                            <option value="0">Choisir une ville...</option>
+                            <option *ngFor="let city of cities" [value]="city?.name">{{ city?.name }}</option>
+                        </select>
+                        <small class="text-danger">{{errors?.city}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input formControlName="setByUs" class="form-check-input" type="checkbox" role="switch"
+                                id="switchCheckChecked">
+                            <label class="form-check-label" for="switchCheckChecked">Définir nous même ces
+                                paramètres</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="formPartner.get('setByUs')?.value">
+                        <label class="form-label">Code Promo</label>
+                        <input formControlName="codePromo" type="text" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.code_promo}}</small>
+                    </div>
+                    <div *ngIf="formPartner?.get('setByUs')?.value" class="col-md-6">
+                        <label class="form-label">Pourcentage</label>
+                        <input min="1" max="100" formControlName="percentagReduction" type="number"
+                            class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.percentagReduction}}</small>
+                    </div>
+                    <div *ngIf="formPartner?.get('setByUs')?.value" class="col-md-6">
+                        <label class="form-label">Durée d'application (Mois)</label>
+                        <input formControlName="timingApplication" type="number" class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.timingApplication}}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Pourcentage partenaire</label>
+                        <input min="1" max="100" formControlName="partnerPercentag" type="number"
+                            class="form-control form-control-sm">
+                        <small class="text-danger">{{errors?.partnerPercentag}}</small>
+                    </div>
+                    <div *ngIf="formPartner.get('statutPartner')?.value===2" class="col-md-12">
+                        <label for="rejetReason" class="form-label fw-semibold">Raison du rejet</label>
+                        <quill-editor formControlName="reasonRejection" placeholder="Décrivez brièvement l'article...">
+                        </quill-editor>
+                        <small class="text-danger">{{errors?.msg_rejection}}</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <app-submit-spinner *ngIf="editParner" [loading]="isSaving" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-warning btn-sm" (clicked)="updatePartner()">
+                </app-submit-spinner>
+
+                <button id="idModalPartner002" type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

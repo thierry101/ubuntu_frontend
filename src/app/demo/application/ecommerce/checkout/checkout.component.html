@@ -1,0 +1,594 @@
+<div class="row">
+  <div class="col-12" (click)="clickOutsideModal()">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-header bg-white border-0 px-4 pt-4">
+        <ul class="nav nav-tabs checkout-tabs border-0">
+          <li class="nav-item w-100">
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+              <div class="card-body">
+                <div *ngIf="selectedPrinter"
+                  class="alert alert-success py-2 px-3 d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-bluetooth-connected text-success"></i>
+                    <span class="fw-semibold small">{{ selectedPrinter.name || selectedPrinter.deviceId
+                      }}</span>
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2" (click)="disconnectPrinter()">
+                    <i class="ti ti-x me-1"></i> Déconnecter
+                  </button>
+                </div>
+
+                <ng-container *ngIf="isMobileApp">
+                  <div *ngIf="!selectedPrinter"
+                    class="alert alert-secondary py-2 px-3 d-flex align-items-center gap-2 mb-3">
+                    <i class="ti ti-bluetooth-off text-muted"></i>
+                    <span class="small text-muted">Aucune imprimante connectée</span>
+                  </div>
+                </ng-container>
+
+                <!-- Bouton Scan -->
+                <button *ngIf="isMobileApp" class="btn btn-outline-primary btn-sm w-100 rounded-3 mb-3"
+                  (click)="scanPrinters()" [disabled]="scanningPrinters">
+                  <span *ngIf="!scanningPrinters">
+                    <i class="ti ti-bluetooth me-1"></i> Rechercher des imprimantes
+                  </span>
+                  <span *ngIf="scanningPrinters" class="d-flex align-items-center justify-content-center gap-2">
+                    <span class="spinner-border spinner-border-sm"></span> Recherche en cours...
+                  </span>
+                </button>
+                <div *ngIf="discoveredPrinters.length > 0" class="list-group rounded-3">
+                  <button *ngFor="let printer of discoveredPrinters" type="button"
+                    class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3"
+                    [class.active]="selectedPrinter?.deviceId === printer.deviceId" (click)="connectToPrinter(printer)"
+                    [disabled]="connectingPrinter">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="ti ti-printer"></i>
+                      <div>
+                        <div class="fw-semibold small">{{ printer.name || 'Appareil inconnu' }}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">{{ printer.deviceId }}</div>
+                      </div>
+                    </div>
+                    <span *ngIf="selectedPrinter?.deviceId === printer.deviceId" class="badge bg-success rounded-pill">
+                      <i class="ti ti-check"></i>
+                    </span>
+                    <span *ngIf="connectingPrinter && connectingId === printer.deviceId">
+                      <span class="spinner-border spinner-border-sm text-primary"></span>
+                    </span>
+                  </button>
+                </div>
+
+                <p *ngIf="printerSearchDone && discoveredPrinters.length === 0"
+                  class="text-muted small text-center mt-2">
+                  <i class="ti ti-mood-sad me-1"></i> Aucune imprimante trouvée. Vérifiez que le Bluetooth est
+                  activé.
+                </p>
+                <!-- Client & Cart Info Row -->
+                <div class="row g-3 align-items-end">
+                  <!-- Client Name -->
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Nom du Client</label>
+                    <ng-container *ngIf="!createClient">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="flex-grow-1">
+                          <app-selected [placeholder]="'Choisir un client...'" [(searchTerm)]="searchClient"
+                            [results]="all_clients" [displayField]="'name'" [error]="errors?.provider"
+                            [showResults]="!!all_clients?.length" (search)="searchClients($event)"
+                            (select)="selectClient($event)">
+                          </app-selected>
+                          <small class="text-danger">{{ errors?.name }}</small>
+                        </div>
+                        <button *ngIf="shBtnCreate" class="btn btn-outline-success btn-sm" (click)="createTheClient()"
+                          title="Créer un nouveau client">
+                          <i class="ti ti-circle-plus"></i>
+                        </button>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="createClient">
+                      <input [(ngModel)]="clientInfo.name" type="text" name="nameClient" (keyup)="resetIfEmpty()"
+                        class="form-control form-control-sm" placeholder="Nom du client" />
+                      <small class="text-danger">{{ errors?.name }}</small>
+                    </ng-container>
+                    <small class="text-danger">{{ errors?.client }}</small>
+                  </div>
+
+                  <!-- Phone -->
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Téléphone</label>
+                    <input [(ngModel)]="clientInfo.phone" name="phone" type="tel"
+                      class="form-control form-control-sm" />
+                    <small class="text-danger">{{ errors?.phone }}</small>
+                  </div>
+
+                  <!-- Email -->
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Email</label>
+                    <input [(ngModel)]="clientInfo.email" name="emailClient" type="email"
+                      class="form-control form-control-sm" placeholder="exemple@mail.com" />
+                    <small class="text-danger">{{ errors?.email }}</small>
+                  </div>
+
+                  <!-- Reset Button -->
+                  <div class="col-6 col-md-3">
+                    <label class="form-label opacity-0 d-block">Réinitialiser</label>
+                    <button (click)="resetClient()" class="btn btn-outline-secondary btn-sm w-100">
+                      <i class="ti ti-rotate-clockwise me-1"></i> Réinitialiser
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+            <div class="row g-4" *ngIf="!isLoading">
+              <!-- Cart Items -->
+              <div class="col-lg-8">
+                <div class="card border rounded-3">
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <small class="text-danger">{{ errors?.quantity }}</small>
+                      <small class="text-danger">{{ errors?.cart }}</small>
+
+                      <table class="table table-hover table-sm mb-0 align-middle">
+                        <thead class="bg-light small text-muted">
+                          <tr>
+                            <th>Article(s) <small class="text-muted">(<i class="ti ti-shopping-cart"></i>
+                                {{cartProds?.length }})</small></th>
+                            <th class="text-end">Prix</th>
+                            <th class="text-center">Quantité</th>
+                            <th class="text-end">Total</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody class="small">
+                          <tr *ngFor="let item of cartProds trackByItem">
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img [src]="item?.product?.product?.imageFront | image" alt="image"
+                                  class="rounded border me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                                <div>
+                                  <div class="fw-semibold text-wrap">{{ item?.product?.product?.name }}</div>
+                                  <small class="text-muted">
+                                    Taille: {{ item?.product?.product?.size }} |
+                                    Couleur:
+                                    <span class="d-inline-block ms-1 rounded-circle border"
+                                      [style.backgroundColor]="item?.product?.product?.color"
+                                      style="width: 10px; height: 10px;"></span>
+                                  </small>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="text-end fw-semibold">{{ item?.sold_price | number:'1.0-0' }} {{ devise }}</td>
+                            <td class="text-center">
+                              <div class="btn-group btn-group-sm border rounded overflow-hidden">
+                                <button class="btn btn-light py-0 px-2" title="Moins" (click)="minus(item)">
+                                  <i class="ti ti-minus"></i>
+                                </button>
+                                <input type="text" name="qty" [(ngModel)]="item.quantity" (keyup)="clickedQty(item)"
+                                  class="form-control text-center border-0 py-0" style="width: 40px;" />
+                                <button class="btn btn-light py-0 px-2" title="Plus" (click)="plus(item)">
+                                  <i class="ti ti-plus"></i>
+                                </button>
+                              </div>
+                            </td>
+                            <td class="text-end fw-semibold">{{ item?.total_price | number:'1.0-0' }} {{ devise }}</td>
+                            <td class="text-end">
+                              <button class="btn btn-sm btn-outline-danger py-0 px-2" (click)="deleteProductCart(item)"
+                                title="Supprimer">
+                                <i class="ti ti-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+
+                          <!-- Summary Section -->
+                          <tr class="table-light fw-semibold align-middle">
+                            <td class="text-muted">TVA collectée :</td>
+                            <td>{{ totalTVA | number:'1.0-0'}} {{ devise }}</td>
+                            <td colspan="2" class="text-end text-muted">Total HT :</td>
+                            <td class="fw-semibold text-end">
+                              {{ totalTTC - totalTVA | number:'1.0-0'}} {{ devise }}
+                            </td>
+                          </tr>
+
+                          <tr class="align-middle">
+                            <!-- Discount Row (if coupon is applied) -->
+                            <td *ngIf="couponChecked" class="text-muted">Réduction :</td>
+                            <td *ngIf="couponChecked" class="text-danger">
+                              <span>{{ amountDiscount | number:'1.0-0'}} {{ devise }}</span>
+                            </td>
+                            <td colspan="2" class="text-end text-primary fw-semibold">Total TTC :</td>
+                            <td class="text-end fw-bold">
+                              <ng-container *ngIf="couponChecked; else totalOnly">
+                                <span class="text-decoration-line-through text-muted small me-2">
+                                  {{ totalTTC | number:'1.0-0'}} {{ devise }}
+                                </span>
+                                <span class="text-success">
+                                  {{ totalTTC - amountDiscount | number:'1.0-0'}} {{ devise }}
+                                </span>
+                              </ng-container>
+                              <ng-template #totalOnly>
+                                {{ totalTTC | number:'1.0-0'}} {{ devise }}
+                              </ng-template>
+                            </td>
+                          </tr>
+
+                          <tr class="align-middle">
+                            <td colspan="5" class="text-success text-center">Article(s) de troc</td>
+                          </tr>
+                          <tr *ngFor="let item of tableProdsTrocks">
+                            <td colspan="2">{{item?.stockWhStore?.product?.name || item?.product?.name}} </td>
+                            <td colspan="2">{{item?.quantity}}</td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-danger py-0 px-2" (click)="deleteProductTroc(item)"
+                                title="Supprimer">
+                                <i class="ti ti-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- LISTE MOBILE PANIER -->
+                    <div class="mobile-cart-list d-block d-md-none">
+
+                      <div *ngFor="let item of cartProds trackByItem" class="cart-item-mobile">
+                        <div class="cim-img">
+                          <img [src]="item?.product?.product?.imageFront | image" alt="image">
+                        </div>
+                        <div class="cim-body">
+                          <div class="cim-name">{{ item?.product?.product?.name }}</div>
+                          <div class="cim-meta">
+                            Taille: {{ item?.product?.product?.size }} | Couleur:
+                            <span class="d-inline-block rounded-circle border"
+                              [style.backgroundColor]="item?.product?.product?.color"
+                              style="width:10px;height:10px"></span>
+                          </div>
+                          <div class="cim-row">
+                            <div class="qty-ctrl-mobile">
+                              <button class="qty-btn" (click)="minus(item)">−</button>
+                              <input type="text" name="qty" [(ngModel)]="item.quantity" (keyup)="clickedQty(item)">
+                              <button class="qty-btn" (click)="plus(item)">+</button>
+                            </div>
+                            <span class="cim-price">{{ item?.total_price | number:'1.0-0' }} {{ devise }}</span>
+                            <button class="btn-del-cart" (click)="deleteProductCart(item)">🗑</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Totaux -->
+                      <div class="cart-totals">
+                        <div class="total-row">
+                          <span>TVA collectée</span>
+                          <span>{{ totalTVA | number:'1.0-0' }} {{ devise }}</span>
+                        </div>
+                        <div class="total-row">
+                          <span>Total HT</span>
+                          <span>{{ totalTTC - totalTVA | number:'1.0-0' }} {{ devise }}</span>
+                        </div>
+                        <div class="total-row main">
+                          <span>Total TTC</span>
+                          <span>{{ totalTTC | number:'1.0-0' }} {{ devise }}</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Form -->
+              <div class="col-lg-4" *ngIf="cartProds?.length > 0">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                  <div class="card-body p-4">
+
+                    <!-- Section Title -->
+                    <h6 class="fw-bold text-primary mb-4 d-flex align-items-center">
+                      <i class="ti ti-credit-card me-2 fs-5"></i> Méthodes de Paiement
+                    </h6>
+
+                    <div class="row g-3 mb-3 align-items-center">
+
+                      <!-- Payment Switch -->
+                      <div class="col-md-6 d-flex align-items-center" *ngIf="choiceType === 'sell'">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" [(ngModel)]="paymentStatus" type="checkbox"
+                            id="switchCheckChecked">
+                          <label class="form-check-label ms-2 fw-semibold" for="switchCheckChecked">
+                            {{ paymentStatus ? 'Paiement total' : 'Paiement partiel' }}
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- Type Selector -->
+                      <div class="col-md-6">
+                        <label for="saleType" class="form-label small text-muted fw-semibold">Type</label>
+                        <select (change)="lauchTrockModal()" [(ngModel)]="choiceType" id="saleType"
+                          class="form-select form-select-sm" name="choiceTyp">
+                          <option value="{{ item?.value }}" *ngFor="let item of typesSale">
+                            {{ item?.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Troc Button -->
+                      <div class="col-md-3 d-flex justify-content-md-end" *ngIf="choiceType === 'exchange'">
+                        <button (click)="resetModalTrock()" class="btn btn-info btn-sm rounded" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalTroc">
+                          Troc
+                        </button>
+                      </div>
+
+                    </div>
+
+
+                    <!-- Payment Form -->
+                    <form>
+                      <!-- Total Payment Inputs -->
+                      <div *ngIf="choiceType!=='gift'" class="row g-1">
+                        <h6 *ngIf="!paymentStatus" class="form-label small text-center text-muted fw-semibold">Acompte
+                        </h6>
+                        <ng-container *ngFor="let item of defaultTypePayments">
+                          <div class="col-6" *ngIf="fetchedTypePayments?.[item?.value]">
+                            <label [for]="'input-' + item?.value" class="form-label small text-muted">
+                              {{ item?.name}}</label>
+                            <input type="number" min="0" class="form-control form-control-sm"
+                              [id]="'input-' + item?.value" [name]="item?.value" [(ngModel)]="amounts[item.value]" />
+                          </div>
+                        </ng-container>
+                        <small class="text-danger" *ngIf="errors?.payment"> Remplir les montants </small>
+                        <small class="text-danger">{{ errors?.amount }}</small>
+                        <small class="text-danger">{{ errors?.product_exchange }}</small>
+                      </div>
+
+                      <!-- Partial Payment Inputs -->
+                      <div *ngIf="!paymentStatus && choiceType==='sell'" class="row g-3 mb-3">
+                        <!-- <div class="col-12">
+                          <label class="form-label small text-muted fw-semibold">Acompte</label>
+                          <input type="number" [(ngModel)]="amountAdvanced" name="amtAvced"
+                            class="form-control form-control-sm" />
+                          <small class="text-danger">{{ errors.amountAdvanced }}</small>
+                        </div> -->
+
+                        <div class="col-12">
+                          <label class="form-label small text-muted fw-semibold">Date prochain versement</label>
+                          <input type="date" [(ngModel)]="nextDate" name="nextDate"
+                            class="form-control form-control-sm" />
+                          <small class="text-danger">{{ errors?.nextDate }}</small>
+                        </div>
+                      </div>
+
+                      <!-- Coupon + Confirm Button -->
+                      <div class="mt-1">
+                        <!-- Coupon Status -->
+                        <div *ngIf="checkVerifCoupon" class="text-success text-center small mb-2">
+                          Coupon valide
+                        </div>
+                        <div class="form-floating">
+                          <textarea class="form-control" name=comment [(ngModel)]="commentInvoice"
+                            id="floatingTextarea"></textarea>
+                          <label for="floatingTextarea">Commentaire facture</label>
+                        </div>
+
+                        <!-- Coupon Input -->
+                        <div class="input-group input-group-sm mt-2" *ngIf="['sell', 'exchange'].includes(choiceType)">
+                          <input type="text" name="coupon" [(ngModel)]="codeDiscount" class="form-control"
+                            placeholder="Code promo" />
+                          <button type="button" class="btn btn-outline-secondary" (click)="checkCoupon()">
+                            Vérifier
+                          </button>
+                        </div>
+                        <!-- Coupon Error -->
+                        <small class="text-danger text-center mt-2"> {{ errors?.codeDiscount }} </small>
+
+                        <!-- Confirm Button -->
+                        <app-submit-spinner [loading]="isValidCommand" label="Confirmer" icon="ti ti-cash me-1"
+                          cssClass="btn btn-success w-100 rounded-pill btn-sm mt-3" (clicked)="confirmCommand()">
+                        </app-submit-spinner>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- End Payment -->
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Trigger Button -->
+<button hidden type="button" class="btn btn-primary" id="lauchModalPrint004" data-bs-toggle="modal"
+  data-bs-target="#exampleModalChoiceFormat">
+  Choice format invoice
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalChoiceFormat" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Choisir le format d'impression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check">
+          <input data-bs-toggle="modal" data-bs-target="#exampleModalInvoice01" class="form-check-input" type="radio"
+            name="radioDefault" id="radioDefault1">
+          <label class="form-check-label" for="radioDefault1">
+            Impression 80mm
+          </label>
+        </div>
+        <div class="form-check">
+          <input data-bs-toggle="modal" data-bs-target="#exampleModalBigFormat" class="form-check-input" type="radio"
+            name="radioDefault" id="radioDefault2">
+          <label class="form-check-label" for="radioDefault2">
+            Impression A4
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Small Format Invoice -->
+<div class="modal fade" id="exampleModalInvoice01" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-3">
+      <div class="modal-header bg-primary text-white">
+        <h6 class="modal-title">🧾 Facture 80mm</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <app-smal-invoice [order_printed]="order_to_print" [item_of_deposit]="item_of_deposit"></app-smal-invoice>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModalBigFormat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <app-big-invoice [order_printed]="order_to_print" [item_of_deposit]="item_of_deposit"></app-big-invoice>
+</div>
+
+
+
+<!-- Button trigger modal -->
+<button hidden type="button" id="modalLauchTroc002" class="btn btn-primary" data-bs-toggle="modal"
+  data-bs-target="#exampleModalTroc">
+  Entrer en stock l'article de troc
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalTroc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" (click)="clickOutsideModalTroc()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Articles de troc</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" [formGroup]="formProduct">
+          <!-- Fournisseur -->
+          <div class="col-6">
+            <label class="form-label fw-semibold" for="inputProvider4">Fournisseur</label>
+            <select formControlName="provider_id" class="form-select form-select-sm">
+              <option value="{{oneProvider?.id}}">{{oneProvider?.name}}</option>
+            </select>
+            <small class="text-danger">{{ errors?.provider}}</small>
+          </div>
+          <!-- Magasin d'entré -->
+          <div *ngIf="mainWarehouses?.length > 0" class="col-6">
+            <label class="form-label fw-semibold" for="inputWhEnter">Magasin d'entrée</label>
+            <select formControlName="whSelected" id="inputState" class="form-select form-select-sm">
+              <option value="0">Choisir...</option>
+              <option *ngFor="let warehouse of mainWarehouses" value="{{warehouse?.id}}">{{warehouse?.nameWh}}</option>
+            </select>
+            <small class="text-danger">{{ errors?.warehouse }}</small>
+          </div>
+
+          <!-- Add Product Line -->
+          <div class="row g-3 align-items-end mx-0">
+            <div class="col-6 col-md-3">
+              <label class="form-label fw-semibold">Désignation</label>
+              <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTerm" [results]="all_products"
+                [displayField]="'name'" [error]="errors?.product" [showResults]="!!all_products?.length"
+                (search)="searchProduct($event)" (select)="selectProduct($event)">
+              </app-selected>
+            </div>
+
+            <div class="col-6 col-md-2">
+              <label class="form-label fw-semibold" for="inputReference">Référence</label>
+              <input readonly [(ngModel)]="productEntry.reference" [ngModelOptions]="{ standalone: true }"
+                name="reference" type="text" class="form-control form-control-sm rounded-3" id="inputReference">
+            </div>
+
+            <div class="col-6 col-md-2">
+              <label class="form-label fw-semibold" for="inputQty03">Quantité</label>
+              <input min="0" [(ngModel)]="productEntry.quantity" [ngModelOptions]="{ standalone: true }" name="quantity"
+                type="number" class="form-control form-control-sm rounded-3" id="inputQty03">
+            </div>
+
+            <div class="col-6 col-md-2">
+              <label class="form-label fw-semibold" for="inputStateProd">Etat</label>
+              <select [(ngModel)]="productEntry.stateProd" [ngModelOptions]="{ standalone: true }" id="inputState"
+                class="form-select form-select-sm">
+                <option value="0">Choisir...</option>
+                <option value="new">Neuf</option>
+                <option value="secondHand">Occasion</option>
+              </select>
+            </div>
+
+            <!-- Barcode -->
+            <div class="col-9 col-sm-6 col-md-2">
+              <label class="form-label fw-semibold">Code barre</label>
+              <div class="input-group input-group-sm">
+                <input type="text" [(ngModel)]="productEntry.barCode" [ngModelOptions]="{ standalone: true }"
+                  class="form-control form-control-sm rounded-start-3" name="barCode" />
+                <button title="Générer automatiquement le code barre" type="button"
+                  class="btn btn-outline-secondary btn-sm rounded-end-3" (click)="generateRandom8DigitNumber()">
+                  <i class="ti ti-windmill"></i>
+                </button>
+              </div>
+              <small class="text-danger">{{ errors?.barCode }}</small>
+            </div>
+
+            <div class="col-3 col-sm-6 col-md-1 text-center">
+              <button type="button" (click)="onAddProduct()" class="btn btn-primary btn-sm rounded-circle shadow-sm"
+                title="Ajouter" style="width: 34px; height: 34px;">
+                <i class="ti ti-plus"></i>
+              </button>
+            </div>
+          </div>
+          <!-- 🧮 Products Table -->
+          <small class="text-danger">{{errors?.tableProd}}</small>
+          <div class="col-12" *ngIf="productsAdd?.length > 0">
+            <div class="table-responsive mt-3">
+              <div *ngIf="errors?.tabProducts?.length" class="alert alert-warning border border-danger rounded-3">
+                <strong>Erreurs détectées :</strong>
+                <ul class="mb-0 small">
+                  <li *ngFor="let message of errors?.tabProducts">{{ message }}</li>
+                </ul>
+              </div>
+
+              <table class="table table-hover table-bordered align-middle table-sm">
+                <thead class="table-light text-center">
+                  <tr>
+                    <th>Désignation</th>
+                    <th>Référence</th>
+                    <th>Code barre</th>
+                    <th>Qté</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  <tr *ngFor="let item of productsAdd">
+                    <td class="text-start">{{ item?.nameProduct }}</td>
+                    <td>{{ item?.reference }}</td>
+                    <td>{{ item?.barCode }}</td>
+                    <td>{{ item?.quantity }}</td>
+                    <td>
+                      <i (click)="removeItem(item)" class="ti ti-trash text-danger fs-5 clickable-icon"
+                        title="Supprimer"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modalTrocProduct001" class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal">Fermer</button>
+        <button type="button" (click)="saveProductExchange()" class="btn btn-primary btn-sm">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>

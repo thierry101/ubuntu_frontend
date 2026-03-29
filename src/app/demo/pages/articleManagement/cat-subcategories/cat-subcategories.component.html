@@ -1,0 +1,243 @@
+<div class="">
+    <div class="card border-0 shadow-sm">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                🗂️ Catégories et sous-catégories
+            </h5>
+            <!-- <small class="text-white-50">Gérer les catégories et leurs sous-catégories</small> -->
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="row g-4">
+                <!-- ✅ LEFT — CATÉGORIES -->
+                <div class="col-md-5 border-end">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-semibold mb-0">
+                            <i class="ti ti-folder text-primary me-1"></i>
+                            Catégories <span class="badge bg-info-subtle text-dark ms-1">
+                                {{ pagination?.nberItems || 0}}</span>
+                        </h6>
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#modalCategory" (click)="resetForm()">
+                            ➕ Ajouter
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <app-search-list [searchTerm]="searchTerm"
+                            (searchChange)="onSearchChange($event)"></app-search-list>
+                    </div>
+
+                    <app-spinners *ngIf="isLoading" message="Chargement des fournisseurs ..."></app-spinners>
+                    <div *ngIf="!isLoading" class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom de la catégorie</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of listCategories; trackBy: trackById">
+                                    <td class="fw-semibold">{{ item?.name }}</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-outline-warning btn-sm rounded-circle"
+                                                data-bs-toggle="modal" data-bs-target="#modalCategory"
+                                                (click)="fillCategory(item)" title="Modifier">
+                                                <i class="ti ti-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm rounded-circle"
+                                                (click)="deleteCategory(item?.id)" title="Supprimer">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!listCategories?.length">
+                                    <td colspan="2" class="text-center text-muted py-3">
+                                        Aucune catégorie disponible
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- ── CATÉGORIES : liste mobile ── -->
+                    <div class="mobile-cat-list" style="display:none" *ngIf="!isLoading">
+                        <div *ngIf="!listCategories?.length" class="empty-row">
+                            Aucune catégorie disponible
+                        </div>
+                        <div *ngFor="let item of listCategories; trackBy: trackById" class="item-row">
+                            <span class="item-name">{{ item?.name }}</span>
+                            <div class="item-actions">
+                                <button class="btn-icon edit" data-bs-toggle="modal" data-bs-target="#modalCategory"
+                                    (click)="fillCategory(item)">✏️</button>
+                                <button class="btn-icon del" (click)="deleteCategory(item?.id)">🗑</button>
+                            </div>
+                        </div>
+                    </div>
+                    <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                        [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                        (pageChange)="onPageChange($event)">
+                    </app-set-pagination>
+                </div>
+
+                <!-- ✅ RIGHT — SOUS-CATÉGORIES -->
+                <div class="col-md-7">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-semibold mb-0">
+                            <i class="ti ti-folders text-success me-1"></i>
+                            Sous-catégories <span class="badge bg-info-subtle text-dark ms-1">
+                                {{paginationSubCat?.nberItems || 0 }}
+                            </span>
+                        </h6>
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#modalSubCategory" (click)="resetSubCat()">
+                            ➕ Ajouter
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <app-search-list [searchTerm]="searchTermSubCat"
+                            (searchChange)="onSearchChangeSub($event)"></app-search-list>
+                    </div>
+
+                    <app-spinners *ngIf="isLoadingSub" message="Chargement des fournisseurs ..."></app-spinners>
+                    <div *ngIf="!isLoadingSub" class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th>Sous-catégorie</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let subCat of listSubCategories; trackBy: trackById2">
+                                    <td>
+                                        <span *ngIf="subCat?.category">{{ subCat?.category?.name }}</span>
+                                        <span *ngIf="!subCat?.category" class="text-warning">Non définie</span>
+                                    </td>
+                                    <td class="fw-semibold">{{ subCat?.name }}</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-outline-warning btn-sm rounded-circle"
+                                                data-bs-toggle="modal" data-bs-target="#modalSubCategory"
+                                                (click)="fillSubCategory(subCat)" title="Modifier">
+                                                <i class="ti ti-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm rounded-circle"
+                                                (click)="deleteSubCategory(subCat?.id)" title="Supprimer">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!listSubCategories?.length">
+                                    <td colspan="3" class="text-center text-muted py-3">
+                                        Aucune sous-catégorie disponible
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- ── SOUS-CATÉGORIES : liste mobile ── -->
+                    <div class="mobile-subcat-list" style="display:none" *ngIf="!isLoadingSub">
+                        <div *ngIf="!listSubCategories?.length" class="empty-row">
+                            Aucune sous-catégorie disponible
+                        </div>
+                        <div *ngFor="let subCat of listSubCategories; trackBy: trackById2" class="item-row">
+                            <div style="flex:1;min-width:0">
+                                <span class="item-cat-tag">
+                                    {{ subCat?.category?.name || 'Non définie' }}
+                                </span>
+                                <div class="item-name">{{ subCat?.name }}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn-icon edit" data-bs-toggle="modal" data-bs-target="#modalSubCategory"
+                                    (click)="fillSubCategory(subCat)">✏️</button>
+                                <button class="btn-icon del" (click)="deleteSubCategory(subCat?.id)">🗑</button>
+                            </div>
+                        </div>
+                    </div>
+                    <app-set-pagination [currentPage]="paginationSubCat?.currentPage"
+                        [totalPages]="paginationSubCat?.nber_pages" [previousPage]="paginationSubCat?.previousPage"
+                        [nextPage]="paginationSubCat?.nextPage" (pageChange)="onPageChangeSub($event)">
+                    </app-set-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🟦 MODAL — CATÉGORIE -->
+<div class="modal fade" id="modalCategory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">{{ titleModal }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nom de la catégorie</label>
+                        <input name="category" [(ngModel)]="nameCategory" type="text"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.nameCat }}</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalCategory" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner *ngIf="!editCat" [loading]="isSaving" label="Enregistrer" icon=""
+                    cssClass="btn btn-primary btn-sm" (clicked)="saveCategory()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="editCat" [loading]="isSaving" label="Mettre à jour" icon="ti ti-refresh me-1"
+                    cssClass="btn btn-warning btn-sm" (clicked)="saveEditCategory()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🟩 MODAL — SOUS-CATÉGORIE -->
+<div class="modal fade" id="modalSubCategory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" (click)="clearTab()">
+            <div class="modal-header bg-success text-white">
+                <h6 class="modal-title">{{ titleModalSub }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Catégorie</label>
+                        <app-selected id="articleSelect" [placeholder]="'Choisir la catégorie...'"
+                            [(searchTerm)]="searchTermSubCatForCat" [results]="listCategoriesSearch"
+                            [displayField]="'name'" [error]="errors?.idCat"
+                            [showResults]="!!listCategoriesSearch?.length" (search)="onSearchCategoryforSub($event)"
+                            (select)="selectCategoryForSub($event)">
+                        </app-selected>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nom de la sous-catégorie</label>
+                        <input name="subCat" [(ngModel)]="nameSubCat" type="text"
+                            class="form-control form-control-sm" />
+                        <small class="text-danger">{{ errors?.nameSubCat }}</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalSubCategory" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner *ngIf="!editSubCat" [loading]="isSaving" label="Enregistrer" icon=""
+                    cssClass="btn btn-primary btn-sm" (clicked)="saveSubCategory()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="editSubCat" [loading]="isSaving" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-warning btn-sm" (clicked)="saveEditSubCategory()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>

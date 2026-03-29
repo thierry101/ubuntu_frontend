@@ -1,0 +1,43 @@
+<div class="" *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                📦 E-commerce
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Manage expenses -->
+                <div *ngIf="hasRole || permissions?.includes('handle_ecommerce')" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/setting-catalog']" class="menu-card btn w-100 bg-info text-dark">
+                        <div class="menu-icon">🧑‍🤝‍🧑💰</div>
+                        <div class="menu-label">Paramètre du catalogue</div>
+                    </a>
+                </div>
+                <!-- Manage expenses -->
+                <div *ngIf="hasRole || permissions?.includes('handle_ecommerce')" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/catalog-setting']" class="menu-card btn w-100 bg-warning text-dark">
+                        <div class="menu-icon">🧑‍🤝‍🧑💰</div>
+                        <div class="menu-label">Catalogue numérique</div>
+                    </a>
+                </div>
+
+                <div *ngIf="['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller']?.includes(role) || permissions?.includes('handle_ecommerce')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/command-catalog']" class="menu-card btn w-100 bg-secondary text-white">
+                        <div class="menu-icon">💰📦</div>
+                        <div class="menu-label">Commandes</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

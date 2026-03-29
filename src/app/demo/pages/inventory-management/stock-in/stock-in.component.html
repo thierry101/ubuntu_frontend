@@ -1,0 +1,507 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                📦 Gestion des stocks
+            </h5>
+            <div class="d-flex gap-2">
+                <!-- Entrer en stock Button -->
+                <button type="button" (click)="resetForm()" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    ➕ Stock
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- Search and Tools -->
+            <div class="row mb-3 align-items-center g-2">
+                <!-- Search -->
+                <div class="col-12 col-md-5">
+                    <app-search-list [searchTerm]="searchTermStock" (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <!-- Transfer Cart Button -->
+                <div class="col-12 col-md-2 d-flex justify-content-start justify-content-md-center">
+                    <button type="button" (click)="showModalAddItemTransfert()"
+                        class="btn btn-light btn-sm w-100 w-md-auto" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalTransfert003">
+                        🛒 Panier de transfert
+                    </button>
+                </div>
+
+                <!-- Column Selector + Export + Badge -->
+                <div class="col-12 col-md-5 d-flex flex-wrap justify-content-end align-items-center gap-2">
+                    <!-- Column Selector -->
+                    <div class="d-none d-md-block">
+                        <app-columns-selected [columns]="columns" (toggle)="toggleColumnVisibility($event)">
+                        </app-columns-selected>
+                    </div>
+
+                    <!-- Export Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            📤 Exporter
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" (click)="exportAllItemToExcel()">📊
+                                    En Excel</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" (click)="exportAllToPDF()">📄 En
+                                    PDF</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Badge -->
+                    <div class="d-none d-md-block">
+                        <span class="badge bg-info-subtle text-dark fw-semibold mt-1">
+                            Nombre d'entrées : {{ pagination?.nberItems || 0 }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <span class="text-danger">{{errors?.permission}}</span>
+
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="loading" message="Chargement des stocks..."></app-spinners>
+
+            <!-- Table -->
+            <div *ngIf="!loading" class="table-responsive custom-table-container">
+                <table class="table table-hover table-bordered align-middle table-sm custom-table text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th *ngIf="isColumnVisible('product')">Désignation</th>
+                            <th *ngIf="isColumnVisible('indiceStock')">Référence stock</th>
+                            <th *ngIf="isColumnVisible('provider')">Fournisseur</th>
+                            <th *ngIf="isColumnVisible('quantity')">Quantité</th>
+                            <th *ngIf="isColumnVisible('created_at')">Date d'entrée</th>
+                            <th *ngIf="isColumnVisible('expDate')">Date d'expiration</th>
+                            <th *ngIf="isColumnVisible('purchase_price')">Prix de revient</th>
+                            <th *ngIf="isColumnVisible('sell_price')">Prix de vente</th>
+                            <th *ngIf="isColumnVisible('validStock')">Statut</th>
+                            <th *ngIf="isColumnVisible('actions')">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let lot of all_stocks_lot trackBy: trackById"
+                            [ngClass]="{ 'table-active': lot?.id === idLot }">
+                            <td class="text-wrap text-break" *ngIf="isColumnVisible('product')">
+                                <span *ngIf="the_date > lot?.expDate && lot?.quantity > 0"
+                                    class="badge bg-warning-subtle text-warning me-1">⚠️ Expiré</span>
+                                {{ lot?.product?.name }}
+                            </td>
+                            <td *ngIf="isColumnVisible('indiceStock')">{{ lot?.indiceStock }}
+                                <!-- <span><svg #barcodeSvg style="width:300px; height:100px;"></svg></span> -->
+                                <canvas #barcodeCanvas style="display:none"></canvas>
+                                <i (click)="generateAndDownload(lot?.product?.name, lot?.indiceStock)"
+                                    title="Télécharger le code barre"
+                                    class="ti ti-barcode text-primary clickable-icon"></i>
+                            </td>
+                            <td *ngIf="isColumnVisible('provider')">{{ lot?.provider?.name }}</td>
+                            <td *ngIf="isColumnVisible('quantity')">{{ lot?.quantity | number }}</td>
+                            <td *ngIf="isColumnVisible('created_at')">{{ lot?.created_at | date }}</td>
+                            <td *ngIf="isColumnVisible('expDate')">{{ lot?.expDate | date }}</td>
+                            <td *ngIf="isColumnVisible('purchase_price')">
+                                {{ lot?.purchase_price || 0 | number }} {{ devise }}
+                            </td>
+                            <td *ngIf="isColumnVisible('sell_price')">
+                                {{ lot?.sellPrice || 0 | number }} {{ devise }}
+                            </td>
+                            <td *ngIf="isColumnVisible('validStock')">
+                                <span class="badge rounded-pill px-3 py-2"
+                                    [ngClass]="lot?.validStock ? 'bg-success' : 'bg-warning text-dark'">
+                                    {{ lot?.validStock ? 'Validé' : 'Non Validé' }}
+                                </span>
+                            </td>
+                            <td *ngIf="isColumnVisible('actions')">
+                                <div class="d-flex gap-2 justify-content-start align-items-center">
+                                    <!-- Delete -->
+                                    <!-- <button class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalDelete" (click)="getIdLot(lot?.id)"
+                                        title="Supprimer cette entrée">
+                                        <i class="ti ti-trash"></i>
+                                    </button> -->
+                                    <!-- Transfer -->
+                                    <button class="btn btn-sm btn-outline-info rounded-circle"
+                                        [disabled]="!lot?.validStock" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalTransfertProd0004"
+                                        (click)="getDetailOfProduct(lot)" title="Transférer cet article">
+                                        <i class="ti ti-transfer-in"></i>
+                                    </button>
+                                    <!-- Edit Price -->
+                                    <button class="btn btn-sm btn-outline-warning rounded-circle"
+                                        [disabled]="!lot?.validStock" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalTransfertProd0004"
+                                        (click)="setTheSellingPrice(lot)" title="Modifier le prix de vente">
+                                        <i class="ti ti-pencil"></i>
+                                    </button>
+                                    <!-- Defective Items -->
+                                    <button [disabled]="!lot?.validStock"
+                                        class="btn btn-sm btn-outline-dark rounded-circle" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalTransfertProd0004"
+                                        (click)="reportDefectiveItems(lot)" title="Déclarer cet article en rebu">
+                                        <i class="ti ti-bucket"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4 *ngIf="all_stocks_lot.length === 0 && !loading">
+                    <td class="text-center text-muted">Aucun stock
+                        trouvé</td>
+                </h4>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-stock-list" style="display:none" *ngIf="!loading">
+
+                <div *ngIf="all_stocks_lot.length === 0"
+                    style="text-align:center;padding:40px;color:#7a9ab8;font-size:13px">
+                    Aucun stock trouvé
+                </div>
+
+                <div *ngFor="let lot of all_stocks_lot trackBy: trackById" class="stock-card"
+                    [class.active]="lot?.id === idLot" [class.expired]="the_date > lot?.expDate && lot?.quantity > 0">
+
+                    <div class="stock-top">
+                        <div class="stock-name">{{ lot?.product?.name }}</div>
+                        <span [ngClass]="{
+        'badge-valid':   lot?.validStock,
+        'badge-pending': !lot?.validStock && !(the_date > lot?.expDate),
+        'badge-expired':  the_date > lot?.expDate && lot?.quantity > 0
+      }">
+                            {{ the_date > lot?.expDate && lot?.quantity > 0 ? '⚠️ Expiré' :
+                            lot?.validStock ? '✓ Validé' : '⏳ Non validé' }}
+                        </span>
+                    </div>
+
+                    <div class="stock-ref">
+                        <span class="ref-code">{{ lot?.indiceStock }}</span>
+                        <button class="btn-barcode" (click)="generateAndDownload(lot?.product?.name, lot?.indiceStock)"
+                            title="Télécharger le code barre">⊞</button>
+                    </div>
+
+                    <div class="stock-meta">
+                        <span class="meta-pill qty">Qté : {{ lot?.quantity | number }}</span>
+                        <span class="meta-pill" *ngIf="lot?.provider?.name">🏭 {{ lot?.provider?.name }}</span>
+                        <span class="meta-pill" *ngIf="lot?.created_at">📅 {{ lot?.created_at | date }}</span>
+                        <span class="meta-pill" *ngIf="lot?.expDate">🗓 Exp : {{ lot?.expDate | date }}</span>
+                        <span class="meta-pill price" *ngIf="lot?.purchase_price">
+                            Prix de revient : {{ lot?.purchase_price | number }} {{ devise }}
+                        </span>
+                        <span class="meta-pill price" *ngIf="lot?.sellPrice">
+                            Prix de vente : {{ lot?.sellPrice | number }} {{ devise }}
+                        </span>
+                    </div>
+
+                    <div class="stock-actions">
+                        <button class="btn-act btn-transfer" [disabled]="!lot?.validStock" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="getDetailOfProduct(lot)">
+                            ↗ Transférer
+                        </button>
+                        <button class="btn-act btn-price" [disabled]="!lot?.validStock" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="setTheSellingPrice(lot)">
+                            ✏️ Prix
+                        </button>
+                        <button class="btn-act btn-defect" [disabled]="!lot?.validStock" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalTransfertProd0004" (click)="reportDefectiveItems(lot)">
+                            🪣 Rébus
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Add Stock -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3" (click)="clickOutsideModal()">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">Enregistrer un stock</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form class="row g-3" [formGroup]="formProduct">
+                    <!-- Désignation (Autocomplete) -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Désignation</label>
+                        <app-selected [placeholder]="'Choisir l\'article...'" [disabled]="editProduct"
+                            [(searchTerm)]="searchTerm" [results]="all_products" [displayField]="'name'"
+                            [error]="errors?.product" [showResults]="!!all_products?.length"
+                            (search)="searchProduct($event)" (select)="selectProduct($event)"></app-selected>
+                    </div>
+
+                    <!-- Référence -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="inputReference4">Référence</label>
+                        <input type="text" class="form-control form-control-sm" id="inputReference4"
+                            [(ngModel)]="productDetail.reference" [ngModelOptions]="{ standalone: true }" readonly />
+                    </div>
+
+                    <!-- barcode -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Numéro de stock</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control form-control-sm" formControlName="barCode" />
+                            <button *ngIf="isMobileApp" type="button" class="btn btn-outline-secondary btn-sm"
+                                (click)="onBarcodeScannedAdd()">
+                                𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                (click)="generateRandom8DigitNumber()">
+                                Générer
+                            </button>
+                        </div>
+                        <small class="text-danger">{{ errors?.barCode }}</small>
+                    </div>
+
+                    <!-- Fournisseur -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="inputProvider4">Fournisseur</label>
+                        <div class="autocomplete-container">
+                            <div class="input-group">
+                                <input [disabled]="editProduct" (click)="getProvider()" type="text" name="searchItem"
+                                    class="form-control form-control-sm" placeholder="Choisir le fournisseur..."
+                                    [(ngModel)]="searchTermP" [ngModelOptions]="{ standalone: true }"
+                                    (input)="searchProvider()" id="inputProvider002" />
+                            </div>
+                            <small class="text-danger small">{{ errors?.provider }}</small>
+                            <div class="autocomplete-results list-group" *ngIf="all_providers?.length">
+                                <button type="button" class="list-group-item list-group-item-action"
+                                    *ngFor="let provider of all_providers" (click)="selectProvider(provider)">
+                                    {{ provider?.name }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantité -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="inputQty4">Quantité</label>
+                        <input formControlName="quantity" min="0" type="number" class="form-control form-control-sm"
+                            id="inputQty4" />
+                        <div class="text-danger small" *ngIf="errors?.quantity">{{ errors?.quantity }}</div>
+                    </div>
+
+                    <!-- Date d'expiration -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="inputExpirationDate4">Date d'expiration</label>
+                        <input formControlName="expDate" type="date" class="form-control form-control-sm"
+                            id="inputExpirationDate4" />
+                        <div class="text-danger small" *ngIf="errors?.expDate">{{ errors?.expDate }}</div>
+                    </div>
+
+                    <!-- Prix de revient -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="inputBuyPrice">Prix de revient</label>
+                        <input formControlName="cost_price" type="number" class="form-control form-control-sm"
+                            id="inputBuyPrice" />
+                        <div class="text-danger small" *ngIf="errors?.cost_price">{{ errors?.cost_price }}</div>
+                    </div>
+
+                    <!-- Prix de vente -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="inputBuyPrice">Prix de vente</label>
+                        <input formControlName="sellPrice" type="number" class="form-control form-control-sm"
+                            id="inputBuyPrice" />
+                        <div class="text-danger small" *ngIf="errors?.sellPrice">{{ errors?.sellPrice }}</div>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Image de l'article</label>
+                        <div *ngIf="productDetail.image" class="mt-2">
+                            <img [src]="productDetail.image | image" alt="Preview" class="img-thumbnail"
+                                style="max-width: 150px; max-height: 150px;" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="closeModalStock" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner [loading]="isSaving" label="Enregistrer" icon="" cssClass="btn btn-primary btn-sm"
+                    (clicked)="saveInventory()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Delete Stock -->
+<div class="modal fade" id="exampleModalDelete" tabindex="-1" aria-labelledby="modalDeleteStockLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <app-delete-confirm-modal [title]="'🗑️ Suppression de stock'"
+            [confirmMessage]="'Pour confirmer la suppression de ce stock, veuillez taper le mot'"
+            [wordToType]="'delete'" [errors]="errors" (deleteConfirmed)="deleteStock()">
+        </app-delete-confirm-modal>
+    </div>
+</div>
+
+<!-- ✅ Modal: Transfer Cart -->
+<div class="modal fade" id="exampleModalTransfert003" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">🛒 Panier de transfert</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" (click)="clickOutsideModalAddItem()">
+                <!-- Warehouse/Store Selection -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold" for="inputWhShop4">Choisir entrepôt/boutique</label>
+                    <app-selected [placeholder]="'Choisir entrepôt/boutique'" [(searchTerm)]="searchTermWhStor"
+                        [results]="all_warehouses_stores" [displayField]="'nameWh'" [error]="errors?.product"
+                        [showResults]="!!all_warehouses_stores?.length" (search)="searchWhStore($event)"
+                        (select)="selectWhStore($event)"></app-selected>
+                    <div class="text-danger small" *ngIf="errors?.idWHStore">{{ errors?.idWHStore }}</div>
+                </div>
+
+                <!-- Transfer Items Table -->
+                <div class="table-responsive">
+                    <app-spinners *ngIf="loadingTransf" message="Chargement des articles..."></app-spinners>
+                    <div class="text-danger small mb-2" *ngIf="errors?.itemsTransfert">{{ errors?.itemsTransfert }}
+                    </div>
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Désignation</th>
+                                <th>Référence article</th>
+                                <th>Référence stock</th>
+                                <th>Quantité</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of itemsToTransfert">
+                                <td class="text-wrap text-break">{{item?.lotWhStock?.product?.name}}</td>
+                                <td>{{item?.lotWhStock?.product?.code}}</td>
+                                <td>{{item?.lotWhStock?.indiceStock}}</td>
+                                <td>{{item?.quantity}}</td>
+                                <td>
+                                    <div class="tooltip-container">
+                                        <button (click)="deleteItemToTransfert(item?.id)"
+                                            class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                        <span class="tooltip-text">Supprimer l'article</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <app-set-pagination [currentPage]="paginationTransf?.currentPage"
+                    [totalPages]="paginationTransf?.nber_pages" [previousPage]="paginationTransf?.previousPage"
+                    [nextPage]="paginationTransf?.nextPage" (pageChange)="onPageChangeTransf($event)">
+                </app-set-pagination>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" id="closeModalTransfert001"
+                    data-bs-dismiss="modal">Fermer</button>
+
+                <app-submit-spinner [loading]="isTransfert" label="Valider" icon="ti ti-refresh me-1"
+                    cssClass="btn btn-sm btn-primary rounded" (clicked)="confirmTransfertItem()">
+                </app-submit-spinner>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal: Product Transfer/Edit -->
+<div class="modal fade" id="exampleModalTransfertProd0004" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">{{titleModal}}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="text-danger small" *ngIf="errors?.product">{{ errors?.product }}</div>
+                <h4><b>Quantité actuelle : </b> <span class="badge text-bg-secondary">{{detailProd?.quantity}}</span>
+                </h4>
+
+                <form class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" for="inputSesignation0004">Désignation</label>
+                        <input readonly [(ngModel)]="detailProd.name" type="text" name="nameP"
+                            class="form-control form-control-sm" id="inputSesignation0004">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" for="inputReference04">Rérérence du stock</label>
+                        <input readonly [(ngModel)]="detailProd.referenceStock" name="ref" type="text"
+                            class="form-control form-control-sm" id="inputReference04">
+                    </div>
+
+                    <div *ngIf="!setSellingPrice" class="col-12">
+                        <label class="form-label fw-semibold" for="inputQty004">Quantité</label>
+                        <input [(ngModel)]="detailProd.quanty" min="0" name="qty" type="number"
+                            class="form-control form-control-sm" id="inputQty004">
+                        <div class="text-danger small" *ngIf="errors?.quanty">{{ errors?.quanty }}</div>
+                    </div>
+
+                    <div *ngIf="defectiveItem" class="col-md-12">
+                        <label class="form-label fw-semibold" for="inputState">Etat</label>
+                        <select [(ngModel)]="setBadge" id="inputState" name="t_badge"
+                            class="form-select form-select-sm">
+                            <option value="expired">Expiré</option>
+                            <option value="bad">Défectueux</option>
+                        </select>
+                    </div>
+
+                    <div *ngIf="setSellingPrice" class="col-12">
+                        <label class="form-label fw-semibold" for="inputSellingPrice005">Prix de vente</label>
+                        <input min="0" [(ngModel)]="sellingPricing" name="sellPrice" type="number"
+                            class="form-control form-control-sm" id="inputSellingPrice005">
+                        <div class="text-danger small" *ngIf="errors?.sellingPrice">{{ errors?.sellingPrice }}</div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" id="closeModalAddItem"
+                    data-bs-dismiss="modal">Fermer</button>
+                <button *ngIf="!setSellingPrice && !defectiveItem"
+                    [disabled]="detailProd?.quanty > detailProd?.quantity" (click)="addItemToTransfert()" type="button"
+                    class="btn btn-info btn-sm">Ajouter</button>
+                <button *ngIf="defectiveItem" (click)="validDefectiveItem()" type="button" class="btn btn-info btn-sm">
+                    Valider
+                </button>
+                <button [disabled]="sellingPricing<=0" *ngIf="setSellingPrice && !defectiveItem"
+                    (click)="setThSellingPrice()" type="button" class="btn btn-warning btn-sm">
+                    Mettre à jour
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

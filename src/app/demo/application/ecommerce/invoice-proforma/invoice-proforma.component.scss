@@ -1,0 +1,557 @@
+@media print {
+    #invoicePrint {
+        background: white !important;
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    table {
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── LAYOUT : 2 colonnes → empilées ── */
+    .row.g-4 {
+        flex-direction: column !important;
+
+        .col-md-5,
+        .col-md-7 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+    }
+
+    /* ── CARDS INTERNES ── */
+    .col-md-5>.card,
+    .col-md-7>.card {
+        border-radius: 12px !important;
+        border: 0.5px solid #d0e4f7 !important;
+        box-shadow: none !important;
+
+        .card-header {
+            background: #f8fbff !important;
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: 0.5px solid #e6f0fa !important;
+            padding: 12px 16px !important;
+
+            h6 {
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                color: #0d1b2a !important;
+            }
+
+            /* Search dans le header de la liste */
+            .col-md-6 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                padding: 0 !important;
+                margin-top: 8px;
+            }
+        }
+
+        .card-body {
+            padding: 14px !important;
+        }
+    }
+
+    /* ── FORMULAIRE ── */
+    .col-md-5 .card-body form {
+
+        .col-12,
+        .col-md-6,
+        .col-md-3 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Quantité + P.U côte à côte */
+        .col-md-3 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+
+            &:nth-of-type(2) {
+                padding-right: 4px !important;
+                padding-left: 0 !important;
+            }
+
+            &:nth-of-type(3) {
+                padding-left: 4px !important;
+                padding-right: 0 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            min-height: 42px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+
+            &[readonly] {
+                background: #f8fbff !important;
+                color: #7a9ab8 !important;
+            }
+        }
+
+        /* Boutons Ajouter + Choisir client */
+        .d-flex.justify-content-between.mt-3 {
+            gap: 8px !important;
+
+            .btn {
+                flex: 1 !important;
+                padding: 10px !important;
+                font-size: 12px !important;
+                border-radius: 8px !important;
+            }
+
+            .btn-primary {
+                background: #1565C0 !important;
+                border: none !important;
+            }
+
+            .btn-outline-info {
+                background: #e3f2fd !important;
+                color: #1565C0 !important;
+                border: 0.5px solid #90caf9 !important;
+            }
+        }
+    }
+
+    /* ── TABLEAU PRODUITS AJOUTÉS → MINI CARTES ── */
+    .col-md-5 .card-body .table-responsive {
+        display: none !important;
+    }
+
+    .mobile-prod-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .mini-prod-card {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 8px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .mini-prod-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mini-prod-name {
+        font-size: 12px;
+        font-weight: 500;
+        color: #0d1b2a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mini-prod-sub {
+        font-size: 10px;
+        color: #7a9ab8;
+        margin-top: 1px;
+    }
+
+    .mini-prod-total {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1565C0;
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .btn-del-mini {
+        background: #fff0f0;
+        color: #e53935;
+        border: 0.5px solid #ffd0d0;
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 11px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    /* Boutons finaux Retour + Valider */
+    .col-md-5 .card-body>.d-flex.justify-content-between.mt-3 {
+        gap: 8px !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 12px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── LISTE PROFORMAS ── */
+    .col-md-7 .card-body .table-responsive {
+        display: none !important;
+    }
+
+    .mobile-proforma-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .proforma-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 13px 15px;
+    }
+
+    .pf-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .pf-nber {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+        font-family: 'DM Mono', monospace;
+    }
+
+    .pf-date {
+        font-size: 10px;
+        color: #7a9ab8;
+        margin-top: 2px;
+    }
+
+    .pf-amount {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1565C0;
+        font-family: 'DM Mono', monospace;
+        text-align: right;
+    }
+
+    .pf-client {
+        font-size: 11px;
+        color: #7a9ab8;
+        text-align: right;
+        margin-top: 2px;
+    }
+
+    .pf-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-act {
+        flex: 1;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border: 0.5px solid;
+
+        &.btn-view {
+            background: #e3f2fd;
+            color: #1565C0;
+            border-color: #90caf9;
+        }
+
+        &.btn-del {
+            background: #fff0f0;
+            color: #e53935;
+            border-color: #ffd0d0;
+        }
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODAL BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 16px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+        flex-wrap: wrap !important;
+        gap: 8px;
+
+        h6 {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            order: -1;
+            flex: 1 0 100%;
+            text-align: center;
+        }
+
+        .d-flex.align-items-center {
+            width: 100% !important;
+            justify-content: center !important;
+            gap: 6px !important;
+
+            .btn-light {
+                font-size: 11px !important;
+                padding: 6px 10px !important;
+                border-radius: 8px !important;
+            }
+
+            .btn-close {
+                position: absolute;
+                right: 16px;
+                top: 20px;
+            }
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 14px !important;
+        max-height: calc(95vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        padding-bottom: calc(12px + 40px) !important;
+        /* 70px = hauteur bottom nav */
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL CONTENU PROFORMA ── */
+    #invoicePrint {
+        padding: 14px !important;
+        max-width: 100% !important;
+
+        /* Header logo + infos */
+        .row.align-items-center {
+            flex-direction: column !important;
+            gap: 8px;
+
+            .col-6 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+            }
+
+            .col-6.text-end {
+                text-align: left !important;
+            }
+
+            h4 {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Infos client + entreprise */
+        .row.mt-3.mb-4 {
+            flex-direction: column !important;
+            gap: 12px;
+
+            .col-6 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+            }
+
+            .col-6.text-end {
+                text-align: left !important;
+            }
+
+            h6 {
+                font-size: 12px !important;
+            }
+
+            p {
+                font-size: 12px !important;
+            }
+        }
+
+        /* Table produits */
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 0.5px solid #e6f0fa !important;
+
+            .table {
+                min-width: unset !important;
+            }
+
+            thead th {
+                font-size: 10px !important;
+                padding: 8px !important;
+                background: #1565C0 !important;
+                color: #fff !important;
+                border: none !important;
+            }
+
+            tbody td {
+                font-size: 11px !important;
+                padding: 7px 8px !important;
+                border: none !important;
+                border-bottom: 0.5px solid #e6f0fa !important;
+            }
+
+            tfoot td {
+                font-size: 11px !important;
+                padding: 7px 8px !important;
+            }
+
+            .table-primary td {
+                background: #1565C0 !important;
+            }
+        }
+
+        footer {
+            font-size: 11px !important;
+        }
+    }
+
+    .modal-xl .modal-content {
+        max-height: 95vh !important;
+    }
+
+    .modal-xl .modal-body {
+        max-height: calc(95vh - 130px) !important;
+    }
+}

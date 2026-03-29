@@ -1,0 +1,47 @@
+<div class="" *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📦 Gestion des articles</h5>
+            <!-- <span class="badge bg-light text-dark px-3 py-2">{{ role | roleName | titlecase }}</span> -->
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Manage categories -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_categories')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-sub-and-category']" class="menu-card btn w-100 bg-warning text-dark">
+                        <div class="menu-icon">🗂️</div>
+                        <div class="menu-label">Ajouter une catégorie / sous-catégorie</div>
+                    </a>
+                </div>
+
+                <!-- Manage providers -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_provider')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-providers']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">🧾</div>
+                        <div class="menu-label">Voir / Ajouter des fournisseurs</div>
+                    </a>
+                </div>
+
+                <!-- Manage products -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_products')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-products']" class="menu-card btn w-100 bg-success text-white">
+                        <div class="menu-icon">🛒</div>
+                        <div class="menu-label">Voir / Ajouter des articles</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

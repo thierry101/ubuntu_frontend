@@ -1,0 +1,269 @@
+/* ── STYLES DE BASE ── */
+.minimal-upload {
+    .upload-area {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        background: #fff;
+        font-size: 14px;
+
+        &:hover {
+            border-color: #6c63ff;
+        }
+
+        input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+    }
+}
+
+.upload-area {
+    border: 2px dashed #ced4da;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+
+    &:hover {
+        border-color: #ffc107;
+        background: #fff9f0;
+    }
+
+    i {
+        font-size: 2rem;
+    }
+
+    span {
+        font-size: 0.9rem;
+    }
+}
+
+.preview-wrapper {
+    background: #fefefe;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+    }
+
+    /* Supprimer les ombres des cards imbriquées */
+    .card.shadow-sm.rounded {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── BANNIÈRE : upload + preview empilés ── */
+    .row.g-3.mb-4 {
+        flex-direction: column !important;
+
+        .col-md-3,
+        .col-md-9 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+            margin-bottom: 10px;
+        }
+
+        /* Zone upload stylisée */
+        .upload-area {
+            height: auto !important;
+            flex-direction: column !important;
+            padding: 20px 12px !important;
+            border: 2px dashed #d0e4f7 !important;
+            border-radius: 10px !important;
+            background: #f8fbff !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px;
+
+            &:hover {
+                border-color: #1565C0 !important;
+                background: #eef5ff !important;
+            }
+
+            i {
+                font-size: 2rem !important;
+                color: #7a9ab8 !important;
+            }
+
+            span {
+                font-size: 12px !important;
+                color: #7a9ab8 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #1565C0 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px !important;
+        }
+
+        /* Preview bannière */
+        .preview-wrapper {
+            border-radius: 10px !important;
+            border: 0.5px solid #d0e4f7 !important;
+
+            img {
+                max-height: 160px !important;
+                object-fit: cover !important;
+                width: 100% !important;
+            }
+        }
+    }
+
+    /* ── FORMULAIRE : 2 colonnes → 1 colonne ── */
+    form.row.g-3 {
+        .col-6 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Champs individuels */
+        .col-md-6.col-sm-12,
+        .col-md-12,
+        .col-12 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Couleurs côte à côte */
+        .col-md-6:has(input[type="color"]) {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+            padding: 0 4px !important;
+
+            &:first-child {
+                padding-left: 0 !important;
+            }
+
+            &:last-child {
+                padding-right: 0 !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            min-height: 42px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        input[type="color"] {
+            height: 42px !important;
+            padding: 4px !important;
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            cursor: pointer !important;
+        }
+
+        textarea.form-control {
+            resize: none !important;
+            min-height: 80px !important;
+            font-size: 13px !important;
+        }
+
+        /* Toggles en cartes */
+        .form-check.form-switch {
+            background: #f8fbff !important;
+            border: 0.5px solid #e6f0fa !important;
+            border-radius: 10px !important;
+            padding: 12px 14px 12px 48px !important;
+            display: flex !important;
+            align-items: center !important;
+
+            .form-check-input {
+                width: 38px !important;
+                height: 22px !important;
+                margin-top: 0 !important;
+                margin-left: -38px !important;
+                cursor: pointer;
+            }
+
+            .form-check-label {
+                font-size: 13px !important;
+                color: #1a2e42 !important;
+                cursor: pointer;
+                flex: 1;
+            }
+        }
+
+        /* Textarea promotion avec label flottant */
+        .form-floating {
+            .form-control {
+                height: auto !important;
+                min-height: 80px !important;
+                padding-top: 1.625rem !important;
+            }
+
+            label {
+                font-size: 12px !important;
+            }
+        }
+
+        /* Bouton mettre à jour */
+        .col-12.text-end {
+            text-align: center !important;
+
+            app-submit-spinner .btn {
+                width: 100% !important;
+                border-radius: 10px !important;
+                padding: 12px !important;
+                font-size: 13px !important;
+                font-weight: 600 !important;
+            }
+        }
+    }
+}

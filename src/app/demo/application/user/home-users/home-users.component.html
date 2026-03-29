@@ -1,0 +1,36 @@
+<div class="" *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">👥🔒 Utilisateurs et permissions</h5>
+            <!-- <span class="badge bg-light text-dark px-3 py-2">{{ role | roleName | titlecase }}</span> -->
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Manage users -->
+                <div *ngIf="role === 'Admin' || permissions?.includes('handle_users')" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-users']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">👤➕</div>
+                        <div class="menu-label">Voir / Ajouter des utilisateurs</div>
+                    </a>
+                </div>
+
+                <!-- Manage permissions -->
+                <div *ngIf="role === 'Admin'" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-permissions']" class="menu-card btn w-100 bg-dark text-white">
+                        <div class="menu-icon">🛡️</div>
+                        <div class="menu-label">Gérer les permissions</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

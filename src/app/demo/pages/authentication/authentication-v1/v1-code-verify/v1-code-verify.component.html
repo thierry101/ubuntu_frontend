@@ -1,0 +1,56 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="card mt-5">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Code de vérification</b></h2>
+                <h4 *ngIf="email" class="text-muted"><b>Nous vous avons envoyé un email.</b></h4>
+              </div>
+              <app-logo></app-logo>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <p *ngIf="email" class="f-14 mt-2"> Nous vous avons envoyé un code à l'adresse {{email | maskEmail}} </p>
+          </div>
+          <div class="d-flex justify-content-between" [formGroup]="formCode">
+            <input #codeInput *ngFor="let c of codes; let i = index" type="text" maxlength="1" autocomplete="off"
+              formControlName="{{ c }}" (input)="onInput($event, i)" (keydown)="onKeyDown($event, i)"
+              (paste)="onPaste($event)" style="width: 100%; text-align: center; margin: 8px; padding: 10px;
+                border: 1px solid rgb(224, 224, 224); border-radius: 4px;" />
+          </div>
+
+          <div class="text-danger" *ngIf="errors && errors.otpCode">{{ errors.otpCode }}</div>
+          <div class="text-danger" *ngIf="errors && errors.email">{{ errors.email }}</div>
+          <div class="d-grid mt-4">
+            <button type="button" (click)="validCode()" class="btn btn-primary p-2">Confirmer</button>
+          </div>
+          <div class="d-flex mt-1 justify-content-between mt-4">
+          </div>
+          <hr />
+          <h5 class="d-flex justify-content-center"> Vous n'avez pas reçu l'e-mail ? Vérifiez votre filtre anti-spam. 
+          </h5>
+            <h5  class="text-center">OU</h5>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-outline-secondary bg-light text-secondary p-2" (click)="resendOtp()"
+              [disabled]="isResending || cooldown > 0">
+
+              <ng-container *ngIf="cooldown === 0">
+                Renvoyer le code
+              </ng-container>
+
+              <ng-container *ngIf="cooldown > 0">
+                Renvoyer dans {{ cooldown }}s
+              </ng-container>
+
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <app-my-theme></app-my-theme>
+  </div>
+</div>

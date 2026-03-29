@@ -1,0 +1,313 @@
+<div class="">
+  <div class="card border-0 shadow-sm rounded-3">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">
+        📦 Entrepôts & Boutiques ({{ warehouses?.length }})
+      </h5>
+      <button (click)="resetFormWh()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+        data-bs-target="#exampleModalWh">
+        ➕ Entrepôt
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+      <!-- Loading Spinner -->
+      <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+      <!-- Table -->
+      <div class="table-responsive" *ngIf="!isLoading">
+        <small class="text-danger fw-semibold">{{ errors?.qtyExist }}</small>
+        <table class="table table-hover align-middle table-bordered text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Nom</th>
+              <th>Type</th>
+              <th>Téléphone</th>
+              <th>Localisation</th>
+              <th>TVA</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of warehouses; trackBy: trackByWarehouseId">
+              <td class="text-start">{{ item?.nameWh || '—' }}</td>
+              <td>{{ returnName(item?.typeWh) || '—' }}</td>
+              <td>{{ item?.phoneWh || '—' }}</td>
+              <td>{{ item?.localisationWh || '—' }}</td>
+              <td>{{ item?.rateTva ? (item.rateTva + ' %') : '—' }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-1">
+                  <button (click)="fillModalWh(item)" class="btn btn-outline-warning btn-sm rounded-circle"
+                    data-bs-toggle="modal" data-bs-target="#exampleModalWh" title="Modifier">
+                    <i class="ti ti-pencil"></i>
+                  </button>
+                  <button (click)="deleteWarehouse(item?.id)" class="btn btn-outline-danger btn-sm rounded-circle"
+                    title="Supprimer">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="warehouses?.length === 0 && !isLoading">
+              <td colspan="6" class="text-center text-muted">Aucun entrepôt trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- LISTE MOBILE -->
+      <div class="mobile-wh-list" style="display:none" *ngIf="!isLoading">
+
+        <div *ngIf="warehouses?.length === 0" style="text-align:center;padding:40px;color:#7a9ab8;font-size:13px">
+          Aucun entrepôt trouvé
+        </div>
+
+        <div *ngFor="let item of warehouses; trackBy: trackByWarehouseId" class="wh-card">
+
+          <div class="wh-top">
+            <div class="wh-name">{{ item?.nameWh || '—' }}</div>
+            <span class="wh-type">{{ returnName(item?.typeWh) || '—' }}</span>
+          </div>
+
+          <div class="wh-meta">
+            <span class="meta-pill" *ngIf="item?.phoneWh">📞 {{ item?.phoneWh }}</span>
+            <span class="meta-pill" *ngIf="item?.localisationWh">📍 {{ item?.localisationWh }}</span>
+            <span class="meta-pill tva" *ngIf="item?.rateTva">TVA {{ item?.rateTva }}%</span>
+            <span class="meta-pill" *ngIf="!item?.rateTva">TVA —</span>
+          </div>
+
+          <div class="wh-actions">
+            <button class="btn-act btn-edit" (click)="fillModalWh(item)" data-bs-toggle="modal"
+              data-bs-target="#exampleModalWh">
+              ✏️ Modifier
+            </button>
+            <button class="btn-act btn-del" (click)="deleteWarehouse(item?.id)">
+              🗑 Supprimer
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Entrepôt -->
+<div class="modal fade" id="exampleModalWh" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-3 shadow-sm border-0">
+      <div class="modal-header bg-primary text-white">
+        <h6 class="modal-title">{{ titleModal }}</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formWarehouse" class="row g-1">
+          <!-- Split into two main columns -->
+          <div class="row">
+            <!-- LEFT SIDE -->
+            <div class="col-lg-7">
+              <div class="row g-3">
+                <!-- Nom entrepôt -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Nom <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" formControlName="name"
+                    placeholder="Nom de l'entrepôt/boutique" />
+                  <small class="text-danger">{{ errors?.name }}</small>
+                </div>
+
+                <!-- Type entrepôt -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Type <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-sm" formControlName="typeWh">
+                    <option value="0">Choisir le type...</option>
+                    <option *ngFor="let wh of filteredTypesWarehouses; trackBy: trackByWhId" [value]="wh?.value">
+                      {{ wh?.name }}
+                    </option>
+                  </select>
+                  <small class="text-danger">{{ errors?.typeWh }}</small>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Téléphone</label>
+                  <input type="tel" class="form-control form-control-sm" formControlName="phoneWh"
+                    placeholder="Numéro de téléphone" />
+                  <small class="text-danger">{{ errors?.phoneWh }}</small>
+                </div>
+
+                <!-- Localisation -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Localisation</label>
+                  <input type="text" class="form-control form-control-sm" formControlName="localisation"
+                    placeholder="Adresse ou localisation" />
+                </div>
+
+                <!-- Indices -->
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Indice Facture doit <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" formControlName="invoiceIndice"
+                    placeholder="Ex: FAC-" />
+                  <small class="text-danger">{{ errors?.invoiceIndice }}</small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Indice Transfert <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" formControlName="transferIndice"
+                    placeholder="Ex: TRANS-" />
+                  <small class="text-danger">{{ errors?.transferIndice }}</small>
+                </div>
+
+                <!-- Indice Lot -->
+                <div class="col-md-12" *ngIf="formWarehouse.get('typeWh')?.value === 'Principal'">
+                  <label class="form-label fw-semibold">Indice de lot</label>
+                  <input type="text" class="form-control form-control-sm" formControlName="lotIndice"
+                    placeholder="Ex: LOT-" />
+                  <small class="text-danger">{{ errors?.lotIndice }}</small>
+                </div>
+              </div>
+
+              <!-- Options de configuration -->
+              <div class="col-12 mt-1">
+                <div class="card border-0 bg-light-subtle">
+                  <div class="card-body">
+                    <h6 class="fw-semibold mb-3">⚙️ Options de configuration</h6>
+                    <div class="row g-3">
+                      <div class="col-md-4" *ngFor="let option of [
+                    { ctrl: 'collectTva', label: 'Collecter la TVA', id: 'flexSwitchCheckChecked' },
+                    { ctrl: 'editSoldPrice', label: 'Modifier les prix de vente', id: 'flexSwitchEditSoldPrice' },
+                    { ctrl: 'makeGift', label: 'Autoriser à faire les dons', id: 'flexSwitchmakeGift' },
+                    { ctrl: 'getCreditNote', label: 'Accepter les retours marchandises', id: 'flexSwitchCreditNote' },
+                    { ctrl: 'swapping', label: 'Autoriser à faire les trocs d\'articles', id: 'flexSwitchSwapping' },
+                  ]">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" [formControlName]="option.ctrl" type="checkbox"
+                            [id]="option.id" />
+                          <label class="form-check-label fw-semibold" [for]="option.id">
+                            {{ option.label }}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Taux TVA -->
+              <div class="col-md-6 mt-3" *ngIf="formWarehouse.get('collectTva')?.value">
+                <label class="form-label fw-semibold">Taux de TVA (%) <span class="text-danger">*</span></label>
+                <input class="form-control form-control-sm" (input)="onTvaInput($event)" type="text" inputmode="decimal"
+                  pattern="^\d+([.,]\d{1,2})?$" formControlName="rateTva" placeholder="Ex: 18.5" />
+                <small class="text-danger">{{ errors?.rateTva }}</small>
+              </div>
+
+              <!-- Facture avoir -->
+              <div class="col-md-6" *ngIf="formWarehouse.get('getCreditNote')?.value">
+                <label class="form-label fw-semibold">Indice Facture avoir <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-sm" formControlName="noteCreditIndice"
+                  placeholder="Ex: FAC-" />
+                <small class="text-danger">{{ errors?.noteCreditIndice }}</small>
+              </div>
+
+              <!-- Types de paiement -->
+              <div class="col-12 mt-1">
+                <div class="card border-0 bg-light-subtle">
+                  <div class="card-body">
+                    <label class="form-label fw-semibold">💳 Types de paiement acceptés <span
+                        class="text-danger">*</span></label>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                      <ng-container *ngFor="let item of typePayments">
+                        <!-- <input type="checkbox" [checked]="getTypePayments?.[item?.value]" class="btn-check" -->
+                        <input type="checkbox" [checked]="isGetTypePayments(item?.value)" class="btn-check"
+                          id="{{ item?.value }}" autocomplete="off" (click)="selectPayment(item, $event)" />
+                        <label class="btn btn-outline-primary btn-sm" for="{{ item?.value }}">{{ item?.name }}</label>
+                      </ng-container>
+                    </div>
+                    <small class="text-danger">{{ errors?.payments }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="col-lg-5 mt-lg-0">
+              <div class="card border-0 shadow-sm h-100">
+                <!-- Header / Toggle -->
+                <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
+                  <div class="form-check form-switch m-0">
+                    <input formControlName="configDaysWork" class="form-check-input" type="checkbox" role="switch"
+                      id="switchConfigDaysWork" />
+                    <label class="form-check-label fw-semibold ms-2" for="switchConfigDaysWork">
+                      🕒 Configuration des horaires de travail
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Error Message -->
+                <div class="px-3 pt-2">
+                  <small class="text-danger fw-semibold">{{ errors?.open_hour }}</small>
+                </div>
+
+                <!-- Work Schedule Table -->
+                <div *ngIf="formWarehouse?.get('configDaysWork')?.value" class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle table-hover mb-0">
+                      <thead class="table-primary text-secondary fw-semibold">
+                        <tr>
+                          <th>Jour</th>
+                          <th class="text-center">Actif</th>
+                          <th class="text-center" colspan="2">Horaire d'ouverture</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let day of workSchedule" [class.text-muted]="!day?.active"
+                          [class.opacity-75]="!day?.active">
+                          <td class="fw-semibold">{{ day?.label }}</td>
+
+                          <!-- Actif Switch -->
+                          <td class="text-center">
+                            <div class="form-check form-switch d-inline-block m-0">
+                              <input [ngModelOptions]="{ standalone: true }" type="checkbox" class="form-check-input"
+                                [(ngModel)]="day.active" />
+                            </div>
+                          </td>
+
+                          <!-- Start Time -->
+                          <td>
+                            <input [ngModelOptions]="{ standalone: true }" type="time"
+                              class="form-control form-control-sm shadow-sm" [(ngModel)]="day.startTime"
+                              [disabled]="!day?.active" (change)="validateWorkHours(day)" />
+                          </td>
+
+                          <!-- End Time -->
+                          <td>
+                            <input [ngModelOptions]="{ standalone: true }" type="time"
+                              class="form-control form-control-sm shadow-sm" [(ngModel)]="day.endTime"
+                              [disabled]="!day?.active" (change)="validateWorkHours(day)" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="closeModalWhStore002" class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal">Fermer</button>
+        <app-submit-spinner *ngIf="!editWh" [loading]="isSaving" label="Enregistrer" icon=""
+          cssClass="btn btn-primary btn-sm" (clicked)="saveWarehouse()">
+        </app-submit-spinner>
+        <app-submit-spinner *ngIf="editWh" [loading]="isSaving" label="Mettre à jour" icon="ti ti-refresh me-1"
+          cssClass="btn btn-warning btn-sm" (clicked)="saveEditWarehouse()">
+        </app-submit-spinner>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<!-- 80mm Invoice Print View -->
+<div class="modal-dialog">
+  <div class="modal-content" style="width: 80mm; font-size: 11px; font-family: 'Courier New', monospace;">
+    <div class="modal-header py-2 px-3">
+      <h6 class="modal-title" id="exampleModalLabel">Impression facture</h6>
+      <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body px-3 py-2">
+      <div #tableToPrint23 id="tableToPrint23" style="width: 80mm;">
+
+        <!-- Header -->
+        <div class="text-center mb-2">
+          <strong style="font-size: 14px;">{{setting?.nameEtprise}}</strong><br />
+          <small *ngIf="order_printed?.warehouse">{{order_printed?.warehouse?.nameWh}}</small>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="mb-1">
+          <div class=""><b>Facture jour N° :</b> {{order_printed?.daily_invoice_count}} </div>
+          <div *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder)"><b>Facture N°</b>:
+            <strong>{{order_printed?.nberInvoice}}</strong>
+          </div>
+          <div *ngIf="order_printed?.typeOrder === 'gift'"><b>Don N°</b>:
+            <strong>{{order_printed?.nberInvoice}}</strong>
+          </div>
+          <div><b>Date</b>: {{order_printed?.created_at | date: 'dd/MM/yyyy à HH:mm' : '' : 'fr'}}</div>
+          <div *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder)"><b>Vendeur(se)</b>:
+            {{order_printed?.user?.surname}}</div>
+          <div *ngIf="order_printed?.typeOrder === 'gift'"><b>Donateur</b>: {{setting?.nameEtprise}}</div>
+          <div *ngIf="order_printed?.client?.name && ['exchange', 'sell']?.includes(order_printed?.typeOrder)">
+            <b>Client</b>:
+            {{order_printed?.client?.name}}
+          </div>
+          <div *ngIf="order_printed?.client?.name && order_printed?.typeOrder === 'gift'"><b>Bénéficiaire</b>:
+            {{order_printed?.client?.name}}</div>
+        </div>
+
+        <hr class="my-2" />
+
+        <!-- Items -->
+        <ul class="list-unstyled">
+          <li *ngFor="let item of order_printed?.listItems" class="mb-1">
+            <div class="text-wrap">
+              {{item?.product?.product}}
+              <br />
+              {{item?.sold_price | number}} {{setting?.devise}} x {{item?.quantity}} =
+              {{item?.total_price | number}} {{setting?.devise}}
+              <!-- <span *ngIf="item?.percentage > 0">(-{{item?.percentage}}%)</span> -->
+            </div>
+          </li>
+        </ul>
+        <hr class="my-2" *ngIf="order_printed?.products_exchange" />
+        <ul class="list-unstyled" *ngIf="order_printed?.products_exchange">
+          <small><b>Articles de troc : </b></small>
+          <li *ngFor="let item of order_printed?.products_exchange" class="mb-1">
+            <div class="text-wrap">
+              {{item?.name}}
+              <br />
+              quantité x {{item?.quantity}}
+            </div>
+          </li>
+        </ul>
+        <hr class="my-2" />
+        <!-- Totals -->
+        <div class="text-center">
+          <div *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder)"><b>Total HT</b>:
+            {{order_printed?.totalCart |
+            number}} {{setting?.devise}}
+          </div>
+          <div *ngIf="order_printed?.reduction > 0"><b>Remise</b>: {{order_printed?.reduction | number}}
+            {{setting?.devise}}
+          </div>
+          <div
+            *ngIf="order_printed?.warehouse?.rateTva > 0 && ['exchange', 'sell']?.includes(order_printed?.typeOrder)">
+            <b>TVA</b> ({{order_printed?.warehouse?.rateTva}}%): {{order_printed?.totalTva | number}}
+            {{setting?.devise}}
+          </div>
+          <div style="font-size: 13px;" class="fw-bold mt-1"><b>Net à payer</b>: {{order_printed?.amountToPay | number}}
+            {{setting?.devise}}
+          </div>
+        </div>
+
+        <hr class="my-2" style="border-top: 2px dashed #000;" *ngIf="!order_printed?.statusPayment" />
+        <div class="" *ngIf="!order_printed?.statusPayment">
+          <div class="col-12">
+            <p><b>Acompte</b>: <span> : {{item_of_deposit?.amountPaid | number}} {{ setting?.devise }}</span></p>
+          </div>
+          <div class="col-12">
+            <p><b>Reste à payer</b>:
+              {{order_printed?.amountToPay - item_of_deposit?.amountPaid | number}}
+              {{ setting?.devise }}</p>
+          </div>
+          <div *ngIf="item_of_deposit?.nextPaymentDate" class="col-12">
+            <p class="text-center"><b>Date du prochain Acompte</b>:
+              {{item_of_deposit?.nextPaymentDate | date: 'dd/MM/yyyy' : '' : 'fr'}}
+            </p>
+          </div>
+        </div>
+        <hr class="my-2" style="border-top: 2px dashed #000;"
+          *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder) && order_printed?.commentInvoice" />
+        <div *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder) && order_printed?.commentInvoice"
+          class="text-center">
+          <small>{{order_printed?.commentInvoice}}</small>
+        </div>
+
+        <hr class="my-2" style="border-top: 2px dashed #000;" />
+
+        <!-- Footer Signature -->
+        <div *ngIf="['exchange', 'sell']?.includes(order_printed?.typeOrder)" class="text-center">
+          <small>{{setting?.signature}}</small>
+        </div>
+        <br>
+        <!-- <hr class="my-2" style="border-top: 2px dashed #000;" /> -->
+      </div>
+    </div>
+
+    <div class="modal-footer py-2 px-3">
+      <button (click)="printOrderSmall()" class="btn btn-sm btn-primary">
+        <i class="bi bi-printer me-1"></i> Imprimer
+      </button>
+    </div>
+  </div>
+</div>

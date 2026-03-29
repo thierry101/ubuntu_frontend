@@ -1,0 +1,101 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
+            <div>
+                <h5 class="mb-0">
+                    📦 Valider les entrées de stock en magasin
+                </h5>
+                <small class="text-warning fst-italic">
+                    Merci de vérifier le stock physique avant toute validation
+                </small>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                <button class="btn btn-light btn-sm" (click)="exportAllItemToExcel()">
+                    📊 Export Excel
+                </button>
+                <button class="btn btn-outline-light btn-sm" (click)="exportAllToPDF()">
+                    🧾 Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- ✅ Toolbar Section -->
+            <div class="row g-3 align-items-end mb-4">
+                <!-- 🔍 Search Field -->
+                <div class="col-12 col-md-4">
+                    <label for="search-stock" class="form-label fw-semibold text-secondary">
+                        🔍 Rechercher un article
+                    </label>
+                    <app-search-list id="search-stock" [searchTerm]="searchTerm"
+                        (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <!-- 📋 Columns Selector -->
+                <div class="col-12 col-md-3 d-none d-md-block">
+                    <label class="form-label fw-semibold text-secondary mb-1">
+                        🧩 Colonnes visibles
+                    </label>
+                    <app-columns-selected [columns]="columns" (toggle)="toggleColumnVisibility($event)">
+                    </app-columns-selected>
+                </div>
+            </div>
+
+            <!-- ✅ Spinner -->
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- ✅ Table Section -->
+            <div class="table-responsive" *ngIf="!isLoading">
+                <table class="table table-hover table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr class="text-uppercase small text-muted">
+                            <th *ngIf="isColumnVisible('product')">Article</th>
+                            <th *ngIf="isColumnVisible('refStock')">Réf. stock</th>
+                            <th *ngIf="isColumnVisible('expDate')">Date d'expiration</th>
+                            <th *ngIf="isColumnVisible('provider')">Fournisseur</th>
+                            <th *ngIf="isColumnVisible('quantity')">Quantité</th>
+                            <th *ngIf="isColumnVisible('purchase_Price')">Prix de revient</th>
+                            <th *ngIf="isColumnVisible('valid')">Valider</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let lot of all_stocks_lot; trackBy: trackById">
+                            <td *ngIf="isColumnVisible('product')" class="fw-semibold text-dark text-wrap text-break">
+                                {{ lot?.product }}
+                            </td>
+                            <td *ngIf="isColumnVisible('refStock')">{{ lot?.indiceStock }}</td>
+                            <td *ngIf="isColumnVisible('expDate')">{{ lot?.expDate | date }}</td>
+                            <td *ngIf="isColumnVisible('provider')">{{ lot?.provider }}</td>
+                            <td *ngIf="isColumnVisible('quantity')">{{ lot?.quantity | number:'1.0-0':'fr' }}</td>
+                            <td *ngIf="isColumnVisible('purchase_Price')">
+                                {{ lot?.purchase_price | number:'1.0-0':'fr' }} {{ devise }}
+                            </td>
+                            <td *ngIf="isColumnVisible('valid')">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input (click)="validateProduct(lot, $event)" class="form-check-input"
+                                        type="checkbox" role="switch" [checked]="lot?.validStock"
+                                        aria-label="Valider produit" />
+                                    <label class="form-check-label ms-2 small">
+                                        {{ lot?.validStock ? 'Oui' : 'Non' }}
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="all_stocks_lot.length === 0 && !isLoading">
+                            <td colspan="7" class="text-center text-muted">Aucun lot trouvé</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ✅ Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>

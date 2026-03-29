@@ -1,0 +1,72 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="card mt-5"> 
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Salut, Bienvenue 👋</b></h2>
+                <h4>Connectez-vous</h4>
+              </div>
+              <app-logo></app-logo>
+            </div>
+          </div>
+          <div class="d-grid">
+            <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+              <img src="assets/images/authentication/google-icon.svg" alt="Sign IN With Google" />Se connecter avec
+              Google
+            </button>
+          </div>
+          <div class="saprator mt-3">
+            <span>ou</span>
+          </div>
+          <h5 class="my-4 d-flex justify-content-center"> Se connecter avec son adresse email </h5>
+          <form [formGroup]="loginForm" class="row g-3" (ngSubmit)="onSubmit()">
+            <div class="text-danger" *ngIf="errors && errors.login">{{ errors.login }}</div>
+            <div class="col-md-12">
+              <label for="inputEmail4" class="form-label">Adresse email</label>
+              <input formControlName="email" type="email" class="form-control form-control-sm" id="inputEmail4"
+                placeholder="Adresse email">
+            </div>
+            <div class="col-md-12">
+              <label for="inputPassword4" class="form-label">Mot de passe</label>
+              <div class="input-group mb-3">
+                <input formControlName="password" type="password" class="form-control form-control-sm"
+                  placeholder="Mot de passe" id="password" aria-describedby="button-addon2">
+                <button (click)="togglePassword()" class="btn btn-outline-secondary btn-sm" type="button"
+                  id="button-addon2">Voir
+                </button>
+              </div>
+            </div>
+            <div class="d-flex mt-1 justify-content-between">
+              <div class="form-check">
+                <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="" />
+                <label class="form-check-label text-muted" for="customCheckc1">Se souvenir de moi</label>
+              </div>
+              <h5 class="text-secondary">
+                <a [routerLink]="['/forgetPassword']">Mot de passe oublié?</a>
+              </h5>
+            </div>
+            <div class="d-grid mt-4">
+              <button class="btn btn-secondary btn-sm"> Se connecter </button>
+            </div>
+          </form>
+          <hr />
+          <h5 class="d-flex justify-content-center align-items-center gap-2 mt-4 text-muted">
+            <span>Vous n'avez pas de compte&nbsp;?</span>
+            <a [routerLink]="['/register']" class="fw-semibold text-primary text-decoration-none">
+              Créer un compte
+            </a>
+            <span class="mx-1">ou</span>
+            <a [routerLink]="['/register-space-partner']" class="fw-semibold text-success text-decoration-none">
+              Devenir partenaire
+            </a>
+          </h5>
+
+        </div>
+      </div>
+    </div>
+    <app-my-theme></app-my-theme>
+  </div>
+</div>

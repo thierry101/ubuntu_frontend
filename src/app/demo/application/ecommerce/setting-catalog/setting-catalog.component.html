@@ -1,0 +1,154 @@
+<div class="">
+    <div class="card border-0 shadow-sm">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                📦 Paramètre du catalogue numérique
+            </h5>
+        </div>
+        <!-- BODY -->
+        <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+        <div class="card shadow-sm rounded">
+            <div class="card-body">
+                <!-- Upload + Preview Row -->
+                <div class="row g-3 mb-4">
+                    <!-- Upload field -->
+                    <div class="col-md-3 col-sm-12">
+                        <div class="minimal-upload">
+                            <label class="form-label fw-semibold">Bannière catalogue</label>
+
+                            <div class="upload-area d-flex flex-column justify-content-center align-items-center bg-light text-center rounded border border-dashed p-3"
+                                (click)="fileInput.click()">
+                                <input #fileInput type="file" accept="image/*" (change)="onBannerSelected($event)"
+                                    hidden>
+                                <i class="bi bi-upload display-4 text-secondary mb-2"></i>
+                                <span class="fw-medium text-secondary">Sélectionner une image</span>
+                            </div>
+
+                            <small class="text-danger mt-1 d-block">{{errors?.bannerCatalog}}</small>
+                        </div>
+                    </div>
+                    <!-- Preview -->
+                    <div class="col-md-9 col-sm-12" *ngIf="bannerPreview">
+                        <label class="form-label fw-semibold">Aperçu de la bannière</label>
+
+                        <div class="preview-wrapper border rounded p-2 shadow-sm bg-white">
+                            <img [src]="bannerPreview | image" alt="Prévisualisation bannière" class="img-fluid rounded"
+                                style="max-height: 250px; object-fit: cover; width: 100%;">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Social Links Form -->
+                <form class="row g-3" [formGroup]="formSettingsCatalog">
+                    <div class="col-6">
+                        <div class="row g-3">
+                            <div class="col-md-6 col-sm-12">
+                                <label for="facebookLink" class="form-label">Lien page Facebook</label>
+                                <input formControlName="facebookLink" type="text" class="form-control form-control-sm"
+                                    id="facebookLink" placeholder="https://facebook.com/...">
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="whatsappLink" class="form-label">Lien WhatsApp</label>
+                                <input formControlName="whatsappLink" type="text" class="form-control form-control-sm"
+                                    id="whatsappLink" placeholder="https://wa.me/...">
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="instagramLink" class="form-label">Lien Instagram</label>
+                                <input formControlName="instagramLink" type="text" class="form-control form-control-sm"
+                                    id="instagramLink" placeholder="https://instagram.com/...">
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="inputnberItems" class="form-label">Nombre d'articles par page</label>
+                                <select id="inputnberItems" formControlName="nbrItems"
+                                    class="form-select form-select-sm">
+                                    <option value="0">Choisir...</option>
+                                    <option *ngFor="let item of nberItems" value="{{item}}">{{item}}</option>
+                                </select>
+                                <small class="text-danger">{{errors?.nberItemsPage}}</small>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" formControlName="enablePromotion" type="checkbox"
+                                        role="switch" id="switchCheckChecked" checked>
+                                    <label class="form-check-label" for="switchCheckChecked">Activer la bannière de
+                                        promotion</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" formControlName="randomAffect" type="checkbox"
+                                        role="switch" id="switchCheckChecked" checked>
+                                    <label class="form-check-label" for="switchCheckChecked">Distribuer les commandes
+                                        aléatoirement aux boutiques
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12" *ngIf="formSettingsCatalog?.get('enablePromotion')?.value">
+                                <div class="form-floating">
+                                    <textarea class="form-control" formControlName="textPromotion"
+                                        id="floatingTextarea"></textarea>
+                                    <label for="floatingTextarea">Texte promotion</label>
+                                </div>
+                                <small class="text-danger">{{errors?.msg_promotion}}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="inputNavBar4" class="form-label">Couleur barre navigation</label>
+                                <input type="color" formControlName="barColor" class="form-control" id="inputEmail4">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputBgColorl4" class="form-label">Couleur de fond</label>
+                                <input type="color" formControlName="bgColor" class="form-control" id="inputEmail4">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="inputMsgWhatsapp4" class="form-label">Message whatsapp de confirmation de
+                                    commande
+                                    <i class="ti ti-info-circle" data-bs-toggle="popover" data-bs-placement="top"
+                                        data-bs-html="true" data-bs-trigger="click" data-bs-title="Informations"
+                                        data-bs-content="
+                                    <strong>Le contenu du message doit contenir les mots clés suivants :</strong>
+                                    <ul style='margin:0;padding-left:16px'>
+                                    <li><b>{name}</b> : nom du client</li>
+                                    <li><b>{nber_cmd}</b> : numéro de commande</li>
+                                    <li><b>{orders}</b> : liste des commandes</li>
+                                    <li><b>{fee}</b> : frais de livraison</li>
+                                    <li><b>{total}</b> : total de la commande</li>
+                                    <li><b>{location}</b> : lieu de livraison</li>
+                                    <li><b>{allTotal}</b> : total global (livraison incluse)</li>
+                                    </ul>
+                                    <em>Un exemple est disponible ci-dessous.</em>
+                                "></i>
+                                </label>
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here"
+                                        id="floatingTextarea2" style="height: 100px"
+                                        formControlName="whatsappMsg"></textarea>
+                                </div>
+                                <ng-container *ngIf="isObject(errors?.msg_whatsapp)">
+                                    <li class="text-danger mt-1 d-block"
+                                        *ngFor="let error of errors?.msg_whatsapp">{{error}}</li>
+                                </ng-container>
+                                <ng-container *ngIf="!isObject(errors?.msg_whatsapp) && errors?.msg_whatsapp !== undefined">
+                                    <small class="text-danger mt-1 d-block">{{errors?.msg_whatsapp}}</small>
+                                </ng-container>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <app-submit-spinner [loading]="isValidCommand" label="Mettre à jour" icon="ti ti-cash me-1"
+                            cssClass="btn btn-warning w-100 rounded-pill btn-sm mt-3" (clicked)="saveSettingCatalog()">
+                        </app-submit-spinner>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

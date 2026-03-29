@@ -1,0 +1,121 @@
+<div *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📦 Gestion de stock</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Entrée en stock -->
+                <div *ngIf="role === 'siteAdmin' || (adminHasWarehouse && role==='Admin')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/inventory-management']" class="menu-card btn w-100 bg-success text-white">
+                        <div class="menu-icon">➕📦</div>
+                        <div class="menu-label">Entrée en stock</div>
+                    </a>
+                </div>
+
+                <!-- Mes stocks -->
+                <div *ngIf="['Agent', 'Agency'].includes(role)" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/list-all-stocks']" class="menu-card btn w-100 bg-dark text-white">
+                        <div class="menu-icon">📦</div>
+                        <!-- mes ici concernent uniquement les magasins secondaires et les boutiques, pour les entrpôts
+                        pricipaux, c'est Entrée en stock -->
+                        <div class="menu-label">Mes stocks</div>
+                    </a>
+                </div>
+
+                <!-- Voir stock -->
+                <div *ngIf=" all_roles.includes(role) || permissions?.includes('watch_stock')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/products-in-warehouse']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">📥</div>
+                        <div class="menu-label">Voir stock cumulatif</div>
+                    </a>
+                </div>
+
+                <!-- Mouvement de stock -->
+                <div *ngIf="all_roles.includes(role)" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/list-stock-movement']" class="menu-card btn w-100 bg-warning text-dark">
+                        <div class="menu-icon">🔄</div>
+                        <div class="menu-label">Mouvement de stock</div>
+                    </a>
+                </div>
+
+                <!-- Valider les stocks -->
+                <div *ngIf="infoEnterprise?.stockVerif && (role === 'Admin' || permissions?.includes('handle_stock'))"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/inventory-validate']"
+                        class="menu-card btn w-100 bg-primary-subtle text-primary fw-semibold">
+                        <div class="menu-icon">✅</div>
+                        <div class="menu-label">Valider les stocks</div>
+                    </a>
+                </div>
+
+                <div *ngIf="permissions?.includes('adjust_stock') || permissions?.includes('view_adjustments_stock') || role === 'Admin'"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/adjust-stock']"
+                        class="menu-card btn w-100 bg-secondary-subtle text-primary fw-semibold">
+                        <div class="menu-icon">🎛️</div>
+                        <div class="menu-label">Ajuster les stocks</div>
+                    </a>
+                </div>
+
+                <!-- Valider la corbeille -->
+                <div *ngIf="infoEnterprise?.defective && (role === 'Admin' || permissions?.includes('handle_trash'))"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/trash-validate']" class="menu-card btn w-100 bg-danger text-white">
+                        <div class="menu-icon">🗑️</div>
+                        <div class="menu-label">Valider la corbeille</div>
+                    </a>
+                </div>
+
+                <ng-container *ngIf="nber_wh_stores > 1">
+                    <!-- Historique des transferts -->
+                    <div *ngIf="role === 'Admin' || permissions?.includes('historik_transfert')"
+                        class="col-12 col-md-6 col-lg-4">
+                        <a [routerLink]="['/historik-validation-items']"
+                            class="menu-card btn w-100 bg-secondary text-white">
+                            <div class="menu-icon">📜</div>
+                            <div class="menu-label">Historique des transferts</div>
+                        </a>
+                    </div>
+
+                    <!-- all-validation-items and valid-product use the same template -->
+                    <!-- Mes transferts -->
+                    <div *ngIf="all_roles2.includes(role) || adminHasWarehouse" class="col-12 col-md-6 col-lg-4">
+                        <a [routerLink]="['/transfert-product']" class="menu-card btn w-100 bg-teal text-white">
+                            <div class="menu-icon">🔁</div>
+                            <div class="menu-label">Mes transferts</div>
+                        </a>
+                    </div>
+
+                    <!-- Valider les transferts -->
+                    <div *ngIf="all_roles2.includes(role) || adminHasWarehouse" class="col-12 col-md-6 col-lg-4">
+                        <a [routerLink]="['/valid-product']" class="menu-card btn w-100 bg-indigo text-white">
+                            <div class="menu-icon">📬</div>
+                            <div class="menu-label">Valider les transferts</div>
+                        </a>
+                    </div>
+                </ng-container>
+
+
+                <!-- 🗑️ Ma poubelle -->
+                <div *ngIf="all_roles2?.includes(role) || permissions?.includes('watch_trash_prod') || adminHasWarehouse"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/my-trash']" class="menu-card btn w-100 bg-orange text-white">
+                        <div class="menu-icon">🧺</div>
+                        <div class="menu-label">Poubelle</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

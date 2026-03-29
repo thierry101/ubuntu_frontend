@@ -1,0 +1,211 @@
+<div class="">
+  <div class="card border-0 shadow-sm rounded-3">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">
+        🏢 Gestion des fournisseurs
+      </h5>
+      <button (click)="resetFormProvider()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+        data-bs-target="#exampleModalProvider">
+        ➕ Fournisseur
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+      <!-- Search and Info -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+          <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChange($event)"></app-search-list>
+        </div>
+        <div class="col-md-6 text-end">
+          <span class="badge bg-info-subtle text-dark fw-semibold">
+            Nombre de fournisseurs : {{ pagination?.nberItems }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <app-spinners *ngIf="isLoading" message="Chargement des fournisseurs ..."></app-spinners>
+
+      <!-- Table -->
+      <div class="table-responsive" *ngIf="!isLoading">
+        <small class="text-danger">{{ errors?.existProvider }}</small>
+        <table class="table table-hover align-middle table-bordered text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Nom</th>
+              <th>Code fournisseur</th>
+              <th>Email</th>
+              <th>Pays</th>
+              <th>Téléphone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let provider of list_providers; trackBy: trackByProviderId"
+              [ngClass]="{ 'table-active': provider?.id === idProvider }">
+              <td class="text-start">{{ provider?.name || '—' }}</td>
+              <td>{{ provider?.code || '—' }}</td>
+              <td>{{ provider?.email || '—' }}</td>
+              <td>{{ provider?.country || '—' }}</td>
+              <td>{{ provider?.phone || '—' }}</td>
+              <td class="text-center">
+                <small class="text-wrap" *ngIf="provider?.name === 'Particulier'">Ce fournisseur est créé par défaut
+                  quand l'option troc est activé</small>
+                <button *ngIf="provider?.name !== 'Particulier'" (click)="fillProvider(provider)"
+                  class="btn btn-outline-warning btn-sm rounded-circle" data-bs-toggle="modal"
+                  data-bs-target="#exampleModalProvider" title="Modifier">
+                  <i class="ti ti-pencil"></i>
+                </button>
+
+                <button *ngIf="provider?.name !== 'Particulier'" (click)="deleteWarehouse(provider?.id)"
+                  class="btn btn-outline-danger btn-sm rounded-circle mx-1" title="Supprimer">
+                  <i class="ti ti-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="list_providers.length === 0 && !isLoading">
+              <td colspan="6" class="text-center text-muted">Aucun fournisseur trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- LISTE MOBILE -->
+      <div class="mobile-prov-list" style="display:none" *ngIf="!isLoading">
+
+        <div *ngIf="list_providers.length === 0" class="empty">
+          Aucun fournisseur trouvé
+        </div>
+
+        <div *ngFor="let provider of list_providers; trackBy: trackByProviderId" class="prov-card"
+          [class.active]="provider?.id === idProvider" [class.prov-default]="provider?.name === 'Particulier'">
+
+          <div class="prov-top">
+            <div>
+              <div class="prov-name">{{ provider?.name || '—' }}</div>
+              <div class="prov-code">{{ provider?.code || '—' }}</div>
+            </div>
+            <span *ngIf="provider?.name === 'Particulier'" class="prov-default-badge">Par défaut</span>
+          </div>
+
+          <!-- Fournisseur par défaut -->
+          <div *ngIf="provider?.name === 'Particulier'" class="prov-default-info">
+            Ce fournisseur est créé automatiquement quand l'option troc est activée.
+          </div>
+
+          <!-- Fournisseur normal -->
+          <ng-container *ngIf="provider?.name !== 'Particulier'">
+            <div class="prov-meta">
+              <span class="meta-pill" *ngIf="provider?.email">📧 {{ provider?.email }}</span>
+              <span class="meta-pill" *ngIf="provider?.phone">📞 {{ provider?.phone }}</span>
+              <span class="meta-pill" *ngIf="provider?.country">🌍 {{ provider?.country }}</span>
+            </div>
+            <div class="prov-actions">
+              <button class="btn-act btn-edit" (click)="fillProvider(provider)" data-bs-toggle="modal"
+                data-bs-target="#exampleModalProvider">
+                ✏️ Modifier
+              </button>
+              <button class="btn-act btn-del" (click)="deleteWarehouse(provider?.id)">
+                🗑 Supprimer
+              </button>
+            </div>
+          </ng-container>
+
+        </div>
+
+      </div>
+
+      <!-- Pagination -->
+      <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+        [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+      </app-set-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal: Add / Edit Provider -->
+<div class="modal fade" id="exampleModalProvider" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-3" (click)="clearTable()">
+      <div class="modal-header bg-primary text-white">
+        <h6 class="modal-title">{{ titleModalProvider }}</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formProvider" class="row g-3">
+          <!-- Nom -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputNameFr4">Nom</label>
+            <input formControlName="name" type="text" id="inputNameFr4" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.name }}</small>
+          </div>
+
+          <!-- Code fournisseur -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputCodeFr4">Code Fournisseur</label>
+            <input formControlName="codeP" type="text" id="inputCodeFr4" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.codeP }}</small>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputEmailFr4">Email</label>
+            <input formControlName="emailP" type="email" id="inputEmailFr4" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.email }}</small>
+          </div>
+
+          <!-- Téléphone -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputPhoneFr">Téléphone</label>
+            <input formControlName="phoneP" type="tel" id="inputPhoneFr" class="form-control form-control-sm" />
+            <small class="text-danger">{{ errors?.phoneP }}</small>
+          </div>
+
+          <!-- Site internet -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputWebsite2">Site internet</label>
+            <input formControlName="siteInternet" type="text" id="inputWebsite2" class="form-control form-control-sm" />
+          </div>
+
+          <!-- Pays -->
+          <div class="col-6 col-md-6">
+            <label class="form-label fw-semibold">Pays</label>
+            <app-selected id="countrySelected" [placeholder]="'Choisir le pays...'" [(searchTerm)]="searchTermCountry"
+              [results]="all_countries" [displayField]="'name'" [error]="errors?.country"
+              [showResults]="!!all_countries?.length" (search)="searchCountry($event)"
+              (select)="selectCityBasedCountry($event)">
+            </app-selected>
+          </div>
+
+          <!-- Ville -->
+          <div class="col-6 col-md-6">
+            <label class="form-label fw-semibold">Ville</label>
+            <app-selected id="citySelected" [placeholder]="'Choisir la ville...'" [(searchTerm)]="searchTermCity"
+              [results]="cities" [displayField]="" [error]="errors?.city" [showResults]="!!cities?.length"
+              (search)="searchCity($event)" (select)="selectCity($event)">
+            </app-selected>
+          </div>
+
+          <!-- Adresse -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="inputAdresse10">Adresse</label>
+            <input formControlName="address" type="text" id="inputAdresse10" class="form-control form-control-sm" />
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="closeModalProvider" class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal">Fermer</button>
+        <app-submit-spinner *ngIf="!editProvider" [loading]="isSaving" label="Enregistrer" icon=""
+          cssClass="btn btn-primary btn-sm" (clicked)="saveProvider()">
+        </app-submit-spinner>
+        <app-submit-spinner *ngIf="editProvider" [loading]="isSaving" label="Mettre à jour" icon="ti ti-refresh me-1"
+          cssClass="btn btn-warning btn-sm" (clicked)="saveEditProvider()">
+        </app-submit-spinner>
+      </div>
+    </div>
+  </div>
+</div>

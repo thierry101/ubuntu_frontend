@@ -1,0 +1,533 @@
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .badge.bg-light {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: #fff !important;
+            border-radius: 20px !important;
+            font-size: 11px !important;
+            padding: 4px 12px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── SEARCH ── */
+    .col-12.col-md-4 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        padding: 0 !important;
+    }
+
+    /* ── CACHER TABLE ── */
+    .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE ── */
+    .mobile-orders-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .order-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: border-color 0.15s;
+
+        &.active {
+            border-color: #1565C0;
+            background: #f0f7ff;
+        }
+    }
+
+    .order-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .order-nber {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1565C0;
+        font-family: 'DM Mono', monospace;
+        background: #e3f2fd;
+        border: 0.5px solid #90caf9;
+        border-radius: 6px;
+        padding: 3px 8px;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .order-client {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+        margin-top: 4px;
+    }
+
+    .order-phone {
+        font-size: 11px;
+        color: #7a9ab8;
+    }
+
+    .order-amount {
+        font-size: 15px;
+        font-weight: 700;
+        color: #2e7d32;
+        font-family: 'DM Mono', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .items-preview {
+        background: #f8fbff;
+        border: 0.5px solid #e6f0fa;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 10px;
+    }
+
+    .item-line {
+        font-size: 11px;
+        color: #2c4f70;
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        border-bottom: 0.5px solid #e6f0fa;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .item-badge {
+        background: #e3f2fd;
+        color: #1565C0;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 10px;
+        font-family: 'DM Mono', monospace;
+        flex-shrink: 0;
+    }
+
+    .item-meta {
+        font-size: 10px;
+        color: #7a9ab8;
+        margin-left: 4px;
+    }
+
+    .more-items {
+        font-size: 10px;
+        color: #1565C0;
+        margin-top: 3px;
+    }
+
+    .delivery-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #f0f7ff;
+        border: 0.5px solid #cce0f5;
+        border-radius: 20px;
+        padding: 3px 8px;
+        font-size: 11px;
+        color: #2c4f70;
+        margin-bottom: 10px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .selects-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .select-grp {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .select-lbl {
+        font-size: 9px;
+        font-weight: 500;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .select-grp select {
+        border: 0.5px solid #d0e4f7 !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        color: #1a2e42 !important;
+        background: #fff !important;
+        outline: none !important;
+        width: 100% !important;
+        min-height: 36px !important;
+        box-shadow: none !important;
+
+        &:focus {
+            border-color: #1565C0 !important;
+        }
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-wa {
+        flex: 1;
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 0.5px solid #a5d6a7;
+        border-radius: 8px;
+        padding: 9px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+
+    /* ── MODALS BOTTOM SHEET ── */
+    .modal {
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease-out !important;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        border: none !important;
+        max-height: 92vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #d0e4f7;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-header {
+        flex-shrink: 0 !important;
+        padding: 12px 18px 14px !important;
+        border-bottom: 0.5px solid #e6f0fa !important;
+
+        h1,
+        h5 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-close {
+            width: 28px !important;
+            height: 28px !important;
+            padding: 0 !important;
+        }
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        padding: 16px !important;
+        max-height: calc(92vh - 130px) !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .modal-footer {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        background: #fff !important;
+        border-top: 0.5px solid #e6f0fa !important;
+        gap: 8px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+
+        .btn {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    /* ── MODAL WHATSAPP ── */
+    #exampleModalWhatsapp .modal-body {
+        .form-label {
+            font-size: 11px !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        .form-floating label {
+            font-size: 12px !important;
+        }
+    }
+
+    /* ── MODAL CRÉER COMMANDE ── */
+    #exampleModalCmd .modal-body {
+        .row.g-3.mb-3 {
+
+            .col-md-3,
+            .col-md-2,
+            .col-md-4 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            /* Frais + statut côte à côte */
+            .col-md-2,
+            .col-md-3:has(#paymentSwitch) {
+                width: 50% !important;
+                flex: 0 0 50% !important;
+            }
+
+            .col-md-2 {
+                padding-right: 4px !important;
+            }
+
+            .col-md-3:has(#paymentSwitch) {
+                padding-left: 4px !important;
+            }
+        }
+
+        .row.g-3.align-items-end {
+
+            .col-md-3,
+            .col-md-4,
+            .col-md-2,
+            .col-md-1 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            /* Prix + Qté + bouton côte à côte */
+            .col-md-2 {
+                width: 35% !important;
+                flex: 0 0 35% !important;
+                padding-right: 4px !important;
+            }
+
+            .col-md-2:nth-child(4) {
+                width: 35% !important;
+            }
+
+            .col-md-1 {
+                width: 20% !important;
+                flex: 0 0 20% !important;
+                padding-left: 4px !important;
+            }
+        }
+
+        .form-label {
+            font-size: 11px !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 4px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        .form-check.form-switch {
+            background: #f8fbff;
+            border: 0.5px solid #e6f0fa;
+            border-radius: 8px;
+            padding: 10px 12px 10px 44px !important;
+
+            .form-check-input {
+                width: 34px !important;
+                height: 20px !important;
+                margin-top: 0 !important;
+                margin-left: -38px !important;
+            }
+
+            .form-check-label {
+                font-size: 12px !important;
+            }
+        }
+
+        .table-responsive {
+            display: block !important;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 0.5px solid #e6f0fa !important;
+
+            .table {
+                min-width: unset !important;
+            }
+
+            thead th {
+                font-size: 10px !important;
+                padding: 7px !important;
+                background: #f8fbff !important;
+            }
+
+            tbody td {
+                font-size: 11px !important;
+                padding: 7px 8px !important;
+                border-bottom: 0.5px solid #e6f0fa !important;
+            }
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+
+    .modal-lg .modal-content {
+        max-height: 92vh !important;
+    }
+
+    .modal-lg .modal-body {
+        max-height: calc(92vh - 130px) !important;
+    }
+}
+
+@media (max-width: 767px) {
+
+    /* ── MODAL WHATSAPP : centré au lieu de bottom sheet ── */
+    #exampleModalWhatsapp .modal-dialog {
+        margin: auto !important;
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        bottom: auto !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: 92vw !important;
+        max-width: 92vw !important;
+    }
+
+    #exampleModalWhatsapp.fade .modal-dialog {
+        transform: translate(-50%, -50%) scale(0.95) !important;
+        transition: transform 0.2s ease-out, opacity 0.2s !important;
+    }
+
+    #exampleModalWhatsapp.show .modal-dialog {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+
+    #exampleModalWhatsapp .modal-content {
+        border-radius: 16px !important;
+        max-height: 80vh !important;
+
+        /* Pas de barre en haut — pas un bottom sheet */
+        &::before {
+            display: none !important;
+        }
+    }
+
+    #exampleModalWhatsapp .modal-body {
+        max-height: calc(80vh - 120px) !important;
+    }
+}

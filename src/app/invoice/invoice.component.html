@@ -1,0 +1,116 @@
+<!-- Bouton Télécharger -->
+<button style="position: fixed; top: 20px; right: 20px; z-index: 999; padding: 10px 20px;
+  background: #1565C0; color: white; border: none; border-radius: 8px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500;" (click)="downloadInvoice()">
+    Télécharger
+</button>
+
+<div class="inv-wrap">
+    <!-- Header bleu -->
+    <div class="inv-header">
+        <div class="inv-logo-block">
+            <img [src]="url + invoice?.enterprise.logo" alt="Logo" style="max-height: 56px; border-radius: 10px;">
+            <p class="inv-company-name">{{ invoice?.enterprise.nameEtprise }}</p>
+            <p class="inv-company-sub">{{ invoice?.enterprise.city }}, {{ invoice?.enterprise.country }}</p>
+        </div>
+        <div class="inv-title-block">
+            <h2>Facture</h2>
+            <div class="inv-badge"># {{ invoice?.nberInvoice }}</div>
+            <p class="inv-date">Date : {{ invoice?.created_at | date:'dd/MM/yyyy' }}</p>
+        </div>
+    </div>
+
+    <div class="inv-body">
+        <!-- Parties -->
+        <div class="inv-parties">
+            <div class="inv-party-card">
+                <p class="inv-party-label">De — Entreprise</p>
+                <p class="inv-party-name">{{ invoice?.enterprise.nameEtprise }}</p>
+                <p class="inv-party-detail"><span>Email :</span> {{ invoice?.enterprise.email }}</p>
+                <p class="inv-party-detail"><span>Tél :</span> {{ invoice?.enterprise.phone }}</p>
+                <p class="inv-party-detail"><span>RCCM :</span> {{ invoice?.enterprise.rccm }}</p>
+                <p class="inv-party-detail"><span>NIU :</span> {{ invoice?.enterprise.niu }}</p>
+            </div>
+            <div class="inv-party-card">
+                <p class="inv-party-label">À — Client</p>
+                <p class="inv-party-name">{{ invoice?.client.name }}</p>
+                <p class="inv-party-detail" *ngIf="invoice?.client.email"><span>Email :</span> {{ invoice?.client.email
+                    }}</p>
+                <p class="inv-party-detail"><span>Tél :</span> {{ invoice?.client.phone }}</p>
+            </div>
+        </div>
+
+        <!-- Tableau produits -->
+        <div class="inv-table-wrap">
+            <table class="inv-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Qté</th>
+                        <th>Prix uni. ({{ invoice?.enterprise.devise }})</th>
+                        <th>Total ({{ invoice?.enterprise.devise }})</th>
+                        <th>TVA ({{ invoice?.enterprise.devise }})</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of invoice?.listItems">
+                        <td class="inv-product-name">{{ item.product.product }}</td>
+                        <td>{{ item.quantity | number }}</td>
+                        <td>{{ item.sold_price | number}}</td>
+                        <td>{{ item.total_price | number }}</td>
+                        <td>{{ item.amount_tva | number }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bas de facture -->
+        <div class="inv-bottom">
+            <div class="inv-signature-block">
+                <span class="inv-sig-label">Signature autorisée</span>
+                <span class="inv-sig-name">{{ invoice?.enterprise.signature }}</span>
+                <img *ngIf="invoice?.enterprise.signaturePreview" [src]="url + invoice?.enterprise.signaturePreview"
+                    alt="Signature" style="max-height: 48px; margin-top: 6px;">
+                <div class="inv-sig-line"></div>
+            </div>
+            <div class="inv-totals">
+                <div class="inv-total-row">
+                    <span class="inv-total-label">Sous-total</span>
+                    <span class="inv-total-value">{{ invoice?.amount_without_reduction | number }} {{ invoice?.enterprise.devise
+                        }}</span>
+                </div>
+                <div class="inv-total-row">
+                    <span class="inv-total-label">Réduction</span>
+                    <span class="inv-total-value">- {{ invoice?.reduction | number }} {{ invoice?.enterprise.devise }}</span>
+                </div>
+                <div class="inv-total-row">
+                    <span class="inv-total-label">Total TVA</span>
+                    <span class="inv-total-value">{{ invoice?.totalTva | number }} {{ invoice?.enterprise.devise }}</span>
+                </div>
+                <div class="inv-total-row inv-total-main">
+                    <span class="inv-total-label">Total à payer</span>
+                    <span class="inv-total-value">{{ invoice?.amountToPay | number }} {{ invoice?.enterprise.devise }}</span>
+                </div>
+                <div class="inv-advance-row" *ngIf="!invoice?.statusPayment">
+                    <div class="inv-advance-icon">↓</div>
+                    <div class="inv-advance-info">
+                        <span class="inv-advance-label">Avance versée</span>
+                        <span class="inv-advance-value">{{ invoice?.amount_paid | number }} {{ invoice?.enterprise.devise
+                            }}</span>
+                    </div>
+                    <div class="inv-advance-badge">Partiel</div>
+                </div>
+                <div class="inv-total-row" style="margin-top:8px; border-bottom:none;">
+                    <span class="inv-total-label" style="color:#8a6200;">Reste dû</span>
+                    <span class="inv-reste">{{ invoice?.amount_remaining | number }} {{ invoice?.enterprise.devise }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="inv-footer">
+        <span class="inv-footer-text">{{ invoice?.enterprise.email }} — {{ invoice?.enterprise.phone }}</span>
+        <span class="inv-footer-brand">{{ invoice?.enterprise.nameEtprise }}</span>
+    </div>
+</div>

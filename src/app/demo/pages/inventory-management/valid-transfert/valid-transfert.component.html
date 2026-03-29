@@ -1,0 +1,348 @@
+<div class="" (click)="clickOutsideModal()">
+    <div class="row g-4">
+
+        <!-- ── COL GAUCHE : TRANSFERTS ── -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                <div
+                    class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
+                    <h5 *ngIf="yes_url" class="mb-0 fw-semibold">🚚 Gestion des transferts</h5>
+                    <h5 *ngIf="!yes_url" class="mb-0 fw-semibold">🚚 Historique des transferts</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <!-- Recherche -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">🔍 Rechercher un transfert</label>
+                            <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                            </app-search-list>
+                        </div>
+                    </div>
+
+                    <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+                    <!-- TABLE DESKTOP -->
+                    <div *ngIf="!isLoading" class="table-responsive shadow-sm rounded bg-white p-3 d-none d-md-block">
+                        <table class="table table-hover table-bordered text-center align-middle">
+                            <thead class="table-light text-uppercase small text-muted">
+                                <tr>
+                                    <th>Date de transfert</th>
+                                    <th>N° Transfert</th>
+                                    <th>Provenance</th>
+                                    <th>Destination</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let itemValid of all_items_validate; trackBy: trackById"
+                                    [ngClass]="{ 'table-active': itemValid?.id === idTransfert }">
+                                    <td>{{ itemValid?.created_at | date: 'dd MMM yyyy à HH:mm':'':'fr' }}</td>
+                                    <td class="fw-semibold">{{ itemValid?.transfertNber }}</td>
+                                    <td>{{ itemValid?.fromWhStore?.nameWh }}</td>
+                                    <td>{{ itemValid?.toWhStore?.nameWh }}</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2" [ngClass]="itemValid?.validateAll
+                        ? 'bg-success-subtle text-success border border-success'
+                        : 'bg-warning-subtle text-warning border border-warning'">
+                                            {{ itemValid?.validateAll ? 'Traité' : 'Non traité' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle"
+                                            (click)="listProducts(itemValid)" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModalValidProd" title="Voir les articles">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <app-set-pagination class="mt-4" [currentPage]="pagination?.currentPage"
+                            [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                            [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                        </app-set-pagination>
+                    </div>
+
+                    <!-- LISTE MOBILE -->
+                    <div *ngIf="!isLoading" class="d-block d-md-none">
+
+                        <div *ngIf="all_items_validate?.length === 0"
+                            style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                            Aucun transfert trouvé
+                        </div>
+
+                        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+                            <div *ngFor="let itemValid of all_items_validate; trackBy: trackById" class="tr-card"
+                                [class.active]="itemValid?.id === idTransfert">
+
+                                <div class="tr-top">
+                                    <div>
+                                        <div class="tr-nber">{{ itemValid?.transfertNber }}</div>
+                                        <div class="tr-date">{{ itemValid?.created_at | date: 'dd MMM yyyy à
+                                            HH:mm':'':'fr' }}</div>
+                                    </div>
+                                    <span [ngClass]="itemValid?.validateAll ? 'badge-done' : 'badge-pend'">
+                                        {{ itemValid?.validateAll ? '✓ Traité' : '⏳ Non traité' }}
+                                    </span>
+                                </div>
+
+                                <div class="tr-flow">
+                                    <div class="tr-node">
+                                        <span class="tr-node-lbl">De</span>
+                                        <span class="tr-node-val">{{ itemValid?.fromWhStore?.nameWh }}</span>
+                                    </div>
+                                    <span class="tr-arrow">→</span>
+                                    <div class="tr-node">
+                                        <span class="tr-node-lbl">À</span>
+                                        <span class="tr-node-val">{{ itemValid?.toWhStore?.nameWh }}</span>
+                                    </div>
+                                </div>
+
+                                <button class="btn-view" (click)="listProducts(itemValid)" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalValidProd">
+                                    👁 Voir les articles
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <app-set-pagination [currentPage]="pagination?.currentPage"
+                            [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                            [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                        </app-set-pagination>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ── COL DROITE : STATS + FILTRES ── -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                <div class="card-header bg-light d-flex align-items-center justify-content-between">
+                    <h6 class="fw-semibold text-primary mb-0">📈 Cumul & filtres</h6>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <!-- Filtres -->
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary">🧾 Article</label>
+                            <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTermProd"
+                                [results]="all_products" [displayField]="'name'" [error]="errors?.product"
+                                [showResults]="!!all_products?.length" (search)="searchProduct($event)"
+                                (select)="selectProduct($event)">
+                            </app-selected>
+                        </div>
+
+                        <div *ngIf="(role==='Admin' || hasAccessTemplate) && !yes_url" class="col-12">
+                            <label class="form-label fw-semibold text-secondary">🏢 Entrepôt / Boutique</label>
+                            <select [(ngModel)]="idStoreWh" name="warehouse" class="form-select form-select-sm">
+                                <option value="0">Choisir...</option>
+                                <option [value]="item?.id" *ngFor="let item of all_warehouses">{{ item?.nameWh }}
+                                </option>
+                            </select>
+                            <small class="text-danger">{{ errors?.whStore }}</small>
+                        </div>
+
+                        <!-- Remplacez les deux col-6 séparés par ceci -->
+                        <div class="col-12">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                                <div>
+                                    <label class="form-label fw-semibold text-secondary">📅 Début</label>
+                                    <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold text-secondary">📅 Fin</label>
+                                    <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <small class="text-danger" *ngIf="errors?.date">{{ errors.date }}</small>
+                        </div>
+
+                        <small class="text-danger" *ngIf="errors?.date">{{ errors.date }}</small>
+
+                        <div class="col-12">
+                            <button *ngIf="!isLoadingFilter" (click)="filterCount()"
+                                class="btn btn-outline-primary btn-sm w-100">
+                                🔍 Filtrer
+                            </button>
+                            <button *ngIf="isLoadingFilter" class="btn btn-outline-primary btn-sm w-100">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        <div class="col" *ngFor="let card of [
+              { label: 'Quantité actuelle en boutique', icon: 'ti ti-shopping-cart-plus', value: qty_current,  color: 'primary' },
+              { label: 'Cumul quantité validée',        icon: 'ti ti-check',              value: qty_received, color: 'success' },
+              { label: 'Cumul quantité défectueuse',    icon: 'ti ti-bug',                value: qty_defective,color: 'warning' },
+              { label: 'Cumul quantité perdue',         icon: 'ti ti-shopping-cart-x',    value: qty_lost,     color: 'danger'  }
+            ]">
+                            <div class="card h-100 border-0 shadow-sm bg-light">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="icon-wrapper rounded-circle me-3 bg-{{card.color}} text-white d-flex align-items-center justify-content-center"
+                                        style="width:40px;height:40px;">
+                                        <i [class]="card.icon + ' fs-5'"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-muted mb-1">{{ card.label }}</h6>
+                                        <h4 class="mb-0 fw-bold">{{ card.value | number }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── MODAL VALIDATION ── -->
+    <div class="modal fade" id="exampleModalValidProd" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-semibold">📦 Articles à valider</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="text-danger text-center small mb-2" *ngIf="errors?.quantity">
+                        {{ errors.quantity }}
+                    </div>
+
+                    <!-- TABLE DESKTOP -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover table-bordered align-middle text-center">
+                            <thead class="table-light text-uppercase small text-muted">
+                                <tr>
+                                    <th>Désignation</th>
+                                    <th>Réf. Stock</th>
+                                    <th>Qté transférée</th>
+                                    <th>Qté valide</th>
+                                    <th>Qté défectueuse</th>
+                                    <th>Qté perdue</th>
+                                    <th>Prix de vente</th>
+                                    <th>Statut</th>
+                                    <th *ngIf="(role !== 'Admin' || adminHasWarehouse) && yes_url">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let itemProd of list_items">
+                                    <td class="text-wrap fw-semibold">{{ itemProd?.lotWhStock?.product?.name }}</td>
+                                    <td>{{ itemProd?.lotWhStock?.indiceStock }}</td>
+                                    <td>{{ itemProd?.quantity }}</td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-center"
+                                            [(ngModel)]="qtyDetails[itemProd.id].received" [max]="itemProd?.quantity"
+                                            [disabled]="itemProd?.alreadyValidate" min="0">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-center"
+                                            [(ngModel)]="qtyDetails[itemProd.id].defective" [max]="itemProd?.quantity"
+                                            [disabled]="itemProd?.alreadyValidate" min="0">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-center"
+                                            [(ngModel)]="qtyDetails[itemProd.id].lost" [max]="itemProd?.quantity"
+                                            [disabled]="itemProd?.alreadyValidate" min="0">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-center"
+                                            [(ngModel)]="itemProd.lotWhStock.product.sell_price" min="0" step="1">
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2" [ngClass]="itemProd?.alreadyValidate
+                        ? 'bg-success-subtle text-success border border-success'
+                        : 'bg-warning-subtle text-warning border border-warning'">
+                                            {{ itemProd?.alreadyValidate ? 'Validé' : 'Non Validé' }}
+                                        </span>
+                                    </td>
+                                    <td *ngIf="(role !== 'Admin' || adminHasWarehouse) && yes_url"
+                                        class="d-flex justify-content-center gap-2">
+                                        <button class="btn btn-sm btn-outline-success rounded-circle"
+                                            [disabled]="itemProd?.alreadyValidate" (click)="validateTransfert(itemProd)"
+                                            title="Valider">
+                                            <i class="ti ti-send"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- CARTES MOBILE -->
+                    <div class="d-block d-md-none" style="display:flex;flex-direction:column;gap:10px;padding:14px">
+
+                        <div *ngFor="let itemProd of list_items" class="item-val-card">
+
+                            <div class="item-val-name">{{ itemProd?.lotWhStock?.product?.name }}</div>
+                            <div class="item-val-ref">{{ itemProd?.lotWhStock?.indiceStock }}</div>
+
+                            <div class="item-val-qty-orig">
+                                Qté transférée <span>{{ itemProd?.quantity }}</span>
+                            </div>
+
+                            <div class="item-val-inputs">
+                                <div class="item-val-grp">
+                                    <span class="item-val-lbl">Valide</span>
+                                    <input class="item-val-input" type="number" min="0"
+                                        [(ngModel)]="qtyDetails[itemProd.id].received" [max]="itemProd?.quantity"
+                                        [disabled]="itemProd?.alreadyValidate">
+                                </div>
+                                <div class="item-val-grp">
+                                    <span class="item-val-lbl">Défectueux</span>
+                                    <input class="item-val-input" type="number" min="0"
+                                        [(ngModel)]="qtyDetails[itemProd.id].defective" [max]="itemProd?.quantity"
+                                        [disabled]="itemProd?.alreadyValidate">
+                                </div>
+                                <div class="item-val-grp">
+                                    <span class="item-val-lbl">Perdue</span>
+                                    <input class="item-val-input" type="number" min="0"
+                                        [(ngModel)]="qtyDetails[itemProd.id].lost" [max]="itemProd?.quantity"
+                                        [disabled]="itemProd?.alreadyValidate">
+                                </div>
+                                <div class="item-val-grp">
+                                    <span class="item-val-lbl">Prix de vente</span>
+                                    <input class="item-val-input" type="number" min="0" step="1"
+                                        [(ngModel)]="itemProd.lotWhStock.product.sell_price">
+                                </div>
+                            </div>
+
+                            <div class="item-val-footer">
+                                <span [ngClass]="itemProd?.alreadyValidate ? 'badge-validated' : 'badge-not-valid'">
+                                    {{ itemProd?.alreadyValidate ? '✓ Validé' : '⏳ Non validé' }}
+                                </span>
+                                <button *ngIf="(role !== 'Admin' || adminHasWarehouse) && yes_url" class="btn-validate"
+                                    [disabled]="itemProd?.alreadyValidate" (click)="validateTransfert(itemProd)">
+                                    ✓ Valider
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

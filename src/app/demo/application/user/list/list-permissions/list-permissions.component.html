@@ -1,0 +1,203 @@
+<div class="">
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">
+        🛡️ Permissions utilisateurs
+      </h5>
+      <button (click)="resetModal()" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+        data-bs-target="#exampleModal">
+        ➕ Permission
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+          <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChange($event)">
+          </app-search-list>
+        </div>
+      </div>
+
+      <!-- ⏳ Loading Spinner -->
+      <app-spinners *ngIf="isLoading" message="⏳ Chargement ..."></app-spinners>
+      <div *ngIf="!isLoading" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="col-3">Utilisateur</th>
+              <th class="col-2">Permission</th>
+              <th class="col-4">Droit(s)</th>
+              <th class="col-3 text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="!listPermissions || listPermissions.length === 0">
+              <td colspan="4" class="text-center text-muted py-4">
+                <i class="ti ti-info-circle me-2"></i> Aucune permission attribuée pour le moment.
+              </td>
+            </tr>
+
+            <tr *ngFor="let permission of listPermissions; trackBy: trackById"
+              [ngClass]="{ 'table-active': permission?.id === idPermission }">
+
+              <td>{{ permission?.user?.email }}</td>
+              <td>{{ returnNamePermission(permission?.content_type) }}</td>
+
+              <td>
+                <ng-container *ngFor="let rightP of permission?.permission_type">
+                  <div class="form-check form-check-inline">
+                    <input disabled [checked]="true" class="form-check-input" type="checkbox" />
+                    <label class="form-check-label">
+                      {{ rightP === 'read' ? 'Voir' : rightP === 'create' ? 'Créer' : rightP === 'edit' ? 'Modifier' :
+                      rightP === 'delete' ? 'Supprimer' : rightP }}
+                    </label>
+                  </div>
+                </ng-container>
+              </td>
+
+              <td class="text-center">
+                <div class="d-inline-flex gap-2">
+                  <button (click)="editPermission(permission)" class="btn btn-outline-warning btn-sm rounded-circle"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal" title="Modifier cette permission">
+                    <i class="ti ti-pencil"></i>
+                  </button>
+
+                  <button (click)="deletePermission(permission?.id)"
+                    class="btn btn-outline-danger btn-sm rounded-circle" title="Supprimer cette permission">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- LISTE MOBILE -->
+      <div class="mobile-perm-list" style="display:none" *ngIf="!isLoading">
+
+        <div *ngIf="!listPermissions || listPermissions.length === 0" class="empty">
+          Aucune permission attribuée.
+        </div>
+
+        <div *ngFor="let permission of listPermissions; trackBy: trackById" class="perm-card"
+          [class.active]="permission?.id === idPermission">
+
+          <div class="perm-top">
+            <div class="perm-email">{{ permission?.user?.email }}</div>
+            <span class="perm-type">{{ returnNamePermission(permission?.content_type) }}</span>
+          </div>
+
+          <div class="perm-rights">
+            <ng-container *ngFor="let rightP of permission?.permission_type">
+              <span class="right-pill" [ngClass]="{
+            'read':   rightP === 'read',
+            'create': rightP === 'create',
+            'edit':   rightP === 'edit',
+            'delete': rightP === 'delete'
+          }">
+                ✓ {{ rightP === 'read' ? 'Voir' : rightP === 'create' ? 'Créer' :
+                rightP === 'edit' ? 'Modifier' : rightP === 'delete' ? 'Supprimer' : rightP }}
+              </span>
+            </ng-container>
+          </div>
+
+          <div class="perm-actions">
+            <button class="btn-act btn-edit" (click)="editPermission(permission)" data-bs-toggle="modal"
+              data-bs-target="#exampleModal">
+              ✏️ Modifier
+            </button>
+            <button class="btn-act btn-del" (click)="deletePermission(permission?.id)">
+              🗑 Supprimer
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+      <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+        [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+      </app-set-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal: Ajouter / Modifier une permission -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" (click)="clickOutsideModal()">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="exampleModalLabel">{{ titleModal }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formPermission" class="row g-3">
+          <small class="text-danger">{{ errors?.setPermission }}</small>
+
+          <!-- Utilisateur -->
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Utilisateur</label>
+            <app-selected [placeholder]="'Choisir un utilisateur...'" [(searchTerm)]="searchTermUsr" [results]="users"
+              [displayField]="'email'" [error]="errors?.user" [showResults]="!!users?.length"
+              (search)="searchUser($event)" (select)="selectUser($event)">
+            </app-selected>
+          </div>
+
+          <!-- Permission -->
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Permission</label>
+            <ng-select (change)="onPermissionSelect($event)" class="ng-select-sm" formControlName="permission">
+              @for (permission of allPermissions; track permission?.value) {
+              <ng-option [value]="permission">{{ permission?.name }}</ng-option>
+              }
+            </ng-select>
+            <small class="text-danger">{{ errors?.permission }}</small>
+          </div>
+
+          <!-- Droits -->
+          <div class="col-md-12">
+            <label class="form-label fw-bold">Droit(s)</label>
+            <div class="d-flex flex-wrap gap-2">
+              <div *ngIf="showRead" class="form-check">
+                <input (change)="checkRigth()" value="read" formControlName="read_p" class="form-check-input"
+                  type="checkbox" id="readCheck">
+                <label class="form-check-label" for="readCheck">Voir</label>
+              </div>
+
+              <div *ngIf="showCreate" class="form-check">
+                <input (change)="checkRigth()" formControlName="create_p" class="form-check-input" type="checkbox"
+                  id="createCheck" value="create">
+                <label class="form-check-label" for="createCheck">Créer</label>
+              </div>
+
+              <div *ngIf="showEdit" class="form-check">
+                <input (change)="checkRigth()" value="edit" formControlName="edit_p" class="form-check-input"
+                  type="checkbox" id="editCheck">
+                <label class="form-check-label" for="editCheck">Modifier</label>
+              </div>
+
+              <div *ngIf="showDelete" class="form-check">
+                <input (change)="checkRigth()" value="delete" formControlName="delete_p" class="form-check-input"
+                  type="checkbox" id="deleteCheck">
+                <label class="form-check-label" for="deleteCheck">Supprimer</label>
+              </div>
+            </div>
+            <small class="text-danger">{{ errors?.checkPermission }}</small>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="closeModalPermission" class="btn btn-sm btn-secondary rounded"
+          data-bs-dismiss="modal">Fermer</button>
+        <app-submit-spinner *ngIf="!editPerm" [loading]="isSaving" label="Enregistrer" icon=""
+          cssClass="btn btn-sm btn-primary rounded" (clicked)="savePermission()">
+        </app-submit-spinner>
+        <app-submit-spinner *ngIf="editPerm" [loading]="isSaving" label="Mettre à jour" icon="ti ti-refresh me-1"
+          cssClass="btn btn-sm btn-warning rounded" (clicked)="saveEditPermission()">
+        </app-submit-spinner>
+      </div>
+    </div>
+  </div>
+</div>

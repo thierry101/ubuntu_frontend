@@ -1,0 +1,13 @@
+<button [class]="cssClass" [disabled]="loading" (click)="handleClick()">
+    <!-- When NOT loading -->
+    <ng-container *ngIf="!loading">
+        <i *ngIf="icon" [class]="icon"></i>
+        {{ label }}
+    </ng-container>
+
+    <!-- When loading -->
+    <ng-container *ngIf="loading">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Traitement...
+    </ng-container>
+</button>

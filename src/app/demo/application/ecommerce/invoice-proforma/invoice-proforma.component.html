@@ -1,0 +1,411 @@
+<div class="">
+    <div (click)="clickOutsideModal()" class="card border-0 shadow-sm rounded-3">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📄 Gestion des devis proforma</h5>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- ── FORMULAIRE GAUCHE ── -->
+                <div class="col-md-5">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                        <div class="card-header bg-light border-0">
+                            <h6 class="mb-0">
+                                <i class="ti ti-file-earmark-plus"></i> Créer une proforma
+                            </h6>
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- Formulaire produit -->
+                            <div *ngIf="!showClient">
+                                <form [formGroup]="formInvoice" class="row g-3">
+
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label fw-semibold">Choisir l'article</label>
+                                        <app-selected [placeholder]="'Choisir l\'article...'"
+                                            [(searchTerm)]="searchTerm" [results]="all_products"
+                                            [displayField]="'indiceStock'" [error]="errors?.product"
+                                            [showResults]="!!all_products?.length" (search)="searchProduct($event)"
+                                            (select)="selectProduct($event)">
+                                        </app-selected>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Nom article</label>
+                                        <input readonly formControlName="nameProd" type="text"
+                                            class="form-control form-control-sm">
+                                        <small class="text-danger">{{ errors?.idLot }}</small>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Quantité</label>
+                                        <input min="0" formControlName="qty" type="number"
+                                            class="form-control form-control-sm">
+                                        <small class="text-danger">{{ errors?.quantity }}</small>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">P.U</label>
+                                        <input min="0" type="number" formControlName="soldPrice"
+                                            class="form-control form-control-sm">
+                                        <small class="text-danger">{{ errors?.soldPrice }}</small>
+                                    </div>
+
+                                    <!-- Boutons -->
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <button (click)="saveCommand()" type="submit"
+                                            class="btn btn-primary btn-sm w-50 me-2">
+                                            <i class="ti ti-plus-circle"></i> Ajouter
+                                        </button>
+                                        <button (click)="choiceClient()" type="button"
+                                            class="btn btn-outline-info btn-sm w-50">
+                                            <i class="ti ti-person-check"></i> Choisir client
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <!-- Choix du client -->
+                            <div *ngIf="showClient" class="mt-3">
+                                <label class="form-label fw-semibold">Choisir le client</label>
+                                <app-selected [placeholder]="'Choisir un client...'" [(searchTerm)]="searchClient"
+                                    [results]="all_clients" [displayField]="'name'" [error]="errors?.provider"
+                                    [showResults]="!!all_clients?.length" (search)="searchClients($event)"
+                                    (select)="selectClient($event)">
+                                </app-selected>
+                                <small class="text-danger">{{ errors?.idClient }}</small>
+                            </div>
+
+                            <!-- Tableau produits ajoutés — DESKTOP -->
+                            <div class="mt-4">
+                                <small class="text-danger">{{ errors?.productBucket }}</small>
+
+                                <div class="table-responsive d-none d-md-block">
+                                    <table class="table table-hover align-middle table-bordered text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Article</th>
+                                                <th>Qté</th>
+                                                <th>P.U</th>
+                                                <th>Total</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of arrayProds">
+                                                <td class="text-start">{{ item?.product?.product || '—' }}</td>
+                                                <td>{{ item?.quantity || '—' }}</td>
+                                                <td>{{ item?.sold_price | number:'1.0-0' }} {{ devise }}</td>
+                                                <td>{{ item?.total_price | number:'1.0-0' }} {{ devise }}</td>
+                                                <td class="text-center">
+                                                    <button (click)="deleteItem(item)" type="button"
+                                                        class="btn btn-outline-danger btn-sm rounded-circle"
+                                                        title="Supprimer">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="arrayProds.length === 0">
+                                                <td colspan="5" class="text-center text-muted">Aucun produit ajouté</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Mini liste mobile -->
+                                <div class="mobile-prod-list d-block d-md-none">
+
+                                    <div *ngIf="arrayProds.length === 0"
+                                        style="text-align:center;padding:16px;color:#7a9ab8;font-size:12px">
+                                        Aucun produit ajouté
+                                    </div>
+
+                                    <div *ngFor="let item of arrayProds" class="mini-prod-card">
+                                        <div class="mini-prod-info">
+                                            <div class="mini-prod-name">{{ item?.product?.product || '—' }}</div>
+                                            <div class="mini-prod-sub">
+                                                Qté : {{ item?.quantity }} × {{ item?.sold_price | number:'1.0-0' }} {{
+                                                devise }}
+                                            </div>
+                                        </div>
+                                        <span class="mini-prod-total">{{ item?.total_price | number:'1.0-0' }} {{ devise
+                                            }}</span>
+                                        <button class="btn-del-mini" (click)="deleteItem(item)"
+                                            type="button">🗑</button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Boutons finaux Retour + Valider -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <button *ngIf="showClient" (click)="hideClient()" type="button"
+                                    class="btn btn-warning btn-sm">
+                                    <i class="ti ti-box-arrow-left"></i> Retour
+                                </button>
+                                <button *ngIf="showClient" (click)="saveInvoice()" type="button"
+                                    class="btn btn-success btn-sm">
+                                    <i class="ti ti-check-circle"></i> Valider facture
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── LISTE PROFORMAS DROITE ── -->
+                <div class="col-md-7">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+
+                        <div
+                            class="card-header bg-light border-0 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <h6 class="mb-0">
+                                <i class="ti ti-journal-text"></i> Proformas existantes
+                            </h6>
+                            <div class="col-md-6 col-12 ps-md-2 ps-0">
+                                <app-search-list [searchTerm]="searchTerm"
+                                    (searchChange)="onSearchChangeInvoice($event)">
+                                </app-search-list>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <app-spinners *ngIf="isLoading" message="Chargement des proformas ..."></app-spinners>
+
+                            <!-- TABLE DESKTOP -->
+                            <div class="table-responsive d-none d-md-block" *ngIf="!isLoading">
+                                <table class="table table-hover align-middle table-bordered text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>N° Facture</th>
+                                            <th>Date</th>
+                                            <th>Client</th>
+                                            <th>Montant</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of all_orders_invoices">
+                                            <td>{{ item?.nberInvoice || '—' }}</td>
+                                            <td>{{ item?.created_at | date: 'dd/MM/yyyy à HH:mm' }}</td>
+                                            <td>{{ item?.client?.name || '—' }}</td>
+                                            <td>{{ item?.totalCart | number:'1.0-0' }} {{ devise }}</td>
+                                            <td class="text-center">
+                                                <button (click)="showInvoice(item)" data-bs-toggle="modal"
+                                                    data-bs-target="#modalInvoiceProforma" id="showModalInvoice"
+                                                    class="btn btn-outline-primary btn-sm rounded-circle" title="Voir">
+                                                    <i class="ti ti-eye"></i>
+                                                </button>
+                                                <button (click)="deleteInvoice(item)"
+                                                    class="btn btn-outline-danger btn-sm rounded-circle mx-1"
+                                                    title="Supprimer">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="all_orders_invoices?.length === 0 && !isLoading">
+                                            <td colspan="5" class="text-center text-muted">Aucune proforma trouvée</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- LISTE MOBILE -->
+                            <div class="mobile-proforma-list d-block d-md-none" *ngIf="!isLoading">
+
+                                <div *ngIf="all_orders_invoices?.length === 0"
+                                    style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                                    Aucune proforma trouvée
+                                </div>
+
+                                <div *ngFor="let item of all_orders_invoices" class="proforma-card">
+
+                                    <div class="pf-top">
+                                        <div>
+                                            <div class="pf-nber">{{ item?.nberInvoice || '—' }}</div>
+                                            <div class="pf-date">{{ item?.created_at | date:'dd/MM/yyyy à HH:mm' }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="pf-amount">{{ item?.totalCart | number:'1.0-0' }} {{ devise }}
+                                            </div>
+                                            <div class="pf-client">{{ item?.client?.name || '—' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="pf-actions">
+                                        <button class="btn-act btn-view" (click)="showInvoice(item)"
+                                            data-bs-toggle="modal" data-bs-target="#modalInvoiceProforma">
+                                            👁 Voir
+                                        </button>
+                                        <button class="btn-act btn-del" (click)="deleteInvoice(item)">
+                                            🗑 Supprimer
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="mt-3">
+                                <app-set-pagination [currentPage]="pagination?.currentPage"
+                                    [totalPages]="pagination?.nber_pages" [previousPage]="pagination?.previousPage"
+                                    [nextPage]="pagination?.nextPage" (pageChange)="onPageChange($event)">
+                                </app-set-pagination>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL VUE PROFORMA ── -->
+<div class="modal fade" id="modalInvoiceProforma" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1 d-flex justify-content-center">
+                    <h6 class="modal-title mb-0">Facture Proforma</h6>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-light btn-sm me-2" (click)="exportPDF()" title="Exporter PDF">
+                        Exporter PDF <i class="ti ti-download"></i>
+                    </button>
+                    <button (click)="printInvoice()" type="button" class="btn btn-light btn-sm me-2" title="Imprimer">
+                        Imprimer <i class="ti ti-printer"></i>
+                    </button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="container bg-white p-4 rounded-3 border" id="invoicePrint"
+                    style="max-width:900px;font-family:'Poppins','Segoe UI',sans-serif;">
+
+                    <!-- Logo + N° Facture -->
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <img [src]="itemInvoice?.enterprise?.logo | image" alt="Logo"
+                                style="width:120px;height:80px;object-fit:contain;object-position:left;">
+                            <h6 class="mt-2 text-muted">{{ itemInvoice?.enterprise?.slogan || '' }}</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                            <h4 class="fw-bold text-uppercase text-primary mb-1">Facture Proforma</h4>
+                            <p class="mb-0"><strong>Date :</strong> {{ itemInvoice?.created_at | date:'dd/MM/yyyy' }}
+                            </p>
+                            <p class="mb-0"><strong>N° :</strong> {{ itemInvoice?.nberInvoice }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="border-2 border-primary opacity-75 my-3">
+
+                    <!-- Client + Entreprise -->
+                    <div class="row mt-3 mb-4">
+                        <div class="col-6">
+                            <h6 class="fw-bold text-decoration-underline text-primary">Facturé à :</h6>
+                            <p class="mb-0">{{ itemInvoice?.client?.name || '—' }}</p>
+                            <p class="mb-0">Tél : {{ itemInvoice?.client?.phone || '—' }}</p>
+                            <p class="mb-0">Adresse : {{ itemInvoice?.client?.address || '—' }}</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <h6 class="fw-bold text-decoration-underline text-primary">Entreprise :</h6>
+                            <p class="mb-0 fw-semibold">{{ itemInvoice?.enterprise?.nameEtprise || '—' }}</p>
+                            <p class="mb-0">Tél : {{ itemInvoice?.enterprise?.phone || '—' }}</p>
+                            <p class="mb-0">Adresse : {{ itemInvoice?.enterprise?.city || '—' }}, {{
+                                itemInvoice?.enterprise?.country || '—' }}</p>
+                            <p class="mb-0"><strong>RCCM :</strong> {{ itemInvoice?.enterprise?.rccm || '—' }}</p>
+                            <p class="mb-0"><strong>NIU :</strong> {{ itemInvoice?.enterprise?.niu || '—' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Tableau produits -->
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover align-middle table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Description</th>
+                                    <th>Qté</th>
+                                    <th>P.U</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let product of itemInvoice?.listItems; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td class="text-start">{{ product?.product?.product || '—' }}</td>
+                                    <td>{{ product?.quantity || '—' }}</td>
+                                    <td>{{ product?.sold_price | number:'1.0-0' }} {{ product?.devise || devise }}</td>
+                                    <td class="fw-semibold">{{ product?.total_price | number:'1.0-0' }} {{
+                                        product?.devise || devise }}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-light">
+                                    <td colspan="4" class="text-end fw-bold">Sous-total</td>
+                                    <td class="fw-bold">{{ itemInvoice?.totalCart | number:'1.0-0' }} {{
+                                        itemInvoice?.devise || devise }}</td>
+                                </tr>
+                                <tr *ngIf="itemInvoice?.amount_tva > 0" class="table-light">
+                                    <td colspan="4" class="text-end fw-bold">TVA (18%)</td>
+                                    <td class="fw-bold">{{ itemInvoice?.amount_tva | number:'1.0-0' }} {{
+                                        itemInvoice?.devise || devise }}</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td colspan="4" class="text-end fw-bold text-white">Total TTC</td>
+                                    <td class="fw-bold text-white">
+                                        {{ (itemInvoice?.totalCart + (itemInvoice?.amount_tva || 0)) | number:'1.0-0' }}
+                                        {{ itemInvoice?.devise || devise }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Conditions -->
+                    <div class="mt-4">
+                        <p class="small text-muted">
+                            <strong>Conditions :</strong><br>
+                            - Cette facture proforma n'est pas une facture définitive.<br>
+                            - Les prix indiqués sont valables 30 jours à compter de la date d'émission.<br>
+                            - La commande devient effective après validation du paiement ou réception du bon signé.
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="mt-5 pt-3 border-top border-2 border-primary text-center small text-muted">
+                        <p class="mb-0 fw-semibold text-dark">{{ itemInvoice?.enterprise?.nameEtprise || '—' }}</p>
+                        <p class="mb-0">© 2025 — Tous droits réservés</p>
+                        <p class="mt-2 fst-italic text-secondary">Conçu et émis à Abidjan, Côte d'Ivoire</p>
+                    </footer>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Message de restriction -->
+<ng-template>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

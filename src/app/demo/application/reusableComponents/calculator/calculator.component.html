@@ -1,0 +1,33 @@
+<div class="modal fade" id="exampleModalCalculator" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 280px;">
+        <div class="modal-content calc-modal">
+
+            <!-- En-tête -->
+            <div class="calc-header">
+                <span class="calc-title">Calculatrice</span>
+                <button type="button" class="calc-close-btn" data-bs-dismiss="modal" title="Fermer">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+
+            <!-- Écran -->
+            <div class="calc-screen">
+                <div class="calc-expr">{{ calc.exprDisplay() || '&nbsp;' }}</div>
+                <div class="calc-display">{{ calc.display() }}</div>
+            </div>
+
+            <!-- Grille de boutons -->
+            <div class="calc-grid">
+                <ng-container *ngFor="let row of buttons">
+                    <button *ngFor="let btn of row" class="calc-btn" [class.btn-digit]="btn.type === 'digit'"
+                        [class.btn-operator]="btn.type === 'operator'" [class.btn-action]="btn.type === 'action'"
+                        [class.btn-equals]="btn.type === 'equals'" [class.btn-danger]="btn.key === 'C'"
+                        [style.grid-column]="btn.span ? 'span ' + btn.span : null" (click)="press(btn.key)">
+                        {{ btn.label }}
+                    </button>
+                </ng-container>
+            </div>
+
+        </div>
+    </div>
+</div>

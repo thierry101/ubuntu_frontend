@@ -1,0 +1,14 @@
+<div class="autocomplete-container">
+    <div class="input-group">
+        <input [disabled]="disabled" type="text" class="form-control form-control-sm" [placeholder]="placeholder"
+            [(ngModel)]="searchTerm" (input)="onInputChange(searchTerm)" (click)="onInputClick()" />
+    </div>
+    <small class="text-danger" *ngIf="error">{{ error }}</small>
+    <div class="autocomplete-results list-group" *ngIf="results?.length && showResults">
+        <button type="button" class="list-group-item list-group-item-action"
+            *ngFor="let item of results trackBy: trackById" (click)="onSelect(item)">
+            {{ displayFn ? displayFn(item) : item[displayField] }}
+        </button>
+
+    </div>
+</div>

@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+.inv-wrap {
+    font-family: 'DM Sans', sans-serif;
+    max-width: 820px;
+    margin: 1.5rem auto;
+    background: #fff;
+    border-radius: 16px;
+    border: 0.5px solid #d0e4f7;
+    overflow: hidden;
+}
+
+/* ── HEADER ── */
+.inv-header {
+    background: #1565C0;
+    padding: 32px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.inv-logo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.inv-company-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.inv-company-sub {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    margin: 2px 0 0;
+}
+
+.inv-title-block {
+    text-align: right;
+}
+
+.inv-title-block h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.inv-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 8px;
+}
+
+.inv-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ── BODY ── */
+.inv-body {
+    padding: 32px 40px;
+}
+
+.inv-parties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.inv-party-card {
+    background: #f0f7ff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    border: 0.5px solid #cce0f5;
+}
+
+.inv-party-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #1565C0;
+    margin: 0 0 12px;
+}
+
+.inv-party-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0d1b2a;
+    margin: 0 0 6px;
+}
+
+.inv-party-detail {
+    font-size: 12px;
+    color: #5a7a99;
+    margin: 3px 0;
+
+    span {
+        font-weight: 500;
+        color: #2c4f70;
+    }
+}
+
+/* ── TABLE ── */
+.inv-table-wrap {
+    border-radius: 12px;
+    border: 0.5px solid #d0e4f7;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.inv-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead tr {
+        background: #1565C0;
+    }
+
+    thead th {
+        padding: 12px 16px;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        text-align: left;
+
+        &:not(:first-child) {
+            text-align: right;
+        }
+    }
+
+    tbody tr {
+        border-bottom: 0.5px solid #e6f0fa;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &:nth-child(even) {
+            background: #f8fbff;
+        }
+    }
+
+    tbody td {
+        padding: 13px 16px;
+        font-size: 13px;
+        color: #1a2e42;
+
+        &:not(:first-child) {
+            text-align: right;
+            font-family: 'DM Mono', monospace;
+            font-size: 12.5px;
+        }
+    }
+}
+
+.inv-product-name {
+    font-weight: 500;
+}
+
+/* ── BAS DE FACTURE ── */
+.inv-bottom {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: end;
+}
+
+.inv-signature-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inv-sig-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #7a9ab8;
+    font-weight: 500;
+}
+
+.inv-sig-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c4f70;
+    font-style: italic;
+}
+
+.inv-sig-line {
+    width: 120px;
+    height: 1px;
+    background: #cce0f5;
+    margin-top: 8px;
+}
+
+/* ── TOTAUX ── */
+.inv-totals {
+    background: #f0f7ff;
+    border-radius: 12px;
+    border: 0.5px solid #cce0f5;
+    padding: 20px 22px;
+}
+
+.inv-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 0.5px solid #dce9f5;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.inv-total-label {
+    font-size: 12.5px;
+    color: #5a7a99;
+}
+
+.inv-total-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    color: #1a2e42;
+}
+
+.inv-total-main {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 2px solid #1565C0 !important;
+    border-bottom: none !important;
+
+    .inv-total-label {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #1565C0;
+    }
+
+    .inv-total-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1565C0;
+    }
+}
+
+.inv-reste {
+    background: #fff3cd;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: #8a6200;
+    display: inline-block;
+}
+
+/* ── FOOTER ── */
+.inv-footer {
+    background: #f0f7ff;
+    border-top: 0.5px solid #d0e4f7;
+    padding: 14px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inv-footer-text {
+    font-size: 11px;
+    color: #7a9ab8;
+}
+
+.inv-footer-brand {
+    font-size: 11px;
+    color: #1565C0;
+    font-weight: 500;
+}
+
+/* ── AVANCE PARTIELLE ── */
+.inv-advance-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border: 0.5px solid #ffe082;
+    border-left: 3px solid #f9a825;
+    border-radius: 10px;
+}
+
+.inv-advance-icon {
+    width: 30px;
+    height: 30px;
+    background: #f9a825;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.inv-advance-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.inv-advance-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8a6200;
+    font-weight: 600;
+}
+
+.inv-advance-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: #5d4200;
+    margin-top: 2px;
+}
+
+.inv-advance-badge {
+    background: #f9a825;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    flex-shrink: 0;
+}

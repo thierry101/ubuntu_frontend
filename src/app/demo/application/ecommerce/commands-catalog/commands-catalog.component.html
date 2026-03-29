@@ -1,0 +1,431 @@
+<div class="">
+    <div class="card border-0 shadow-sm">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">📦 Commandes clientes</h5>
+            <span class="badge bg-light text-primary">
+                {{ allCmdsCatalog?.length || 0 }} commande(s)
+            </span>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <div *ngIf="!allCmdsCatalog || allCmdsCatalog.length === 0" class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-3">Aucune commande disponible</p>
+            </div>
+
+            <!-- Search -->
+            <div class="row">
+                <div class="col-12 col-md-4 mb-3">
+                    <label class="form-label fw-semibold small text-muted">🔍 Recherchez une facture</label>
+                    <app-search-list [searchTerm]="searchTermCmd" (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+            </div>
+
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- TABLE DESKTOP -->
+            <div *ngIf="allCmdsCatalog && allCmdsCatalog?.length > 0" class="table-responsive d-none d-md-block">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Client</th>
+                            <th>Articles</th>
+                            <th>Livraison</th>
+                            <th>Montant</th>
+                            <th *ngIf="role === 'Admin' || permissions?.includes('handle_ecommerce')">
+                                Boutique
+                                <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Boutique ou magasin qui va traiter la commande"></i>
+                            </th>
+                            <th>Paiement</th>
+                            <th>Statut</th>
+                            <th *ngIf="adminHasWarehouse" class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let order of allCmdsCatalog" (click)="selectOrder(order)"
+                            [class.table-active]="selectedOrderId === order.id" style="cursor:pointer;">
+
+                            <td>
+                                <span (click)="printOrder(order)" class="badge bg-secondary">
+                                    {{ order?.nber_command }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-column text-wrap">
+                                    <strong>{{ order?.client?.name }}</strong>
+                                    <small class="text-muted">
+                                        <i class="bi bi-telephone me-1"></i>{{ order?.client?.phone }}
+                                    </small>
+                                    <small class="text-muted" *ngIf="order?.client?.email">
+                                        <i class="bi bi-envelope me-1"></i>{{ order?.client?.email }}
+                                    </small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="badge bg-info text-dark mb-1">
+                                        {{ order?.listItems?.length }} article(s)
+                                    </span>
+                                    <div *ngFor="let item of order?.listItems?.slice(0, 2)" class="mb-1 text-wrap">
+                                        <small class="text-muted d-block">
+                                            • {{ item?.product?.name }}
+                                            <span class="badge bg-light text-dark ms-1">× {{ item?.quantity }}</span>
+                                        </small>
+                                        <small class="text-muted d-block ms-3" *ngIf="item?.size || item?.color">
+                                            <span *ngIf="item?.size && item?.size !== 'undefined'" class="me-2">
+                                                <i class="ti ti-ruler-measure me-1"></i>Taille: <strong>{{ item?.size
+                                                    }}</strong>
+                                            </span>
+                                            <span *ngIf="item?.color">
+                                                <i class="ti ti-palette me-1"></i>Couleur: <strong>{{ item?.color
+                                                    }}</strong>
+                                            </span>
+                                        </small>
+                                    </div>
+                                    <small class="text-primary" *ngIf="order?.listItems?.length > 2">
+                                        +{{ order?.listItems?.length - 2 }} autre(s)
+                                    </small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-column text-wrap">
+                                    <small><i class="bi bi-geo-alt me-1"></i>{{ order?.delivery }}</small>
+                                    <small class="text-muted">{{ order?.city }}, {{ order?.country }}</small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong class="text-success">
+                                    {{ order?.total_command | number:'1.0-0' }} {{ devise }}
+                                </strong>
+                                <div *ngIf="order?.code_discount" class="mt-1">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-tag me-1"></i>{{ order?.code_discount }}
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td *ngIf="role === 'Admin' || permissions?.includes('handle_ecommerce')">
+                                <select
+                                    [disabled]="roleAccessWhStor?.includes(role) && !permissions?.includes('handle_ecommerce')"
+                                    (change)="affectWhStor(order)" [(ngModel)]="order.warehouse.id"
+                                    class="form-select form-select-sm">
+                                    <option [ngValue]="null">Choisir...</option>
+                                    <option *ngFor="let warehouse of warehouses" [ngValue]="warehouse.id">
+                                        {{ warehouse?.nameWh }}
+                                    </option>
+                                </select>
+                                <span class="text-danger" *ngIf="errorsByOrder[order.id]?.warehouseId">
+                                    {{ errorsByOrder[order.id].warehouseId }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <select (change)="changePaymentOrder(order)" [(ngModel)]="order.status_command"
+                                    class="form-select form-select-sm">
+                                    <option [ngValue]="true">Payée</option>
+                                    <option [ngValue]="false">Paiement en attente</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <select (change)="changeStatusTracking(order)" [(ngModel)]="order.tracking_status"
+                                    class="form-select">
+                                    <option [ngValue]="item?.value" *ngFor="let item of cmdWorkflow">
+                                        {{ item?.name }}
+                                    </option>
+                                </select>
+                            </td>
+
+                            <td class="text-center" *ngIf="adminHasWarehouse">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalWhatsapp" (click)="sendWhatsappDetail(order)"
+                                        title="Envoyer sur WhatsApp">
+                                        <i class="ti ti-brand-whatsapp"></i>
+                                    </button>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-orders-list d-block d-md-none" *ngIf="allCmdsCatalog && allCmdsCatalog?.length > 0">
+
+                <div *ngFor="let order of allCmdsCatalog" class="order-card"
+                    [class.active]="selectedOrderId === order.id" (click)="selectOrder(order)">
+
+                    <div class="order-top">
+                        <div>
+                            <span class="order-nber" (click)="printOrder(order); $event.stopPropagation()">
+                                {{ order?.nber_command }}
+                            </span>
+                            <div class="order-client">{{ order?.client?.name }}</div>
+                            <div class="order-phone">📞 {{ order?.client?.phone }}</div>
+                        </div>
+                        <div>
+                            <div class="order-amount">
+                                {{ order?.total_command | number:'1.0-0' }} {{ devise }}
+                            </div>
+                            <div *ngIf="order?.code_discount" style="text-align:right;margin-top:4px">
+                                <span
+                                    style="background:#fff8e1;color:#8a6200;border:0.5px solid #ffe082;border-radius:6px;padding:2px 6px;font-size:10px">
+                                    🏷 {{ order?.code_discount }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Articles -->
+                    <div class="items-preview">
+                        <div *ngFor="let item of order?.listItems?.slice(0, 2)" class="item-line">
+                            <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                {{ item?.product?.name }}
+                            </span>
+                            <span class="item-badge">×{{ item?.quantity }}</span>
+                            <span class="item-meta" *ngIf="item?.size || item?.color">
+                                <span *ngIf="item?.size && item?.size !== 'undefined'">T:{{ item?.size }}</span>
+                                <span *ngIf="item?.color"> | {{ item?.color }}</span>
+                            </span>
+                        </div>
+                        <div class="more-items" *ngIf="order?.listItems?.length > 2">
+                            +{{ order?.listItems?.length - 2 }} autre(s)
+                        </div>
+                    </div>
+
+                    <!-- Livraison -->
+                    <div class="delivery-pill">
+                        📍 {{ order?.delivery }}, {{ order?.city }}
+                    </div>
+
+                    <!-- Selects -->
+                    <div class="selects-row" (click)="$event.stopPropagation()">
+
+                        <div class="select-grp" *ngIf="role === 'Admin' || permissions?.includes('handle_ecommerce')">
+                            <span class="select-lbl">🏪 Boutique</span>
+                            <select
+                                [disabled]="roleAccessWhStor?.includes(role) && !permissions?.includes('handle_ecommerce')"
+                                (change)="affectWhStor(order)" [(ngModel)]="order.warehouse.id">
+                                <option [ngValue]="null">Choisir...</option>
+                                <option *ngFor="let warehouse of warehouses" [ngValue]="warehouse.id">
+                                    {{ warehouse?.nameWh }}
+                                </option>
+                            </select>
+                            <span class="text-danger" style="font-size:10px"
+                                *ngIf="errorsByOrder[order.id]?.warehouseId">
+                                {{ errorsByOrder[order.id].warehouseId }}
+                            </span>
+                        </div>
+
+                        <div class="select-grp">
+                            <span class="select-lbl">💳 Paiement</span>
+                            <select (change)="changePaymentOrder(order)" [(ngModel)]="order.status_command">
+                                <option [ngValue]="true">Payée</option>
+                                <option [ngValue]="false">Paiement en attente</option>
+                            </select>
+                        </div>
+
+                        <div class="select-grp">
+                            <span class="select-lbl">📦 Statut</span>
+                            <select (change)="changeStatusTracking(order)" [(ngModel)]="order.tracking_status">
+                                <option [ngValue]="item?.value" *ngFor="let item of cmdWorkflow">
+                                    {{ item?.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="order-actions" *ngIf="adminHasWarehouse">
+                        <button class="btn-wa" data-bs-toggle="modal" data-bs-target="#exampleModalWhatsapp"
+                            (click)="sendWhatsappDetail(order); $event.stopPropagation()">
+                            📱 WhatsApp
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PAGINATION -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL WHATSAPP -->
+<div class="modal fade" id="exampleModalWhatsapp" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Envoyer un message Whatsapp</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Frais livraison</label>
+                        <input type="number" (input)="calculateFeeDelivery()" [(ngModel)]="feeDelivery"
+                            class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="floatingTextarea2">Message Whatsapp</label>
+                        <div class="form-floating">
+                            <textarea class="form-control" [(ngModel)]="msgWhatsapp" id="floatingTextarea2"
+                                style="height:100px"></textarea>
+                        </div>
+                        <ng-container *ngIf="isObject(errors?.msg_whatsapp)">
+                            <li class="text-danger mt-1 d-block" *ngFor="let error of errors?.msg_whatsapp">{{ error }}
+                            </li>
+                        </ng-container>
+                        <ng-container *ngIf="!isObject(errors?.msg_whatsapp) && errors?.msg_whatsapp !== undefined">
+                            <small class="text-danger mt-1 d-block">{{ errors?.msg_whatsapp }}</small>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModalWhasapp001" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <button (click)="sendWhatsapp()" type="button" class="btn btn-success btn-sm">
+                    Envoyer <i class="ti ti-brand-whatsapp"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CRÉER COMMANDE -->
+<div class="modal fade" id="exampleModalCmd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" (click)="clickOutside()">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Préparation commande</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Client & livraison -->
+                <div class="row g-3 mb-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Client</label>
+                        <app-selected [placeholder]="'Choisir un client...'" [(searchTerm)]="searchClient"
+                            [results]="all_clients" [displayField]="'name'" [error]="errors?.provider"
+                            [showResults]="!!all_clients?.length" (search)="searchClients($event)"
+                            (select)="selectClient($event)">
+                        </app-selected>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Frais de livraison</label>
+                        <input [(ngModel)]="costDelivery" type="number" class="form-control form-control-sm" min="0"
+                            placeholder="0">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold d-block">Paiement</label>
+                        <div class="form-check form-switch">
+                            <input [(ngModel)]="statusPayment" class="form-check-input" type="checkbox" role="switch"
+                                id="paymentSwitch">
+                            <label class="form-check-label" for="paymentSwitch">
+                                {{ statusPayment ? 'Déjà payée' : 'Paiement à la livraison' }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Lieu de livraison</label>
+                        <input [(ngModel)]="addressDelivery" type="text" class="form-control form-control-sm">
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Ajout produit -->
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Désignation</label>
+                        <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTermP"
+                            [results]="all_products" [displayField]="'indiceStock'" [error]="errors?.product"
+                            [showResults]="!!all_products?.length" (search)="searchProduct($event)"
+                            (select)="selectProduct($event)">
+                        </app-selected>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nom</label>
+                        <input [(ngModel)]="nameProduct" type="text" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Prix</label>
+                        <input [(ngModel)]="currentPrice" type="number" min="0" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Qté</label>
+                        <input [(ngModel)]="quantity" type="number" min="1" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-1 d-grid">
+                        <button (click)="addItem()" class="btn btn-primary btn-sm">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABLE ARTICLES -->
+                <div class="table-responsive mt-4">
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nom</th>
+                                <th class="text-center">Qté</th>
+                                <th class="text-end">P.U</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of items; let i = index">
+                                <td>{{ item.name }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end">{{ item.price | number:'1.0-0' }} {{ devise }}</td>
+                                <td class="text-end">{{ item.total | number:'1.0-0' }} {{ devise }}</td>
+                                <td class="text-center">
+                                    <button (click)="removeItem(i)" class="btn btn-outline-danger btn-sm">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="fw-bold table-secondary">
+                                <td colspan="3" class="text-end">Total panier</td>
+                                <td class="text-end">{{ grandTotal | number:'1.0-0' }} {{ devise }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button class="btn btn-primary btn-sm">Enregistrer</button>
+            </div>
+
+        </div>
+    </div>
+</div>

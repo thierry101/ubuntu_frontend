@@ -1,0 +1,74 @@
+<div class="" *ngIf="hasAnyAccess(); else noAccess">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white border-0 d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">
+                💰 Finances
+            </h5>
+            <!-- <span class="badge bg-light text-dark px-3 py-2">{{ role | roleName | titlecase }}</span> -->
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Manage expenses -->
+                <div *ngIf="hasRole || permissions?.includes('handle_expenses')" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/handle-expenses']" class="menu-card btn w-100 bg-warning text-dark">
+                        <div class="menu-icon">🧑‍🤝‍🧑💰</div>
+                        <div class="menu-label">Saisir une dépense</div>
+                    </a>
+                </div>
+
+                <!-- Supplier debts -->
+                <div *ngIf="allRoles2?.includes(role) || permissions?.includes('view_supplier_debts')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/input-invoice']" class="menu-card btn w-100 bg-secondary text-white">
+                        <div class="menu-icon">🎯📢</div>
+                        <div class="menu-label">Dette fournisseur</div>
+                    </a>
+                </div>
+
+                <!-- Client debts -->
+                <div *ngIf="hasRole" class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/credit-monitoring']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">🎟️💳</div>
+                        <div class="menu-label">Suivi des dettes client</div>
+                    </a>
+                </div>
+
+                <!-- Warehouse benefits -->
+                <div *ngIf="role === 'Admin' || 'Daf'"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/calculate-profit']" class="menu-card btn w-100 bg-dark text-white">
+                        <div class="menu-icon">🤑🤑</div>
+                        <div class="menu-label">Calcul des bénéfices</div>
+                    </a>
+                </div>
+
+                <!-- Create Proforma -->
+                <div *ngIf="['Admin', 'Daf']?.includes(role) || permissions?.includes('handle_proforma')"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/invoice-proforma']" class="menu-card btn w-100 bg-success text-white">
+                        <div class="menu-icon">📄💼</div>
+                        <div class="menu-label">Créer Proforma</div>
+                    </a>
+                </div>
+
+                <!-- return invoice -->
+                <div *ngIf="allRoles?.includes(role)"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/credit-invoice']" class="menu-card btn w-100 bg-danger text-white">
+                        <div class="menu-icon">📄</div>
+                        <div class="menu-label">Établir facture avoir</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #noAccess>
+    <div class="alert alert-warning text-center mt-4">
+        🔒 Vous n'avez pas accès à cette section.
+    </div>
+</ng-template>

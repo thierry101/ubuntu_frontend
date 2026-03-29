@@ -1,0 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+/* ════════════════════════════════
+   MOBILE — < 768px
+════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── PAGE ── */
+  .row {
+    gap: 12px 0;
+  }
+
+  /* ── STAT CARDS HAUT ── */
+  .col-xl-4.col-md-6 {
+    width: 50% !important;
+    flex: 0 0 50% !important;
+    padding: 0 6px !important;
+  }
+
+  .col-xl-4.col-md-6:nth-child(3) {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    padding: 0 !important;
+  }
+
+  .dashnum-card {
+    border-radius: 14px !important;
+    padding: 14px !important;
+    min-height: unset !important;
+
+    .card-body {
+      padding: 0 !important;
+    }
+
+    .col-2 {
+      display: none;
+    }
+
+    .col-10 {
+      width: 100% !important;
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+    }
+
+    .nav-tabs.nav-pills {
+      border: none !important;
+      gap: 6px;
+      margin-bottom: 8px;
+
+      .nav-link {
+        font-size: 11px !important;
+        padding: 3px 10px !important;
+        border-radius: 20px !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        border: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+        background: transparent !important;
+
+        &.active {
+          background: rgba(255, 255, 255, 0.2) !important;
+          color: #fff !important;
+        }
+      }
+    }
+
+    span.f-34 {
+      font-size: 16px !important;
+      font-family: 'DM Mono', monospace !important;
+      font-weight: 700 !important;
+      margin: 6px 0 4px !important;
+      display: block;
+    }
+
+    p.opacity-50 {
+      font-size: 10px !important;
+    }
+  }
+
+  /* ── SMALL CARDS HT / TVA ── */
+  .col-6 .dashnum-card-small {
+    border-radius: 12px !important;
+
+    .card-body {
+      padding: 12px !important;
+    }
+
+    h4 {
+      font-size: 14px !important;
+    }
+
+    p {
+      font-size: 10px !important;
+    }
+
+    .avtar-lg {
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 8px !important;
+    }
+  }
+
+  /* ── SECTION CARDS ── */
+  .col-xl-7,
+  .col-xl-5,
+  .col-xl-6 {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    padding: 0 !important;
+  }
+
+  .card.shadow-sm {
+    border-radius: 14px !important;
+    border: 0.5px solid #d0e4f7 !important;
+    box-shadow: none !important;
+
+    .card-body {
+      padding: 14px 16px !important;
+    }
+
+    h4,
+    h5 {
+      font-size: 13px !important;
+      font-weight: 600 !important;
+    }
+
+    p.small,
+    p.text-muted.small {
+      font-size: 11px !important;
+    }
+  }
+
+  /* ── TOP PERFORMER / CLIENT ── */
+  .rounded.bg-light.p-3.border {
+    background: #f0f7ff !important;
+    border: 0.5px solid #cce0f5 !important;
+    border-radius: 10px !important;
+    padding: 12px 14px !important;
+
+    h5 {
+      font-size: 13px !important;
+      color: #1565C0 !important;
+    }
+
+    h4 {
+      font-size: 14px !important;
+      color: #1565C0 !important;
+    }
+
+    small {
+      font-size: 11px !important;
+    }
+  }
+
+  /* ── FIX hauteur fixe inline ── */
+  div[style*="height: 310px"] {
+    height: auto !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* ── FIX ng-scrollbar ── */
+  ng-scrollbar {
+    display: block !important;
+    height: auto !important;
+    max-height: 280px !important;
+    overflow-y: auto !important;
+  }
+
+  ng-scrollbar .table-responsive {
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  /* ── TABLE WRAPPER (nouveau) ── */
+  .table-wrapper {
+    height: auto !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    border-radius: 10px !important;
+    border: 0.5px solid #e6f0fa !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-wrapper .table-responsive,
+  .table-responsive.border.rounded {
+    height: auto !important;
+    max-height: 300px !important;
+    border-radius: 10px !important;
+    border: 0.5px solid #e6f0fa !important;
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  /* ── TABLES ── */
+  .table-wrapper table.table-sm,
+  ng-scrollbar table.table-sm,
+  table.table-sm {
+    min-width: 480px;
+
+    thead th {
+      font-size: 10px !important;
+      padding: 8px 10px !important;
+      white-space: nowrap !important;
+      background: #f0f7ff !important;
+      color: #5a7a99 !important;
+      border: none !important;
+    }
+
+    tbody td {
+      font-size: 11px !important;
+      padding: 8px 10px !important;
+      border-bottom: 0.5px solid #e6f0fa !important;
+      border-top: none !important;
+      vertical-align: middle !important;
+    }
+
+    .badge {
+      font-size: 10px !important;
+      padding: 2px 7px !important;
+      border-radius: 20px !important;
+    }
+  }
+
+  /* ── FILTRES : NE PAS toucher col-6, col-12 — Bootstrap gère ── */
+  .form-control.form-control-sm,
+  .form-select.form-select-sm {
+    border: 0.5px solid #d0e4f7 !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    color: #1a2e42 !important;
+    box-shadow: none !important;
+
+    &:focus {
+      border-color: #1565C0 !important;
+    }
+  }
+
+  .form-label {
+    font-size: 10px !important;
+    color: #7a9ab8 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 4px !important;
+  }
+
+  /* ── FILTRES autres sections (dates côte à côte) ── */
+  .row.g-3.align-items-end,
+  .row.g-3.mb-4:not(:has(.col-12)) {
+
+    .col-lg-4,
+    .col-lg-3,
+    .col-md-6 {
+      width: 50% !important;
+      flex: 0 0 50% !important;
+      padding: 0 4px !important;
+    }
+
+    .col-lg-4:last-child,
+    .col-lg-3:last-child,
+    .col-lg-4.col-md-12 {
+      width: 100% !important;
+      flex: 0 0 100% !important;
+      padding: 0 !important;
+    }
+  }
+
+  /* ── BOUTON FILTRER ── */
+  .btn-success.btn-sm.rounded.w-100 {
+    background: #1565C0 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+
+  /* ── GRAPHIQUE ZONE ── */
+  .bg-light.rounded.p-3 {
+    background: #f0f7ff !important;
+    border-radius: 10px !important;
+    border: 0.5px solid #cce0f5 !important;
+    padding: 12px !important;
+  }
+
+  apx-chart {
+    width: 100% !important;
+  }
+}
+
+/* ── Fix lisibilité carte Avoirs ── */
+.bg-info-dark {
+  background: #0e7c86 !important;
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+
+    &.active {
+      color: #fff !important;
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+  }
+
+  span.text-white,
+  span.f-34 {
+    color: #fff !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+  }
+
+  p.opacity-50 {
+    opacity: 0.75 !important;
+    color: #fff !important;
+  }
+
+  .text-white.ti {
+    color: #fff !important;
+    opacity: 1 !important;
+  }
+}

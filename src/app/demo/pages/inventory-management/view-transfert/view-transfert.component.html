@@ -1,0 +1,282 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">✅ Mes transferts</h5>
+            <!-- <span class="badge bg-light text-dark fw-semibold">
+                Transferts : {{ pagination?.nberItems || 0 }}
+            </span> -->
+        </div>
+
+        <div class="card-body">
+
+            <!-- SEARCH -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeValidItems($event)">
+                    </app-search-list>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-info-subtle text-dark fw-semibold">
+                        Nombre de transferts : {{ pagination?.nberItems || 0 }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- ERRORS -->
+            <div *ngIf="errors" class="mb-3">
+                <div *ngIf="errors?.permission" class="alert alert-danger">{{ errors?.permission }}</div>
+                <div *ngIf="errors?.transfert" class="alert alert-danger">{{ errors?.transfert }}</div>
+                <div *ngIf="errors?.item" class="alert alert-danger">{{ errors?.item }}</div>
+            </div>
+
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- TABLE DESKTOP -->
+            <div class="table-responsive d-none d-md-block" *ngIf="!isLoading">
+                <table class="table table-hover align-middle table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>N° Transfert</th>
+                            <th>Destinataire</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let itemValid of all_items_for_validate; trackBy: trackById"
+                            [ngClass]="{ 'table-active': itemValid?.id === idTransfert }">
+                            <td>{{ itemValid?.created_at | date: 'dd MMMM yyyy à HH:mm':'':'fr' }}</td>
+                            <td>{{ itemValid?.transfertNber }}</td>
+                            <td>{{ itemValid?.toWhStore?.nameWh }}</td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2"
+                                    [ngClass]="itemValid?.validateAll ? 'bg-success' : 'bg-warning text-dark'">
+                                    {{ itemValid?.validateAll ? 'Traité' : 'Non Traité' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button class="btn btn-outline-info btn-sm rounded-circle"
+                                        (click)="listProducts(itemValid)" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalShowItem" title="Voir les articles">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm rounded-circle"
+                                        (click)="transfertToDelete(itemValid)" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalReasonDel" title="Supprimer le transfert">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="all_items_for_validate.length === 0 && !isLoading">
+                            <td colspan="5" class="text-center text-muted">Aucun transfert trouvé</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="mobile-tr-list d-block d-md-none" *ngIf="!isLoading">
+
+                <div *ngIf="all_items_for_validate.length === 0"
+                    style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                    Aucun transfert trouvé
+                </div>
+
+                <div *ngFor="let itemValid of all_items_for_validate; trackBy: trackById" class="tr-card"
+                    [class.active]="itemValid?.id === idTransfert">
+
+                    <div class="tr-top">
+                        <div>
+                            <div class="tr-nber">{{ itemValid?.transfertNber }}</div>
+                            <div class="tr-date">
+                                {{ itemValid?.created_at | date: 'dd MMMM yyyy à HH:mm':'':'fr' }}
+                            </div>
+                        </div>
+                        <span [ngClass]="itemValid?.validateAll ? 'badge-done' : 'badge-pend'">
+                            {{ itemValid?.validateAll ? '✓ Traité' : '⏳ Non traité' }}
+                        </span>
+                    </div>
+
+                    <div class="tr-dest">
+                        <div class="tr-dest-node">
+                            <span class="tr-dest-lbl">Destinataire</span>
+                            <span class="tr-dest-val">{{ itemValid?.toWhStore?.nameWh }}</span>
+                        </div>
+                    </div>
+
+                    <div class="tr-actions">
+                        <button class="btn-act btn-view" (click)="listProducts(itemValid)" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalShowItem">
+                            👁 Voir articles
+                        </button>
+                        <button class="btn-act btn-del" (click)="transfertToDelete(itemValid)" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalReasonDel">
+                            🗑 Supprimer
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PAGINATION -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChange($event)">
+            </app-set-pagination>
+
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL : VOIR LES ARTICLES ── -->
+<div class="modal fade" id="exampleModalShowItem" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">📋 Liste des articles</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- TABLE DESKTOP -->
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table table-hover table-bordered align-middle text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Désignation</th>
+                                <th>Réf. Stock</th>
+                                <th>Qté transférée</th>
+                                <th>Qté validée</th>
+                                <th>Défectueuse</th>
+                                <th>Perdue</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of list_items; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td class="text-wrap">{{ item?.lotWhStock?.product?.name }}</td>
+                                <td>{{ item?.lotWhStock?.indiceStock }}</td>
+                                <td>{{ item?.quantity }}</td>
+                                <td>{{ item?.quantity_received }}</td>
+                                <td>{{ item?.quantity_damaged }}</td>
+                                <td>{{ item?.quantity_lost }}</td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2"
+                                        [ngClass]="item?.alreadyValidate ? 'bg-success' : 'bg-warning text-dark'">
+                                        {{ item?.alreadyValidate ? 'Validé' : 'Non Validé' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr *ngIf="list_items.length === 0">
+                                <td colspan="8" class="text-center text-muted">Aucun article trouvé</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CARTES MOBILE -->
+                <div class="modal-items-list d-block d-md-none">
+
+                    <div *ngIf="list_items.length === 0"
+                        style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
+                        Aucun article trouvé
+                    </div>
+
+                    <div *ngFor="let item of list_items; let i = index" class="modal-item-card">
+
+                        <div class="mi-top">
+                            <span class="mi-num">#{{ i + 1 }}</span>
+                            <span [ngClass]="item?.alreadyValidate ? 'mi-badge-valid' : 'mi-badge-pend'">
+                                {{ item?.alreadyValidate ? '✓ Validé' : '⏳ Non validé' }}
+                            </span>
+                        </div>
+
+                        <div class="mi-name">{{ item?.lotWhStock?.product?.name }}</div>
+                        <div class="mi-ref">{{ item?.lotWhStock?.indiceStock }}</div>
+
+                        <div class="mi-grid">
+                            <div class="mi-block">
+                                <span class="mi-block-lbl">Transférée</span>
+                                <span class="mi-block-val">{{ item?.quantity }}</span>
+                            </div>
+                            <div class="mi-block">
+                                <span class="mi-block-lbl">Validée</span>
+                                <span class="mi-block-val">{{ item?.quantity_received }}</span>
+                            </div>
+                            <div class="mi-block">
+                                <span class="mi-block-lbl">Défectueuse</span>
+                                <span class="mi-block-val warning">{{ item?.quantity_damaged }}</span>
+                            </div>
+                            <div class="mi-block">
+                                <span class="mi-block-lbl">Perdue</span>
+                                <span class="mi-block-val danger">{{ item?.quantity_lost }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL : SUPPRESSION ── -->
+<div class="modal fade" id="exampleModalReasonDel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3">
+
+            <div class="modal-header bg-danger text-white">
+                <h6 class="modal-title">🗑️ Suppression de transfert</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="text-muted small mb-3">
+                    ⚠️ <strong>NB :</strong> La suppression est
+                    <span class="text-danger fw-bold">irréversible</span>.
+                </p>
+                <p class="mb-3">
+                    Pour confirmer la suppression de ce transfert, veuillez taper le mot&nbsp;
+                    <span class="badge bg-danger-subtle text-danger-emphasis px-2 py-1 fw-semibold">
+                        supprimer
+                    </span>
+                    ci-dessous :
+                </p>
+                <div class="form-floating">
+                    <input [(ngModel)]="reasonDelete" id="deleteReasonInput" type="text"
+                        class="form-control form-control-sm" placeholder="Saisissez le mot 'supprimer'">
+                    <label for="deleteReasonInput">Saisissez "supprimer"</label>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="closeModalDelete003" type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" (click)="deleteTransfert()"
+                    [disabled]="reasonDelete !== 'supprimer'">
+                    Supprimer définitivement
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

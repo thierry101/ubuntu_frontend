@@ -1,0 +1,188 @@
+<div class="">
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
+            <h5 class="mb-0">🗑️ Valider les produits défectueux / expirés</h5>
+
+            <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                <button class="btn btn-light btn-sm" (click)="exportAllItemToExcel()">
+                    📊 Export Excel
+                </button>
+                <button class="btn btn-outline-light btn-sm" (click)="exportAllToPDF()">
+                    🧾 Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+            <!-- ✅ Toolbar -->
+            <div class="row g-3 align-items-end mb-4">
+                <!-- 🔍 Search Field -->
+                <div class="col-12 col-md-4">
+                    <label for="search-stock" class="form-label fw-semibold text-secondary">
+                        🔍 Rechercher un article
+                    </label>
+                    <app-search-list id="search-stock" [searchTerm]="searchTerm"
+                        (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <!-- 🗂️ Organiser par -->
+                <div class="col-12 col-md-3">
+                    <label class="form-label fw-semibold text-secondary mb-1">🗂️ Organiser par :</label>
+                    <select [(ngModel)]="ordered" (change)="orderedItem()" (click)="retrieveWhStore()"
+                        class="form-select form-select-sm">
+                        <option value="0">Choisir ...</option>
+                        <option [value]="item?.id" *ngFor="let item of all_wh_stores">
+                            {{ item?.nameWh }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 🧩 Columns Selector -->
+                <div class="col-12 col-md-3 d-none d-md-block">
+                    <label class="form-label fw-semibold text-secondary mb-1">🧩 Colonnes visibles</label>
+                    <app-columns-selected [columns]="columns" (toggle)="toggleColumnVisibility($event)">
+                    </app-columns-selected>
+                </div>
+            </div>
+
+            <!-- ✅ Loader -->
+            <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
+
+            <!-- ✅ Table Section -->
+            <div *ngIf="!isLoading" class="table-responsive shadow-sm rounded bg-white p-3">
+                <!-- Error Messages -->
+                <div *ngIf="errors?.confirm" class="text-danger text-center small mb-2">
+                    Choisir un statut de validation
+                </div>
+                <div *ngIf="errors?.wh_stor" class="text-danger text-center small mb-2">
+                    {{ errors?.wh_stor }}
+                </div>
+                <div *ngIf="errors?.trash_item" class="text-danger text-center small mb-2">
+                    {{ errors?.trash_item }}
+                </div>
+
+                <!-- Empty State -->
+                <h5 *ngIf="all_stocks_trash?.length === 0" class="text-center text-muted py-3">
+                    Aucun élément disponible
+                </h5>
+
+                <!-- Table -->
+                <small class="text-danger">{{errors?.permission}}</small>
+                <div class="table-responsive mb-2">
+                    <table *ngIf="all_stocks_trash?.length > 0"
+                        class="table table-hover table-bordered align-middle mb-0">
+                        <thead class="table-light text-center">
+                            <tr class="text-uppercase small text-muted">
+                                <th *ngIf="isColumnVisible('product')">Article</th>
+                                <th *ngIf="isColumnVisible('provider')">Fournisseur</th>
+                                <th *ngIf="isColumnVisible('whStore')">Boutique / Entrepôt</th>
+                                <th *ngIf="isColumnVisible('refStock')">Réf. Stock</th>
+                                <th *ngIf="isColumnVisible('expDate')">Date d’expiration</th>
+                                <th *ngIf="isColumnVisible('quantity')">Quantité</th>
+                                <th *ngIf="isColumnVisible('badge')">Badge</th>
+                                <th *ngIf="isColumnVisible('statut')">Statut validation</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <tr *ngFor="let item of all_stocks_trash; trackBy: trackById">
+                                <td *ngIf="isColumnVisible('product')"
+                                    class="fw-semibold text-dark text-wrap text-break">
+                                    {{ item?.lotWhStock?.product?.name }}
+                                </td>
+                                <td *ngIf="isColumnVisible('provider')">
+                                    {{ item?.lotWhStock?.provider || '—' }}
+                                </td>
+                                <td *ngIf="isColumnVisible('whStore')">
+                                    {{ item?.fromWhStore?.nameWh || '—' }}
+                                </td>
+                                <td *ngIf="isColumnVisible('refStock')">
+                                    {{ item?.lotWhStock?.indiceStock || '—' }}
+                                </td>
+                                <td *ngIf="isColumnVisible('expDate')">
+                                    {{ item?.lotWhStock?.expDate || '—' }}
+                                </td>
+                                <td *ngIf="isColumnVisible('quantity')">
+                                    {{ item?.quantity | number:'1.0-0':'fr' }}
+                                </td>
+                                <td *ngIf="isColumnVisible('badge')">
+                                    <span *ngIf="item?.badge === 'expired'"
+                                        class="badge bg-danger-subtle text-danger border border-danger fw-medium px-3 py-1 rounded-pill">
+                                        Expiré
+                                    </span>
+                                    <span *ngIf="item?.badge === 'bad'"
+                                        class="badge bg-warning-subtle text-warning border border-warning fw-medium px-3 py-1 rounded-pill">
+                                        Défectueux
+                                    </span>
+                                </td>
+                                <td *ngIf="isColumnVisible('statut')">
+                                    <select [(ngModel)]="item.confirm" (change)="setStatutTrash(item)"
+                                        [disabled]="item?.confirm === 1 || item?.confirm === 2"
+                                        class="form-select form-select-sm">
+                                        <option value="0">Choisir ...</option>
+                                        <option value="1">Oui</option>
+                                        <option value="2">Non</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LISTE MOBILE -->
+            <div class="d-block d-md-none mobile-trash-list" *ngIf="!isLoading">
+
+                <div *ngIf="all_stocks_trash?.length === 0" class="empty">
+                    Aucun élément disponible
+                </div>
+
+                <div *ngFor="let item of all_stocks_trash; trackBy: trackById" class="trash-card"
+                    [ngClass]="item?.badge === 'expired' ? 'expired' : 'bad'">
+
+                    <div class="trash-top">
+                        <div class="trash-name">{{ item?.lotWhStock?.product?.name }}</div>
+                        <span *ngIf="item?.badge === 'expired'" class="trash-badge-exp">⏰ Expiré</span>
+                        <span *ngIf="item?.badge === 'bad'" class="trash-badge-bad">🧪 Défectueux</span>
+                    </div>
+
+                    <div class="trash-meta">
+                        <span class="meta-pill qty">Qté : {{ item?.quantity | number:'1.0-0':'fr' }}</span>
+                        <span class="meta-pill" *ngIf="item?.lotWhStock?.provider">
+                            🏭 {{ item?.lotWhStock?.provider }}
+                        </span>
+                        <span class="meta-pill" *ngIf="item?.fromWhStore?.nameWh">
+                            🏪 {{ item?.fromWhStore?.nameWh }}
+                        </span>
+                        <span class="meta-pill" *ngIf="item?.lotWhStock?.indiceStock">
+                            📦 {{ item?.lotWhStock?.indiceStock }}
+                        </span>
+                        <span class="meta-pill exp" *ngIf="item?.lotWhStock?.expDate">
+                            📅 Exp : {{ item?.lotWhStock?.expDate | date:'d MMM y' }}
+                        </span>
+                    </div>
+
+                    <div class="trash-statut">
+                        <span class="statut-lbl">Statut de validation</span>
+                        <select [(ngModel)]="item.confirm" (change)="setStatutTrash(item)"
+                            [disabled]="item?.confirm === 1 || item?.confirm === 2" class="statut-select" [ngClass]="{
+          'validated': item?.confirm === 1,
+          'rejected':  item?.confirm === 2
+        }">
+                            <option value="0">Choisir...</option>
+                            <option value="1">✓ Oui — Valider</option>
+                            <option value="2">✕ Non — Rejeter</option>
+                        </select>
+                    </div>
+
+                </div>
+                <!-- ✅ Pagination -->
+                <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                    [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                    (pageChange)="onPageChange($event)">
+                </app-set-pagination>
+            </div>
+        </div>
+    </div>

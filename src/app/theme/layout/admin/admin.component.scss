@@ -1,0 +1,120 @@
+/* ── BOTTOM NAV MOBILE ── */
+@media (max-width: 767px) {
+
+    /* Éviter que le contenu soit caché derrière la barre */
+    .pc-container,
+    .coded-wrapper,
+    .coded-content {
+        padding-bottom: 70px !important;
+    }
+
+    /* Cacher le footer sur mobile */
+    .pc-footer {
+        display: none !important;
+    }
+
+    /* ── BARRE DE NAVIGATION ── */
+    .mobile-bottom-nav {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 62px !important;
+        background: #1565C0 !important;
+        border-top: none !important;
+        box-shadow: 0 -4px 16px rgba(21, 101, 192, 0.3) !important;
+        z-index: 1100 !important;
+        display: flex !important;
+        align-items: stretch !important;
+        padding: 0 !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+
+    /* ── ITEM ── */
+    .bottom-nav-item {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        text-decoration: none !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        transition: color 0.15s, background 0.15s !important;
+        padding: 8px 4px !important;
+        border-radius: 0 !important;
+        position: relative !important;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+        }
+
+        &.active {
+            color: #fff !important;
+
+            &::before {
+                content: '' !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 25% !important;
+                right: 25% !important;
+                height: 3px !important;
+                background: #fff !important;
+                border-radius: 0 0 4px 4px !important;
+            }
+
+            .bottom-nav-icon {
+                transform: scale(1.15) !important;
+            }
+
+            .bottom-nav-label {
+                font-weight: 600 !important;
+                color: #fff !important;
+            }
+        }
+    }
+
+    /* ── ICÔNE ── */
+    .bottom-nav-icon {
+        font-size: 20px !important;
+        line-height: 1 !important;
+        transition: transform 0.15s !important;
+        display: block !important;
+    }
+
+    /* ── LABEL ── */
+    .bottom-nav-label {
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.3px !important;
+        color: inherit !important;
+        font-family: 'DM Sans', sans-serif !important;
+    }
+}
+
+/* Conteneur de l'indicateur */
+.refresh-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    background: #f4f7fa;
+    transition: height 0.1s ease-out;
+    /* Retour fluide quand on lâche */
+}
+
+/* Optimisation de la WebView Capacitor */
+.pc-container {
+    overscroll-behavior-y: contain;
+    /* Bloque le refresh par défaut du navigateur */
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Optionnel : Empêcher le swipe sur les éléments de carrousel ou cartes si nécessaire */
+.no-swipe {
+    touch-action: pan-y !important;
+}

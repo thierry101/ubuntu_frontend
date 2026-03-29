@@ -1,0 +1,349 @@
+@media (max-width: 767px) {
+
+    /* ── HEADER ── */
+    .card-header {
+        background: #1565C0 !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 14px 16px !important;
+        gap: 10px;
+
+        h5 {
+            font-size: 14px !important;
+        }
+
+        .btn-light,
+        .btn-outline-light {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+            border: 0.5px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            padding: 6px 12px !important;
+        }
+    }
+
+    .card-body {
+        padding: 14px !important;
+    }
+
+    /* ── FILTRES ── */
+    .row.g-3.align-items-end.mb-4 {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 14px !important;
+        margin: 0 0 12px !important;
+        gap: 10px 0 !important;
+
+        .col-md-3.col-6,
+        .col-md-2.col-6,
+        .col-md-1.col-12 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Dates côte à côte */
+        /* Désignation — pleine largeur */
+        .col-md-3.col-6:nth-child(2) {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        /* Type de mouvement — côte à côte avec bouton */
+        .col-md-2.col-6 {
+            width: calc(60% - 4px) !important;
+            flex: 0 0 calc(60% - 4px) !important;
+            padding-left: 0 !important;
+            padding-right: 4px !important;
+        }
+
+        /* Bouton Valider — côte à côte avec type */
+        .col-md-1.col-12 {
+            width: 40% !important;
+            flex: 0 0 40% !important;
+            padding-left: 4px !important;
+            padding-right: 0 !important;
+            align-self: flex-end;
+        }
+
+        .form-label {
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            color: #7a9ab8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 5px !important;
+        }
+
+        .form-control,
+        .form-select {
+            border: 0.5px solid #d0e4f7 !important;
+            border-radius: 8px !important;
+            padding: 9px 12px !important;
+            font-size: 13px !important;
+            min-height: 40px !important;
+            box-shadow: none !important;
+
+            &:focus {
+                border-color: #1565C0 !important;
+            }
+        }
+
+        .btn.btn-primary {
+            width: 100% !important;
+            border-radius: 8px !important;
+            padding: 10px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
+    }
+
+    /* ── RAPPORT HEADER ── */
+    .card.bg-light-subtle.mb-4 {
+        border-radius: 12px !important;
+        border-left: 4px solid #1565C0 !important;
+        border-top: 0.5px solid #d0e4f7 !important;
+        border-right: 0.5px solid #d0e4f7 !important;
+        border-bottom: 0.5px solid #d0e4f7 !important;
+        background: #fff !important;
+
+        .card-body {
+            padding: 12px 14px !important;
+        }
+
+        .col-md-4 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            margin-bottom: 4px !important;
+            text-align: left !important;
+
+            &:last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        h5 {
+            font-size: 14px !important;
+            margin-bottom: 1px !important;
+        }
+
+        small {
+            font-size: 11px !important;
+        }
+    }
+
+    /* ── BADGES RÉSUMÉ ── */
+    .d-flex.flex-wrap.gap-2.mb-3 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px !important;
+
+        .badge {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 10px !important;
+            padding: 10px 8px !important;
+            font-size: 11px !important;
+            line-height: 1.4 !important;
+            text-align: center !important;
+
+            strong {
+                font-size: 15px !important;
+                font-family: 'DM Mono', monospace;
+                display: block;
+            }
+        }
+    }
+
+    /* ── ARTICLE SÉLECTIONNÉ ── */
+    h6.fw-semibold.mb-3 {
+        background: #e3f2fd;
+        border: 0.5px solid #90caf9;
+        border-radius: 10px;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        color: #1565C0 !important;
+
+        span.text-primary {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
+    }
+
+    /* ── CACHER LA TABLE ── */
+    .table-responsive {
+        display: none !important;
+    }
+
+    /* ── LISTE MOBILE ── */
+    .mobile-mvt-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .mvt-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #d0e4f7;
+        padding: 12px 14px;
+    }
+
+    .mvt-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 8px;
+    }
+
+    .mvt-product {
+        font-size: 13px;
+        font-weight: 500;
+        color: #0d1b2a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mvt-ref {
+        font-size: 10px;
+        font-family: 'DM Mono', monospace;
+        color: #7a9ab8;
+        margin-top: 2px;
+    }
+
+    .mvt-qty {
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'DM Mono', monospace;
+        color: #1565C0;
+        flex-shrink: 0;
+        text-align: right;
+    }
+
+    .mvt-qty-lbl {
+        font-size: 9px;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        text-align: right;
+        display: block;
+        margin-bottom: 1px;
+    }
+
+    .mvt-type {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        margin-bottom: 8px;
+
+        &.sell {
+            background: #e3f2fd;
+            color: #1565C0;
+            border: 0.5px solid #90caf9;
+        }
+
+        &.transfer {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 0.5px solid #a5d6a7;
+        }
+
+        &.defect {
+            background: #fff0f0;
+            color: #e53935;
+            border: 0.5px solid #ffd0d0;
+        }
+
+        &.gift {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 0.5px solid #a5d6a7;
+        }
+
+        &.lost {
+            background: #f5f5f5;
+            color: #424242;
+            border: 0.5px solid #e0e0e0;
+        }
+
+        &.entry {
+            background: #f0f7ff;
+            color: #2c4f70;
+            border: 0.5px solid #cce0f5;
+        }
+    }
+
+    .mvt-flow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .mvt-node {
+        background: #f0f7ff;
+        border: 0.5px solid #cce0f5;
+        border-radius: 8px;
+        padding: 5px 10px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mvt-node-lbl {
+        font-size: 9px;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+    }
+
+    .mvt-node-val {
+        font-size: 11px;
+        font-weight: 500;
+        color: #0d1b2a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .mvt-arrow {
+        color: #7a9ab8;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .mvt-date {
+        font-size: 10px;
+        color: #aab8cc;
+        font-family: 'DM Mono', monospace;
+        margin-top: 8px;
+    }
+
+    /* ── PAGINATION ── */
+    app-set-pagination .pagination {
+        justify-content: center !important;
+        gap: 4px;
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 0.5px solid #d0e4f7 !important;
+            color: #1565C0 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+        }
+
+        .page-item.active .page-link {
+            background: #1565C0 !important;
+            color: #fff !important;
+            border-color: #1565C0 !important;
+        }
+    }
+}
