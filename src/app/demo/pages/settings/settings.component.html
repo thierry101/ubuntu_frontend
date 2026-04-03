@@ -20,7 +20,7 @@
                     <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" class="row g-3">
                         <!-- Logo Upload -->
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold">Logo  </label>
+                            <label class="form-label fw-semibold">Logo </label>
                             <div class="d-flex align-items-center gap-3">
                                 <label class="btn btn-outline-primary btn-sm rounded-3 py-2 px-3 mb-0">
                                     <i class="ti ti-photo me-1"></i> Choisir logo
@@ -108,6 +108,8 @@
                                 <label class="form-check-label ms-2 fw-semibold" for="expiredProd">
                                     Retirer automatiquement le stock d'articles expirés du stock actuel ?
                                 </label>
+                                <app-tooltip
+                                    message="En activant cette option, les articles expirés seront automatiquement retirés du stock actuel."></app-tooltip>
                                 <span
                                     class="badge bg-{{ expiredProd ? 'success' : 'secondary' }}-subtle text-{{ expiredProd ? 'success' : 'secondary' }} ms-2">
                                     {{ expiredProd ? 'Oui' : 'Non' }}
@@ -191,6 +193,8 @@
                                         <label class="form-check-label ms-2 fw-semibold" for="whSecondary">
                                             Entrepôts annexes ?
                                         </label>
+                                        <app-tooltip
+                                            message="Les entrepôts annexes sont des sites de stockage secondaires destinés à accueillir des produits transférés depuis l’entrepôt central."></app-tooltip>
                                         <span
                                             class="badge bg-{{ whSecondary ? 'success' : 'secondary' }}-subtle text-{{ whSecondary ? 'success' : 'secondary' }} ms-2">
                                             {{ whSecondary ? 'Oui' : 'Non' }}
@@ -205,6 +209,8 @@
                                         <label class="form-check-label ms-2 fw-semibold" for="okToSold">
                                             Responsable boutique peut vendre ?
                                         </label>
+                                        <app-tooltip
+                                            message="En activant cette option, les responsables de boutique pourront vendre les produits en stock."></app-tooltip>
                                         <span
                                             class="badge bg-{{ okToSold ? 'success' : 'secondary' }}-subtle text-{{ okToSold ? 'success' : 'secondary' }} ms-2">
                                             {{ okToSold ? 'Oui' : 'Non' }}
@@ -219,6 +225,8 @@
                                         <label class="form-check-label ms-2 fw-semibold" for="stockVerif">
                                             Double vérification de stock ?
                                         </label>
+                                        <app-tooltip
+                                            message="En activant cette option, chaque entrée de stock doit être validée par un administrateur avant d'être utilisée."></app-tooltip>
                                         <span
                                             class="badge bg-{{ stockVerif ? 'success' : 'secondary' }}-subtle text-{{ stockVerif ? 'success' : 'secondary' }} ms-2">
                                             {{ stockVerif ? 'Oui' : 'Non' }}
@@ -233,6 +241,8 @@
                                         <label class="form-check-label ms-2 fw-semibold" for="checkDefective">
                                             Validation des articles en rébus ?
                                         </label>
+                                        <app-tooltip
+                                            message="En activant cette option, les articles en rébus devront être validés par un administrateur avant d'être mis hors stock."></app-tooltip>
                                         <span
                                             class="badge bg-{{ checkDefective ? 'success' : 'secondary' }}-subtle text-{{ checkDefective ? 'success' : 'secondary' }} ms-2">
                                             {{ checkDefective ? 'Oui' : 'Non' }}
@@ -244,9 +254,10 @@
                                         <input class="form-check-input" type="checkbox" id="enableWhatsap"
                                             [checked]="enableWhatsap" (click)="enableWhatsappMsg($event)">
                                         <label class="form-check-label ms-2 fw-semibold" for="enableWhatsap">
-                                            Activer l'envoie des factures par whatsapp <app-tooltip
-                                                message="Si cet option est activée, les factures d'achat des clients seront envoyées directement dans leur WhatsApp."></app-tooltip>
+                                            Activer l'envoie des factures par whatsapp
                                         </label>
+                                        <app-tooltip
+                                            message="Si cet option est activée, les factures d'achat des clients seront envoyées directement dans leur WhatsApp."></app-tooltip>
                                         <span
                                             class="badge bg-{{ enableWhatsap ? 'success' : 'secondary' }}-subtle text-{{ enableWhatsap ? 'success' : 'secondary' }} ms-2">
                                             {{ enableWhatsap ? 'Oui' : 'Non' }}
@@ -358,11 +369,40 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ...
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="inputActualQty4" class="form-label">Quantité actuelle</label>
+                        <input type="number" [value]="settingSite?.nberWhatsappMsg" readonly class="form-control form-control-sm"
+                            id="inputActualQty4">
+                    </div>
+                    <div class="col-7">
+                        <label for="inputBuyQty4" class="form-label">Quantité à acheter</label>
+                        <input (ngModelChange)="calculateTotal($event)" [(ngModel)]="quantity" name="actualQty"
+                            type="number" class="form-control form-control-sm" id="inputBuyQty4">
+                    </div>
+                    <div class="col-1 text-center d-flex align-items-center justify-content-center">
+                        <strong>X</strong>
+                    </div>
+                    <div class="col-4" *ngIf="adminSetting$ | async as settingAdmin">
+                        <label for="inputUnitPrice4" class="form-label">P.U</label>
+                        <div class="input-group input-group-sm mb-3">
+                            <input [(ngModel)]="unitPrice" name="unitPrice" readonly type="number" class="form-control"
+                                [value]="settingAdmin?.pub_whatsapp">
+                            <span class="input-group-text" id="basic-addon2">{{settingSite?.devise}}</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputTotal4" class="form-label">Total</label>
+                        <div class="input-group input-group-sm mb-3">
+                            <input [(ngModel)]="total" name="total" type="number" readonly class="form-control">
+                            <span class="input-group-text" id="basic-addon2">{{settingSite?.devise}}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-sm btn-primary">Acheter</button>
             </div>
         </div>
     </div>

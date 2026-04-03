@@ -9,7 +9,7 @@ const routes: Routes = [
       {
         path: 'home-product',
         loadComponent: () => import('./home-product/home-product.component').then((c) => c.HomeProductComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_provider', 'handle_categories', 'handle_products'], //edit this guard to acccept array of permissions
@@ -18,7 +18,7 @@ const routes: Routes = [
       {
         path: 'handle-providers',
         loadComponent: () => import('./providers/providers.component').then((c) => c.ProvidersComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_provider'],
@@ -27,7 +27,7 @@ const routes: Routes = [
       {
         path: 'handle-store-warehouse',
         loadComponent: () => import('./store-wh/store-wh.component').then((c) => c.StoreWhComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_stores_wh'],
@@ -36,7 +36,7 @@ const routes: Routes = [
       {
         path: 'handle-sub-and-category',
         loadComponent: () => import('./cat-subcategories/cat-subcategories.component').then((c) => c.CatSubcategoriesComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_categories'],
@@ -45,7 +45,7 @@ const routes: Routes = [
       {
         path: 'handle-products',
         loadComponent: () => import('./articles/articles.component').then((c) => c.ArticlesComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_products'],
@@ -54,7 +54,7 @@ const routes: Routes = [
       {
         path: 'products-in-warehouse',
         loadComponent: () => import('./articles-in-stock/articles-in-stock.component').then((c) => c.ArticlesInStockComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Agency'],
           requiredPermissions: ['watch_stock'],
@@ -63,7 +63,7 @@ const routes: Routes = [
       {
         path: 'input-invoice',
         loadComponent: () => import('./input-invoice/input-invoice.component').then((c) => c.InputInvoiceComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Daf'],
           requiredPermissions: ['view_supplier_debts'],
@@ -72,7 +72,7 @@ const routes: Routes = [
       {
         path: 'setting-promotion',
         loadComponent: () => import('./setting-promotion/setting-promotion.component').then((c) => c.SettingPromotionComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_promotion'],
@@ -81,7 +81,7 @@ const routes: Routes = [
       {
         path: 'promotion',
         loadComponent: () => import('./promotions/promotions.component').then((c) => c.PromotionsComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_promotion'],
@@ -90,7 +90,7 @@ const routes: Routes = [
       {
         path: 'discount-client',
         loadComponent: () => import('./discount-client/discount-client.component').then((c) => c.DiscountClientComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_discount_client'],
@@ -99,7 +99,7 @@ const routes: Routes = [
         {
         path: 'my-invoice',
         loadComponent: () => import('../invoices/invoices.component').then((c) => c.InvoicesComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Daf'],
           requiredPermissions: [''],

@@ -118,7 +118,7 @@ export class SettingsComponent implements OnInit {
 
     this.publicService.adminSetting$.subscribe(setting => {
       if (setting) {
-        this.unitPrice = setting.simple_whatsapp;
+        this.unitPrice = setting?.simple_whatsapp;
         this.calculateTotal();
       }
     });

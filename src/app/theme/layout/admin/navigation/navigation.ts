@@ -44,16 +44,16 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'ti ti-dashboard',
     breadcrumbs: false
   },
-  {
-    id: 'analytics',
-    title: 'Prévision I.A',
-    roles: ['Admin'],
-    type: 'item',
-    classes: 'nav-item',
-    url: '/analytics',
-    icon: 'ti ti-chart-line',
-    breadcrumbs: false
-  },
+  // {
+  //   id: 'analytics',
+  //   title: 'Prévision I.A',
+  //   roles: ['Admin'],
+  //   type: 'item',
+  //   classes: 'nav-item',
+  //   url: '/analytics',
+  //   icon: 'ti ti-chart-line',
+  //   breadcrumbs: false
+  // },
   {
     id: 'users-permissions',
     title: 'Utilisateurs et accès',
@@ -152,15 +152,15 @@ export const NavigationItems: NavigationItem[] = [
       }
     ]
   },
-  {
-    id: 'audit_log',
-    title: 'Audit log',
-    roles: ['Admin', 'Administrateur'],
-    type: 'item',
-    classes: 'nav-item',
-    url: '/audit-log',
-    icon: 'ti ti-shield-lock'
-  },
+  // {
+  //   id: 'audit_log',
+  //   title: 'Audit log',
+  //   roles: ['Admin', 'Administrateur'],
+  //   type: 'item',
+  //   classes: 'nav-item',
+  //   url: '/audit-log',
+  //   icon: 'ti ti-shield-lock'
+  // },
 
   // About partner
   {

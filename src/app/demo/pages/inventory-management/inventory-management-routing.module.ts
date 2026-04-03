@@ -10,7 +10,7 @@ const routes: Routes = [
       {
         path: 'home-stock',
         loadComponent: () => import('./home-stock/home-stock.component').then((c) => c.HomeStockComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur', 'siteAdmin', 'Agent', 'Agency'],
           requiredPermissions: ['watch_stock', 'handle_stock', 'handle_trash', 'historik_transfert', 'historik_transfert', 'watch_trash_prod'], //edit this guard to acccept array of permissions
@@ -24,7 +24,7 @@ const routes: Routes = [
       {
         path: 'inventory-validate',
         loadComponent: () => import('./valid-inventory/valid-inventory.component').then((c) => c.ValidInventoryComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_stock'],
@@ -33,7 +33,7 @@ const routes: Routes = [
       {
         path: 'trash-validate',
         loadComponent: () => import('./trash-product/trash-product.component').then((c) => c.TrashProductComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_trash'],
@@ -42,7 +42,7 @@ const routes: Routes = [
        {
         path: 'my-trash',
         loadComponent: () => import('./my-trash/my-trash.component').then((c) => c.MyTrashComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency'],
           requiredPermissions: ['watch_trash_prod'],
@@ -56,7 +56,7 @@ const routes: Routes = [
       {
         path: 'historik-validation-items',//<!-- all-validation-items and valid-product use the same template -->
         loadComponent: () => import('./valid-transfert/valid-transfert.component').then((c) => c.ValidTransfertComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['historik_transfert'],
@@ -71,7 +71,7 @@ const routes: Routes = [
       {
         path: 'adjust-stock',
         loadComponent: () => import('./adjust-stock/adjust-stock.component').then((c) => c.AdjustStockComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['adjust_stock', 'view_adjustments_stock'],

@@ -1,6 +1,7 @@
 // Angular Imports
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { authAccessGuard } from 'src/app/guards/auth-access.guard';
 
 const routes: Routes = [
   {
@@ -12,7 +13,9 @@ const routes: Routes = [
       },
       {
         path: 'unauthorized',
-        loadComponent: () => import('./unauthorized/unauthorized.component').then((c) => c.UnauthorizedComponent)
+        loadComponent: () => import('./unauthorized/unauthorized.component').then((c) => c.UnauthorizedComponent),
+        canActivate: [authAccessGuard]
+
       },
       {
         path: 'comingSoon',

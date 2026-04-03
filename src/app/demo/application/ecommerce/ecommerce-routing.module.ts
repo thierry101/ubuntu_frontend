@@ -11,7 +11,7 @@ const routes: Routes = [
       {
         path: 'home-client-promotion',
         loadComponent: () => import('./home-clients-promotion/home-clients-promotion.component').then((c) => c.HomeClientsPromotionComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_clients', 'handle_promotion', 'handle_discount_client'],
@@ -20,7 +20,7 @@ const routes: Routes = [
       {
         path: 'handle-expenses',
         loadComponent: () => import('./expenses/expenses.component').then((c) => c.ExpensesComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Daf'],
           requiredPermissions: ['handle_expenses'], //adapt to suit your needs
@@ -29,7 +29,7 @@ const routes: Routes = [
       {
         path: 'advertising-promotion',
         loadComponent: () => import('../../pages/articleManagement/advert/advert.component').then((c) => c.AdvertComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_advertising'],
@@ -43,7 +43,7 @@ const routes: Routes = [
       {
         path: 'home-finance',
         loadComponent: () => import('./finances/finances.component').then((c) => c.FinancesComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Daf'],
           requiredPermissions: ['view_supplier_debts', 'handle_expenses', 'handle_proforma'], //adapt to suit your needs
@@ -52,7 +52,7 @@ const routes: Routes = [
       {
         path: 'home-ecommerce',
         loadComponent: () => import('./ecommerce-menu/ecommerce-menu.component').then((c) => c.EcommerceMenuComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller'],
           requiredPermissions: ['handle_ecommerce'], //adapt to suit your needs
@@ -61,7 +61,7 @@ const routes: Routes = [
       }, {
         path: 'command-catalog',
         loadComponent: () => import('./commands-catalog/commands-catalog.component').then((c) => c.CommandsCatalogComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_ecommerce'], //adapt to suit your needs
@@ -71,7 +71,7 @@ const routes: Routes = [
       {
         path: 'catalog-setting',
         loadComponent: () => import('./catalog-products/catalog-products.component').then((c) => c.CatalogProductsComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_ecommerce'], //adapt to suit your needs
@@ -80,7 +80,7 @@ const routes: Routes = [
       {
         path: 'setting-catalog',
         loadComponent: () => import('./setting-catalog/setting-catalog.component').then((c) => c.SettingCatalogComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin'],
           requiredPermissions: ['handle_ecommerce'], //adapt to suit your needs
@@ -89,7 +89,7 @@ const routes: Routes = [
       {
         path: 'invoice-proforma',
         loadComponent: () => import('./invoice-proforma/invoice-proforma.component').then((c) => c.InvoiceProformaComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Daf'],
           requiredPermissions: ['handle_proforma'], //adapt to suit your needs

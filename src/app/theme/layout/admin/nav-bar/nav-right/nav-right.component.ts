@@ -61,16 +61,16 @@ export class NavRightComponent implements OnInit {
     })
   }
   logout() {
+    // ✅ Supprimer les cookies immédiatement AVANT l'appel HTTP
+    // Ainsi authRedirectGuard ne trouvera plus de session valide
+    this.clearUserSession();
+
     this.authService.logout().subscribe({
       next: () => {
-        this.clearUserSession();
-        this.route.navigate(['/login/']);
+        this.route.navigate(['/login']);
       },
-      error: (err) => {
-        console.error('Logout failed:', err);
-        // Still clear local data to force logout on client side
-        this.clearUserSession();
-        this.route.navigate(['/login/']);
+      error: () => {
+        this.route.navigate(['/login']);
       }
     });
   }

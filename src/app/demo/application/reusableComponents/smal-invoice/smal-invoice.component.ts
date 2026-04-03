@@ -4,11 +4,12 @@ import { PrintService } from 'src/app/services/print.service';
 import { PublicService } from 'src/app/services/public.service';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { Capacitor } from '@capacitor/core';
+import { SubmitSpinnerComponent } from "../submit-spinner/submit-spinner.component";
 
 @Component({
   selector: 'app-smal-invoice',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, SubmitSpinnerComponent],
   templateUrl: './smal-invoice.component.html',
   styleUrl: './smal-invoice.component.scss'
 })
@@ -16,6 +17,7 @@ export class SmalInvoiceComponent implements OnInit {
   @Input() order_printed!: any
   @Input() item_of_deposit!: any
   setting!: any
+  isPrinting: boolean = false;
   // @ViewChild('tableToPrint23', { static: false }) el!: ElementRef;
   @ViewChild('tableToPrint23', { static: false }) tableToPrint!: ElementRef;
   constructor(private publicService: PublicService, private printService: PrintService, private cdr: ChangeDetectorRef) { }
@@ -73,9 +75,11 @@ export class SmalInvoiceComponent implements OnInit {
 
 
   async printOrderSmall(): Promise<void> {
+    this.isPrinting = true
     try {
       if (!this.tableToPrint || !this.tableToPrint.nativeElement) {
         alert('❌ Vue non prête pour impression');
+        this.isPrinting = false
         return;
       }
 
@@ -90,7 +94,7 @@ export class SmalInvoiceComponent implements OnInit {
       // ✅ CAS MOBILE (Bluetooth)
       if (printer && isNative) {
         await this.printService.print(element);
-        console.log('✅ Impression Bluetooth envoyée');
+        this.isPrinting = false
         return;
       }
 
@@ -154,8 +158,9 @@ export class SmalInvoiceComponent implements OnInit {
       }, 300);
 
     } catch (error: any) {
-      console.error('Erreur impression:', error);
-      alert('❌ Erreur: ' + (error?.message || error));
+      this.isPrinting = false
+      alert('❌ Erreur: ');
+      // alert('❌ Erreur: ' + (error?.message || error));
     }
   }
 

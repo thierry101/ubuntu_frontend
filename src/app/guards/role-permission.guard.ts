@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app/guards/role-permission.guard.ts
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  CanActivateFn,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot
+} from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 
-/**
- * Guard avec fonction factory pour vérifier les rôles ET les permissions
- * @param allowedRoles - Tableau des rôles autorisés
- * @param requiredPermissions - Tableau des permissions requises (optionnel)
- */
 export function rolePermissionGuard(
   allowedRoles: string[] = [],
   requiredPermissions: string[] = []
@@ -20,71 +18,61 @@ export function rolePermissionGuard(
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    // ✅ Fusionner avec les données de la route si présentes
     const roles = allowedRoles.length > 0
       ? allowedRoles
-      : (route.data['allowedRoles'] || []);
+      : (route.data['allowedRoles'] ?? []);
 
     const permissions = requiredPermissions.length > 0
       ? requiredPermissions
-      : (route.data['requiredPermissions'] || []);
+      : (route.data['requiredPermissions'] ?? []);
 
     return authService.isAuthenticated().pipe(
       switchMap(isAuth => {
-        // Si pas authentifié, rediriger vers login
-        if (!isAuth) {
+        // ✅ Vérification auth + rôle en une seule étape
+        const userRole: string | null = authService.getRole?.role ?? null;
+
+        if (!isAuth || !userRole) {
           router.navigate(['/login'], {
             queryParams: { returnUrl: state.url }
           });
           return of(false);
         }
 
-        // Récupérer le rôle de l'utilisateur
-        const user = authService.getRole;
-        const userRole = user?.role || null;
-
-        if (!userRole) {
-          router.navigate(['/login']);
-          return of(false);
-        }
-
-        // Vérifier si le rôle est autorisé
+        // ✅ Rôle autorisé → accès direct sans appel réseau
         const hasRole = roles.length === 0 || roles.includes(userRole);
-
         if (hasRole) {
-          return of(true); // ✅ Authentifié et rôle autorisé
+          return of(true);
         }
 
-        // Si pas le bon rôle, vérifier les permissions
+        // ✅ Pas de permissions requises → refus immédiat
         if (permissions.length === 0) {
           router.navigate(['/unauthorized']);
           return of(false);
         }
 
-        // Vérification des permissions
+        // ✅ Vérification des permissions via API
         return authService.getPermissions().pipe(
-          map((permissionsResponse: any) => {
-            const userPerms = permissionsResponse?.result || [];
-            const hasPermission = permissions.some((perm: any) =>
+          map((response: any) => {
+            const userPerms: string[] = response?.result ?? [];
+
+            // Changer `.some` par `.every` si toutes les permissions sont requises
+            const hasPermission = permissions.some((perm: string) =>
               userPerms.includes(perm)
             );
 
-            if (hasPermission) {
-              return true; // ✅ Permission accordée
-            } else {
+            if (!hasPermission) {
               router.navigate(['/unauthorized']);
-              return false; // ❌ Pas de permission
             }
+
+            return hasPermission;
           }),
-          catchError((error) => {
-            console.error('Erreur lors de la vérification des permissions:');
+          catchError(() => {
             router.navigate(['/unauthorized']);
             return of(false);
           })
         );
       }),
-      catchError((error) => {
-        console.error('Erreur d\'authentification:');
+      catchError(() => {
         router.navigate(['/login']);
         return of(false);
       })

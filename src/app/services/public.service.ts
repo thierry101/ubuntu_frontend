@@ -19,6 +19,7 @@ export class PublicService {
 
   constructor(private http: HttpClient) {
     this.loadEnterpriseSettings()
+    this.loadAdminSetting().subscribe();
   }
 
   getSettingEtprise(): Observable<Enterprise> {
@@ -140,17 +141,14 @@ export class PublicService {
 
   // Charge et stocke le résultat dans le BehaviorSubject
   loadAdminSetting(): Observable<{ result: AdminSetting }> {
-    return this.http.get<{ result: AdminSetting }>(
-      `${environment.apiUrl}/get-admin-setting`,
-      { withCredentials: true }
-    ).pipe(
-      tap(response => this.adminSettingSubject.next(response.result))
+    return this.http.get<{ result: AdminSetting }>(`${environment.apiUrl}/get-admin-setting`, { withCredentials: true }).pipe(
+      tap(response => this.adminSettingSubject.next(response?.result))
     );
   }
 
   // Getter direct pour la valeur courante (sans subscribe)
   get adminSettingSnapshot(): AdminSetting | null {
-    return this.adminSettingSubject.getValue();
+    return this.adminSettingSubject?.getValue();
   }
 }
 

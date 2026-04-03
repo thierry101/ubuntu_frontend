@@ -1,18 +1,18 @@
 <div class="auth-main">
   <div class="auth-wrapper v1">
     <div class="auth-form">
-      <div class="card mt-5"> 
+      <div class="card mt-5">
         <div class="card-body">
           <div class="row">
             <div class="d-flex justify-content-between">
               <div>
                 <h2 class="text-secondary"><b>Salut, Bienvenue 👋</b></h2>
-                <h4>Connectez-vous</h4>
+                <!-- <h4>Connectez-vous</h4> -->
               </div>
               <app-logo></app-logo>
             </div>
           </div>
-          <div class="d-grid">
+          <!-- <div class="d-grid">
             <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
               <img src="assets/images/authentication/google-icon.svg" alt="Sign IN With Google" />Se connecter avec
               Google
@@ -20,7 +20,7 @@
           </div>
           <div class="saprator mt-3">
             <span>ou</span>
-          </div>
+          </div> -->
           <h5 class="my-4 d-flex justify-content-center"> Se connecter avec son adresse email </h5>
           <form [formGroup]="loginForm" class="row g-3" (ngSubmit)="onSubmit()">
             <div class="text-danger" *ngIf="errors && errors.login">{{ errors.login }}</div>

@@ -198,6 +198,13 @@ export class SettingPromotionComponent implements OnInit {
       next: (res: any) => {
         this.allRewards?.push(res?.result)
         this.errors = [];
+        this.nameRw = ''
+        this.colorRw = ''
+        this.typeReward = 0
+        this.periodReward = 0
+        this.typeRewardClient = 0
+        this.amtReward = 0
+        this.percentReward = 0
         this.fetchCLientRewarded(1)
         toastShow('success', "✅ Paramètre enregistré");
       },

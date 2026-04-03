@@ -21,7 +21,7 @@ const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./demo/dashboard/default/default.component').then((c) => c.DefaultComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur', 'Daf'],
           requiredPermissions: ['handle_dashboard'],
@@ -30,7 +30,7 @@ const routes: Routes = [
       {
         path: 'list-orders-warehouse/:id_wh_store',
         loadComponent: () => import('./demo/dashboard/list-orders/list-orders.component').then((c) => c.ListOrdersComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur', 'Daf'],
           requiredPermissions: ['handle_dashboard'],

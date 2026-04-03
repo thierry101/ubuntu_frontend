@@ -11,7 +11,7 @@ const routes: Routes = [
       {
         path: 'home-users-permissions',
         loadComponent: () => import('../home-users/home-users.component').then((c) => c.HomeUsersComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_users'],
@@ -20,7 +20,7 @@ const routes: Routes = [
       {
         path: 'handle-users',
         loadComponent: () => import('./list-style-v2/list-style-v2.component').then((c) => c.ListStyleV2Component),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_users'],
@@ -29,7 +29,7 @@ const routes: Routes = [
       {
         path: 'handle-clients',
         loadComponent: () => import('../clients/clients.component').then((c) => c.ClientsComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_clients'],
@@ -38,7 +38,7 @@ const routes: Routes = [
       {
         path: 'detail-client/:id',
         loadComponent: () => import('../detail-client/detail-client.component').then((c) => c.DetailClientComponent),
-        canActivate: [rolePermissionGuard],
+        canActivate: [rolePermissionGuard()],
         data: {
           allowedRoles: ['Admin', 'Administrateur'],
           requiredPermissions: ['handle_clients'],

@@ -4,11 +4,12 @@ import { PublicService } from 'src/app/services/public.service';
 import { typesPayment } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { ImagePipe } from "../../../../pipes/image.pipe";
+import { SubmitSpinnerComponent } from "../submit-spinner/submit-spinner.component";
 
 @Component({
   selector: 'app-big-invoice',
   standalone: true,
-  imports: [SharedModule, ImagePipe],
+  imports: [SharedModule, ImagePipe, SubmitSpinnerComponent],
   templateUrl: './big-invoice.component.html',
   styleUrl: './big-invoice.component.scss'
 })
@@ -17,6 +18,7 @@ export class BigInvoiceComponent implements OnInit {
   @Input() item_of_deposit!: any
   setting!: any
   typePayments!: any
+  isPrinting: boolean = false;
   constructor(private publicService: PublicService) { }
 
   ngOnInit(): void {
@@ -32,10 +34,11 @@ export class BigInvoiceComponent implements OnInit {
   }
 
   printInvoice(): void {
+    this.isPrinting = true;
     const printContents = document.getElementById('contentPrint001')?.innerHTML;
 
     if (!printContents) {
-      console.error('No content found to print.');
+      this.isPrinting = false;
       return;
     }
 
@@ -105,6 +108,7 @@ export class BigInvoiceComponent implements OnInit {
       </html>
     `);
 
+      this.isPrinting = false;
       popupWindow.document.close();
     }
   }

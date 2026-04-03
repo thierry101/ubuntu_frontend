@@ -116,9 +116,9 @@
     </div>
 
     <div class="modal-footer py-2 px-3">
-      <button (click)="printOrderSmall()" class="btn btn-sm btn-primary">
-        <i class="bi bi-printer me-1"></i> Imprimer
-      </button>
+      <app-submit-spinner [loading]="isPrinting" label="Imprimer" icon="ti ti-printer me-1"
+        cssClass="btn btn-primary btn-sm mt-2" (clicked)="printOrderSmall()">
+      </app-submit-spinner>
     </div>
   </div>
 </div>

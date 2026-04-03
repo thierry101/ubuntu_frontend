@@ -157,9 +157,10 @@
         </div>
 
         <div class="modal-footer no-print">
-            <button (click)="printInvoice()" class="btn btn-sm btn-primary">
-                <i class="bi bi-printer me-1"></i> Imprimer la facture
-            </button>
+            <app-submit-spinner [loading]="isPrinting" label="Imprimer" icon="ti ti-printer me-1"
+                cssClass="btn btn-primary btn-sm mt-2" (clicked)="printInvoice()">
+            </app-submit-spinner>
+
             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
         </div>
 

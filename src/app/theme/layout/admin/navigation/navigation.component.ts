@@ -3,7 +3,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { PublicService } from 'src/app/services/public.service';
-import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-navigation',
@@ -22,7 +21,7 @@ export class NavigationComponent {
   constructor(public router: Router, private publicService: PublicService) {
     this.publicService.enterpriseCustomisation$.subscribe({
       next: (res: any) => {
-        this.logo = environment.siteUrlMedia + res?.logo;
+        this.logo = res?.logo;
       }
     });
   }

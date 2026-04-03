@@ -263,16 +263,19 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row g-2">
+                <div class="row g-3">
                     <div class="col-12">
                         <label for="inputActualQty4" class="form-label">Quantité actuelle</label>
                         <input type="number" [value]="nberWhatsappMsg" readonly class="form-control form-control-sm"
                             id="inputActualQty4">
                     </div>
-                    <div class="col-8">
+                    <div class="col-7">
                         <label for="inputBuyQty4" class="form-label">Quantité à acheter</label>
                         <input (ngModelChange)="calculateTotal($event)" [(ngModel)]="quantity" name="actualQty"
                             type="number" class="form-control form-control-sm" id="inputBuyQty4">
+                    </div>
+                    <div class="col-1 text-center d-flex align-items-center justify-content-center">
+                        <strong>X</strong>
                     </div>
                     <div class="col-4" *ngIf="adminSetting$ | async as settingAdmin">
                         <label for="inputUnitPrice4" class="form-label">P.U</label>

@@ -165,7 +165,13 @@ export class HistorikComponent implements OnInit {
     this.fetchOrders(1);
   }
 
-  returnPayment() { //usefull to edit name payment in cart
+
+  filterByPayment(){
+    this.fetchOrders(1);
+  }
+
+
+  get returnPayment() { //usefull to edit name payment in cart
     if (['0', 0].includes(this.paymentSelected)) {
       return 'Tout'
     }
