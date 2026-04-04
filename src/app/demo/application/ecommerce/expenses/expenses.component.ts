@@ -82,36 +82,28 @@ export class ExpensesComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
-    this.role = this.authService.getRole?.role
+    this.role = this.authService.currentUser?.role
     this.the_date = getDateString()
     this.columnVisibility.setColumns(this.columns); //call the service
     this.urlMedia = environment.siteUrlMedia
     this.fetchSaveExpensives(1)
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-        if (this.permissions?.includes("handle_expenses") || this.role === 'Admin') {
-          this.loading = true
-          this.expensiveService.getExpensive().subscribe({
-            next: (res: { results: Expensive[] }) => {
-              this.arrayExpensives = res?.results
-              this.loading = false
-            }
-          })
+    this.permissions = this.authService.currentPermissions || [];
+    if (this.permissions?.includes("handle_expenses") || this.role === 'Admin') {
+      this.loading = true
+      this.expensiveService.getExpensive().subscribe({
+        next: (res: { results: Expensive[] }) => {
+          this.arrayExpensives = res?.results
+          this.loading = false
         }
-        this.checkAccessAndLoadWarehouses()
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+      })
+    }
+    this.checkAccessAndLoadWarehouses()
 
     this.publicService.enterpriseCustomisation$.subscribe({
       next: (res: any) => {
         this.devise = res?.devise;
       }
     });
-
   }
 
   get hasHandleExpenses(): boolean {

@@ -28,13 +28,9 @@ export class NavGroupComponent implements OnInit {
   ngOnInit() {
     // at reload time active and trigger link
     let current_url = this.location.path();
-    this.role = this.authService.getRole?.role
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result
-        this.hasPermission = this.item.all_permissions?.some((p:any) => this.permissions?.includes(p));
-      }
-    })
+    this.role = this.authService.currentUser?.role
+    this.permissions = this.authService.currentPermissions || [];
+    this.hasPermission = this.item.all_permissions?.some((p: any) => this.permissions?.includes(p));
 
     // eslint-disable-next-line
     // @ts-ignore

@@ -72,25 +72,18 @@ export class AdjustStockComponent implements OnInit {
   ngOnInit(): void {
     this.columnVisibility.setColumns(this.columns); //call the service
     this.the_date = getDateString()
-    this.role = this.authService.getRole?.role
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-        this.userHasPermission = this.permissions.includes('adjust_stock');
-        this.userHasPermissionToView = this.permissions.includes('view_adjustments_stock');
-
-        if (this.role === 'Admin' || this.userHasPermissionToView) {
-          this.publicService.getWarehouseStore().subscribe({
-            next: (res: { result: Warehouse[] }) => {
-              this.warehouses = res?.result;
-            }
-          });
+    this.role = this.authService.currentUser?.role
+    this.permissions = this.authService.currentPermissions || [];
+    this.userHasPermission = this.permissions.includes('adjust_stock');
+    this.userHasPermissionToView = this.permissions.includes('view_adjustments_stock');
+    if (this.role === 'Admin' || this.userHasPermissionToView) {
+      this.publicService.getWarehouseStore().subscribe({
+        next: (res: { result: Warehouse[] }) => {
+          this.warehouses = res?.result;
         }
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+      });
+    }
+
 
     this.formAdjustQty = this.fb.group({
       idStock: 0,

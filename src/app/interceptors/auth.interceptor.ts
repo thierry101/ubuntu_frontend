@@ -37,42 +37,6 @@ export class authInterceptor implements HttpInterceptor {
     );
   }
 
-  // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  //   const isRefreshUrl = req.url.includes('/refresh-token');
-  //   const isStateUser = req.url.includes('/state-user'); // ✅ AJOUT
-  //   const isLogin = req.url.includes('/login'); // (optionnel mais propre)
-
-  //   let authReq = req;
-
-  //   if (!isRefreshUrl) {
-  //     const token = this.authService.getAccessToken();
-  //     if (token) {
-  //       authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
-  //     }
-  //   }
-
-  //   return next.handle(authReq).pipe(
-  //     catchError(err => {
-
-  //       if (err.status === 403) {
-  //         this.router.navigate(['/unauthorized']);
-  //       }
-
-  //       // 🚫 NE PAS refresh pour ces routes
-  //       if (
-  //         err instanceof HttpErrorResponse &&
-  //         err.status === 401 &&
-  //         !isRefreshUrl &&
-  //         !isStateUser &&   // ✅ clé du fix
-  //         !isLogin          // ✅ optionnel
-  //       ) {
-  //         return this.handle401(authReq, next);
-  //       }
-
-  //       return throwError(() => err);
-  //     })
-  //   );
-  // }
 
   private handle401(request: HttpRequest<any>, next: HttpHandler) {
 

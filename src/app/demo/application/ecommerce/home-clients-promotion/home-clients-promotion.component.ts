@@ -21,18 +21,9 @@ export class HomeClientsPromotionComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
-
-
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions || [];
   }
 
   hasAnyAccess(): boolean {

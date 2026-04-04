@@ -8,7 +8,7 @@ import {
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
-import { switchMap, catchError, map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 export function rolePermissionGuard(
   allowedRoles: string[] = [],
@@ -18,59 +18,32 @@ export function rolePermissionGuard(
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    const roles = allowedRoles.length > 0
-      ? allowedRoles
-      : (route.data['allowedRoles'] ?? []);
-
-    const permissions = requiredPermissions.length > 0
-      ? requiredPermissions
-      : (route.data['requiredPermissions'] ?? []);
+    const roles = allowedRoles.length > 0 ? allowedRoles : (route.data['allowedRoles'] ?? []);
+    const permissions = requiredPermissions.length > 0 ? requiredPermissions : (route.data['requiredPermissions'] ?? []);
 
     return authService.isAuthenticated().pipe(
-      switchMap(isAuth => {
-        // ✅ Vérification auth + rôle en une seule étape
-        const userRole: string | null = authService.getRole?.role ?? null;
+      map(({ isAuth }) => {
+        const role = authService.currentUser?.role ?? null;
 
-        if (!isAuth || !userRole) {
-          router.navigate(['/login'], {
-            queryParams: { returnUrl: state.url }
-          });
-          return of(false);
+        if (!isAuth || !role) {
+          router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+          return false;
         }
 
-        // ✅ Rôle autorisé → accès direct sans appel réseau
-        const hasRole = roles.length === 0 || roles.includes(userRole);
-        if (hasRole) {
-          return of(true);
-        }
+        const hasRole = roles.length === 0 || roles.includes(role);
+        if (hasRole) return true;
 
-        // ✅ Pas de permissions requises → refus immédiat
         if (permissions.length === 0) {
           router.navigate(['/unauthorized']);
-          return of(false);
+          return false;
         }
 
-        // ✅ Vérification des permissions via API
-        return authService.getPermissions().pipe(
-          map((response: any) => {
-            const userPerms: string[] = response?.result ?? [];
+        // ✅ Synchrone, plus d'appel réseau
+        const userPerms: string[] = authService.currentPermissions ?? [];
+        const hasPermission = permissions.some((perm:any) => userPerms.includes(perm));
 
-            // Changer `.some` par `.every` si toutes les permissions sont requises
-            const hasPermission = permissions.some((perm: string) =>
-              userPerms.includes(perm)
-            );
-
-            if (!hasPermission) {
-              router.navigate(['/unauthorized']);
-            }
-
-            return hasPermission;
-          }),
-          catchError(() => {
-            router.navigate(['/unauthorized']);
-            return of(false);
-          })
-        );
+        if (!hasPermission) router.navigate(['/unauthorized']);
+        return hasPermission;
       }),
       catchError(() => {
         router.navigate(['/login']);

@@ -59,7 +59,7 @@ export class HistorikComponent implements OnInit {
   constructor(private storeService: StoreService, private authService: AuthService, private publicService: PublicService) { }
 
   ngOnInit(): void {
-    this.role = this.authService.getRole?.role
+    this.role = this.authService.currentUser?.role
     this.typePayments = typesPayment
     this.fetchOrders(1)
     this.publicService.getSettingEtpriseForCustomisation().subscribe({

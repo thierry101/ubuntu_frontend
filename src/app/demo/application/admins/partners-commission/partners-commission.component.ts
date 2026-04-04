@@ -43,7 +43,7 @@ export class PartnersCommissionComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchInvoicesPartnerEnterprise(1)
-    this.role = this.authService.getRole?.role
+    this.role = this.authService.currentUser?.role
   }
 
   // On doit avoir également le statut rejeté

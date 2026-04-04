@@ -126,7 +126,8 @@ export const NavigationItems: NavigationItem[] = [
   },
   {
     id: 'home_ecommerce',
-    roles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller'],
+    roles: ['Admin'],
+    // roles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller'],
     permissions: ['handle_ecommerce'],
     title: 'E-commerce',
     type: 'item',
@@ -192,7 +193,7 @@ export const NavigationItems: NavigationItem[] = [
     url: '/global-setting',
     icon: 'ti ti-settings'
   },
-    {
+  {
     id: 'country_city',
     title: 'Pays-Villes',
     roles: ['big_root'],
@@ -229,21 +230,21 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'ti ti-building'
   },
   {
-    id: 'pay_partner',
+    id: 'list_faq',
     title: 'Payer partenaire',
     roles: ['big_root'],
     type: 'item',
     classes: 'nav-item',
-    url: '/payment-partner',
+    url: '/list-all-enterprisese', //edit-faq
     icon: 'ti ti-building'
   },
   {
-    id: 'list_faq',
+    id: 'pay_partner',
     title: 'FAQ',
     roles: ['big_root'],
     type: 'item',
     classes: 'nav-item',
-    url: '/list-all-enterprisese', //edit-faq
+    url: '/admin-faq',
     icon: 'ti ti-building'
   }
 ];

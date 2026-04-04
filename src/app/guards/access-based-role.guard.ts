@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 export function accessBasedRoleGuard(expectedRoles: string[]): CanActivateFn {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
@@ -10,23 +10,18 @@ export function accessBasedRoleGuard(expectedRoles: string[]): CanActivateFn {
     const router = inject(Router);
 
     return authService.isAuthenticated().pipe(
-      switchMap(isAuth => {
-        const userRole: string | null = authService.getRole?.role ?? null;
+      map(({ isAuth }) => {
+        const role = authService.currentUser?.role ?? null;
 
-        // ✅ Auth + rôle vérifiés ensemble
-        if (!isAuth || !userRole) {
-          router.navigate(['/login'], {
-            queryParams: { returnUrl: state.url }
-          });
-          return of(false);
+        if (!isAuth || !role) {
+          router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+          return false;
         }
 
-        if (expectedRoles.includes(userRole)) {
-          return of(true);
-        }
+        if (expectedRoles.includes(role)) return true;
 
         router.navigate(['/unauthorized']);
-        return of(false);
+        return false;
       }),
       catchError(() => {
         router.navigate(['/login']);

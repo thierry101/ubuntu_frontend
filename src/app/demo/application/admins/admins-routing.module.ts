@@ -20,7 +20,7 @@ const routes: Routes = [
     canActivate: [accessBasedRoleGuard(['big_root'])]
   },
   {
-    path: 'payment-partner',
+    path: 'admin-faq',
     loadComponent: () => import('./payment-partner/payment-partner.component').then((c) => c.PaymentPartnerComponent),
     canActivate: [accessBasedRoleGuard(['big_root'])]
   },

@@ -7,6 +7,7 @@ import { AdminComponent } from './theme/layout/admin/admin.component';
 import { GuestComponent } from './theme/layout/guest/guest.component';
 import { accessBasedRoleGuard } from './guards/access-based-role.guard';
 import { rolePermissionGuard } from './guards/role-permission.guard';
+import { authAccessGuard } from './guards/auth-access.guard';
 
 const routes: Routes = [
   {
@@ -89,7 +90,9 @@ const routes: Routes = [
       },
       {
         path: 'faq',
-        loadComponent: () => import('./demo/pages/faq/faq.component').then((c) => c.FaqComponent)
+        loadComponent: () => import('./demo/pages/faq/faq.component').then((c) => c.FaqComponent),
+        canActivate: [authAccessGuard]
+
       },
       {
         path: 'private-policy',
@@ -98,6 +101,7 @@ const routes: Routes = [
       {
         path: 'facture/:name_invoice',
         loadComponent: () => import('./invoice/invoice.component').then((c) => c.InvoiceComponent),
+        canActivate: [authAccessGuard]
       },
     ]
   }

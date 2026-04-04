@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RoleNamePipe } from 'src/app/pipes/role-name.pipe';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 
 @Component({
   selector: 'app-home-product',
   standalone: true,
-  imports: [SharedModule, RouterModule, RoleNamePipe],
+  imports: [SharedModule, RouterModule],
   templateUrl: './home-product.component.html',
   styleUrl: './home-product.component.scss'
 })
@@ -22,17 +21,9 @@ export class HomeProductComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
-
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions || [];
   }
 
   hasAnyAccess(): boolean {

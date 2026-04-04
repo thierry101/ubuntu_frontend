@@ -158,4 +158,41 @@ export class AdminService {
     return this.http.get(`${environment.apiUrl}/retrieve-cities-register/${country}/?${queryString}`, { withCredentials: true });
   }
 
+
+  getFaq(page: number = 1, search: any = '', startDate: string = '', endDate: string = ''): Observable<{ results: Enterprise }> {
+    const params: string[] = [];
+    params.push(`page=${page}`);
+    if (search) {
+      params.push(`search=${encodeURIComponent(search)}`);
+    }
+    if (startDate) {
+      params.push(`start_date=${encodeURIComponent(startDate)}`);
+    }
+
+    if (endDate) {
+      params.push(`end_date=${encodeURIComponent(endDate)}`);
+    }
+
+    const queryString = params.join('&');
+    return this.http.get<{ results: Enterprise }>(`${environment.apiUrl}/get-all-faq?${queryString}`, { withCredentials: true });
+  }
+
+
+  postFaq(data: any) {
+    return this.http.post(`${environment.apiUrl}/build-faq`, data, { withCredentials: true }
+    );
+  }
+
+
+  putFaq(faq_id: number, data: any) {
+    return this.http.put(`${environment.apiUrl}/edit-delete-faq/${faq_id}`, data, { withCredentials: true }
+    );
+  }
+
+
+  deleteFaq(faq_id: number) {
+    return this.http.delete(`${environment.apiUrl}/edit-delete-faq/${faq_id}`, { withCredentials: true }
+    );
+  }
+
 }

@@ -57,16 +57,10 @@ export class MyTrashComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchDefectiveProduct(1)
-    this.role = this.authService.getRole?.role
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-        this.userHasPermission = this.permissions.includes('watch_trash_prod')
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.role = this.authService.currentUser?.role
+    this.permissions = this.authService.currentPermissions || [];
+    this.userHasPermission = this.permissions.includes('watch_trash_prod')
+
     this.columnVisibility.setColumns(this.columns); //call the service
     this.the_date = getDateString()
     if (this.role === 'Admin' || this.role === 'Daf') {

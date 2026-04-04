@@ -32,22 +32,20 @@ export class NavItemComponent implements OnInit {
     this.currentLayout = BerryConfig.layout;
   }
 
+  
   ngOnInit() {
     const requiredPerms = this.item?.permissions;
     this.theme.customMenuType.subscribe((layout: string) => {
       this.currentLayout = layout;
     });
-    this.userInfo = this.authService?.getRole
+    this.userInfo = this.authService?.currentUser
     this.isAdminWithWarehouse(this.userInfo)
     this.role = this.userInfo?.role
     this.checkRoleUsr = this.item?.roles?.includes(this.role)
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result
-        this.hasUserOrProductPerm = requiredPerms?.some((perm: any) => this.permissions?.includes(perm));
-      }
-    })
+    this.permissions = this.authService?.currentPermissions || []
+    this.hasUserOrProductPerm = requiredPerms?.some((perm: any) => this.permissions?.includes(perm));
   }
+
 
   // Vérifie si l'utilisateur est Admin et qu'il a un whStor défini
   isAdminWithWarehouse(userInfo: any) {

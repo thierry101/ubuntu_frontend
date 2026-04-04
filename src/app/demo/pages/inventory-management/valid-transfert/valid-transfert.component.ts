@@ -63,26 +63,22 @@ export class ValidTransfertComponent implements OnInit {
   userInfo: any;
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getRole
+    this.userInfo = this.authService.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
       this.adminHasWarehouse = !!this.userInfo.whStor;
     }
     this.fetchItemsValidate(1);
     this.yes_url = this.current_url?.includes('valid-product') //yes_url vérifie l'url pour afficher les boutiques ou entrepôts
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result
-        this.hasAccessTemplate = this.permissions?.includes('historik_transfert');
-        if (this.role === 'Admin' || this.hasAccessTemplate) {
-          this.publicService.getWarehousesStores().subscribe({
-            next: (res: { result: Warehouse[] }) => {
-              this.all_warehouses = res?.result
-            }
-          })
+    this.permissions = this.authService.currentPermissions || [];
+    this.hasAccessTemplate = this.permissions?.includes('historik_transfert');
+    if (this.role === 'Admin' || this.hasAccessTemplate) {
+      this.publicService.getWarehousesStores().subscribe({
+        next: (res: { result: Warehouse[] }) => {
+          this.all_warehouses = res?.result
         }
-      }
-    })
+      })
+    }
   }
 
   // Stock pagination/search
@@ -101,20 +97,16 @@ export class ValidTransfertComponent implements OnInit {
         this.isLoading = false;
       })
     } else {
-      this.authService.getPermissions().subscribe({
-        next: (res: any) => {
-          this.permissions = res?.result
-          this.hasAccess = this.permissions?.includes('historik_transfert'); //Pour avoir l'historique des transferts
-          if (this.role === 'Admin' || this.hasAccess) {
-            setPagination(this.stockMvtService.getAllItemForValidation.bind(this.stockMvtService), page, this.searchTerm, (data: any) => {
-              this.pagination = data;
-              this.all_items_validate = data?.listItems;
-              this.isLoading = false;
-              this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
-            })
-          }
-        }
-      })
+      this.permissions = this.authService.currentPermissions || [];
+      this.hasAccess = this.permissions?.includes('historik_transfert'); //Pour avoir l'historique des transferts
+      if (this.role === 'Admin' || this.hasAccess) {
+        setPagination(this.stockMvtService.getAllItemForValidation.bind(this.stockMvtService), page, this.searchTerm, (data: any) => {
+          this.pagination = data;
+          this.all_items_validate = data?.listItems;
+          this.isLoading = false;
+          this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
+        })
+      }
     }
   }
 

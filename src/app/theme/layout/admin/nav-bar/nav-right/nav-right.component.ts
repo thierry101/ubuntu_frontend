@@ -43,26 +43,21 @@ export class NavRightComponent implements OnInit {
 
     }, 1000);
 
-
     const allowedRoles = ['siteAdmin', 'Agent', 'Agency', 'Seller'];
     const allowedRolesInvoice = ['Admin', 'Daf'];
-    this.userInfo = this.authService?.getRole
+    this.userInfo = this.authService?.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
     this.hasAccess = allowedRoles.includes(this.role);
     this.hasAccessInvoice = allowedRolesInvoice.includes(this.role);
     this.imgProfile = this.userInfo?.userProfile ? this.url + this.userInfo.userProfile : 'assets/images/gallery.jpg';
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result
-      }
-    })
+    this.permissions = this.authService.currentPermissions || [];
   }
+
+
   logout() {
-    // ✅ Supprimer les cookies immédiatement AVANT l'appel HTTP
-    // Ainsi authRedirectGuard ne trouvera plus de session valide
     this.clearUserSession();
 
     this.authService.logout().subscribe({
@@ -74,6 +69,7 @@ export class NavRightComponent implements OnInit {
       }
     });
   }
+
 
   getRoleName(value: string) {
     const role = roles.find(r => r?.value === value) || otherRoles.find(r => r?.value === value);

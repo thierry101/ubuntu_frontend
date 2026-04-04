@@ -28,7 +28,7 @@ export class HomeStockComponent implements OnInit {
   constructor(private authService: AuthService, private publicService: PublicService) { }
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     if (this.role === 'Admin') {
       this.adminHasWarehouse = !!this.userInfo.whStor;
@@ -39,16 +39,8 @@ export class HomeStockComponent implements OnInit {
         this.infoEnterprise = res;
       }
     });
-
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.nber_wh_stores = res?.nber_wh_stores
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions || [];
+    this.nber_wh_stores = this.authService.currentUser?.nber_wh_stores
   }
 
   hasAnyAccess(): boolean { //Cette permission donne accès à l'ensemble des cards menu de la table et dans chaque cart menu il y'a une autre permission

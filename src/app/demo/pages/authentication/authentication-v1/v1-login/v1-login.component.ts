@@ -78,10 +78,9 @@ export class V1LoginComponent implements OnInit {
       next: (res: { access: string; userInfo: string }) => {
         // ✅ Store tokens
         this.authService.setAccessToken(res?.access);
-        this.authService.storeTokenInCookie('userInfo', res?.userInfo);
 
         // ✅ Get user role
-        const role = this.authService.getRole?.role;
+        const role = this.authService.currentUser?.role;
 
         // ✅ Optional Security: allow only internal URLs
         if (this.returnUrl && this.returnUrl.startsWith('/')) {

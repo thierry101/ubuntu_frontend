@@ -54,7 +54,7 @@ export class ListEnterprisesComponent implements OnInit {
   fetchEnterprises(page: number = 1) {
     this.isLoading = true;
     setPagination(
-      this.adminService.getCitiesRegister.bind(this.adminService) as (page: number, searchTerm: any, startDate?: string, endDate?: string
+      this.adminService.getEnterprises.bind(this.adminService) as (page: number, searchTerm: any, startDate?: string, endDate?: string
       ) => Observable<any>,
       page,
       this.searchTerm,

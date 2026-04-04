@@ -6,26 +6,86 @@
             </h5>
         </div>
         <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>mdo</td>
-                    </tr>
-                    <tr>
+            <div class="row align-items-end g-2 mb-3">
+                <div class="col-12 col-md-9">
+                    <label class="form-label fw-semibold small text-muted">
+                        🔍 Recherchez une facture
+                    </label>
 
-                </tbody>
-            </table>
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                    </app-search-list>
+                </div>
+
+                <div class="col-12 col-md-3 d-grid">
+                    <button (click)="resetForm()" type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                        + Créer une FAQ
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3 p-2 border rounded" *ngFor="let faq of listFaqs">
+                <div class="mb-2">
+                    <strong>{{ faq?.question }}</strong>
+                </div>
+
+                <div [innerHTML]="faq?.answer"></div>
+
+                <!-- Boutons actions -->
+                <div class="mt-2">
+                    <button class="btn btn-warning btn-sm me-2" (click)="editFaq(faq)" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                        Éditer
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteFaq(faq.id)">
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChangeInvoice($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">FAQ</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row-g-3">
+                    <div class="col-12">
+                        <label for="inputEmail4" class="form-label">Question</label>
+                        <input type="email" [(ngModel)]="question" class="form-control form-control-sm"
+                            id="inputEmail4">
+                        <small class="text-danger">{{ errors?.question }}</small>
+                    </div>
+                    <div class="col-12">
+                        <label for="description" class="form-label fw-semibold">Réponse</label>
+                        <quill-editor [(ngModel)]="answer" placeholder="Votre réponse...">
+                        </quill-editor>
+                        <small class="text-danger">{{ errors?.answer }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeFaqModal" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
+                <app-submit-spinner *ngIf="!isEdit" [loading]="isSavingFaq" label="Enregistrer"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-primary btn-sm" (clicked)="saveFaq()">
+                </app-submit-spinner>
+                <app-submit-spinner *ngIf="isEdit" [loading]="isSavingFaq" label="Mettre à jour"
+                    icon="ti ti-refresh me-1" cssClass="btn btn-warning btn-sm" (clicked)="saveEditFaq()">
+                </app-submit-spinner>
+            </div>
         </div>
     </div>
 </div>

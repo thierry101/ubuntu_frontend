@@ -83,7 +83,7 @@ export class InputInvoiceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     if (this.role === 'Admin') {
       this.adminHasWarehouse = !!this.userInfo.whStor;

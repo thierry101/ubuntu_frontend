@@ -54,7 +54,8 @@ const routes: Routes = [
         loadComponent: () => import('./ecommerce-menu/ecommerce-menu.component').then((c) => c.EcommerceMenuComponent),
         canActivate: [rolePermissionGuard()],
         data: {
-          allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller'],
+          allowedRoles: ['Admin'],
+          // allowedRoles: ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Seller'],
           requiredPermissions: ['handle_ecommerce'], //adapt to suit your needs
         },
 

@@ -21,20 +21,13 @@ export class FinancesComponent implements OnInit {
   allRoles2!: any
 
   constructor(private authService: AuthService) {
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions || [];
   }
 
   ngOnInit(): void {
     this.allRoles = ['Admin', 'siteAdmin', 'Agent', 'Agency', 'Daf']
     this.allRoles2 = ['Admin', 'siteAdmin', 'Daf']
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     this.hasRole = this.allRoles.includes(this.role)
 

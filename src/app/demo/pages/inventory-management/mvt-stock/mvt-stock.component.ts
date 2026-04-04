@@ -51,7 +51,7 @@ export class MvtStockComponent implements OnInit {
   ngOnInit(): void {
     this.listMvts = typesMvt
     this.fetchStockMovement(1);
-    this.userInfo = this.authService.getRole
+    this.userInfo = this.authService.currentUser
   }
 
   resetChoice() {

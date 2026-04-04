@@ -55,7 +55,7 @@ export class ArticlesInStockComponent implements OnInit {
 
   ngOnInit(): void {
     this.the_date = getDateString()
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     this.fetchProducts(1)
     this.columnVisibility.setColumns(this.columns); //call the service
@@ -65,15 +65,8 @@ export class ArticlesInStockComponent implements OnInit {
         this.isLoading = false;
       }
     });
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-        this.userHasPermission = this.permissions.includes('watch_stock')
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions || [];
+    this.userHasPermission = this.permissions.includes('watch_stock')
   }
 
   // ******************************* About retrieve article, pagination and search  *******************************

@@ -80,7 +80,7 @@ export class CommandsCatalogComponent implements OnInit {
     this.roleAccessWhStor = ["SiteAdmin", "Agent", "Agency", "Seller"]
     this.cmdWorkflow = workflowCommand
     this.fetchCommands(1)
-    this.userInfo = this.authService.getRole
+    this.userInfo = this.authService.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
       this.adminHasWarehouse = !!this.userInfo.whStor;
@@ -91,14 +91,7 @@ export class CommandsCatalogComponent implements OnInit {
       }
     });
 
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions ?? [];
   }
 
 

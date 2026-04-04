@@ -8,14 +8,10 @@ export const authAccessGuard = () => {
   const router = inject(Router);
 
   return authService.isAuthenticated().pipe(
-    map(isAuthenticated => {
-      if (!isAuthenticated) {
-        // 🚫 utilisateur non connecté → redirection vers login
-        return router.createUrlTree(['/login']);
-      }
-      // ✅ utilisateur connecté → accès autorisé
+    map(({ isAuth }) => {
+      if (!isAuth) return router.createUrlTree(['/login']);
       return true;
     }),
-    catchError(() => of(router.createUrlTree(['/login']))) // en cas d’erreur → login
+    catchError(() => of(router.createUrlTree(['/login'])))
   );
 };

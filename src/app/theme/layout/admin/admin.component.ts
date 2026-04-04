@@ -64,7 +64,7 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     const allowedRoles = ['siteAdmin', 'Agent', 'Agency', 'Seller'];
-    this.userInfo = this.authService?.getRole
+    this.userInfo = this.authService?.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
       this.adminHasWarehouse = !!this.userInfo.whStor;

@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RoleNamePipe } from 'src/app/pipes/role-name.pipe';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 
 @Component({
   selector: 'app-ecommerce-menu',
   standalone: true,
-  imports: [SharedModule, RoleNamePipe, RouterModule],
+  imports: [SharedModule, RouterModule],
   templateUrl: './ecommerce-menu.component.html',
   styleUrl: './ecommerce-menu.component.scss'
 })
@@ -25,17 +24,11 @@ export class EcommerceMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.allRoles = ['Admin']
-    this.userInfo = this.authService.getRole;
+    this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     this.hasRole = this.allRoles.includes(this.role)
-    this.authService.getPermissions().subscribe({
-      next: (res: any) => {
-        this.permissions = res?.result ?? [];
-      },
-      error: err => {
-        console.error("❌ Failed to load permissions:", err);
-      }
-    });
+    this.permissions = this.authService.currentPermissions
+    console.log(this.permissions)
   }
 
   hasAnyAccess(): boolean {

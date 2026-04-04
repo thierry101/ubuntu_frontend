@@ -75,7 +75,7 @@ export class CreditInvoiceComponent implements OnInit {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     this.minDate = `${yyyy}-${mm}-${dd}`;
-    this.role = this.authService.getRole?.role
+    this.role = this.authService.currentUser?.role
     this.publicService.enterpriseCustomisation$.subscribe({
       next: (res: any) => {
         this.devise = res?.devise;
