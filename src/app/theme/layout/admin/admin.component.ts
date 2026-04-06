@@ -67,7 +67,7 @@ export class AdminComponent implements OnInit {
     this.userInfo = this.authService?.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
     this.hasAccess = allowedRoles.includes(this.role);
     this.theme.customMenuType.subscribe((layout: string) => {

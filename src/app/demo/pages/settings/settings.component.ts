@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/use-lifecycle-interface */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { PublicService } from 'src/app/services/public.service';
@@ -11,6 +11,8 @@ import { QrCodeComponent } from 'ng-qrcode';
 import { Enterprise, globalInterface } from 'src/app/interfaces/global';
 import { BleClient, BleDevice } from '@capacitor-community/bluetooth-le';
 import { TooltipComponent } from '../../application/reusableComponents/tooltip/tooltip.component';
+import { CatalogService } from 'src/app/services/catalog.service';
+import { AdminService } from 'src/app/services/admin.service';
 
 @Component({
   selector: 'app-settings',
@@ -21,6 +23,7 @@ import { TooltipComponent } from '../../application/reusableComponents/tooltip/t
 })
 export class SettingsComponent implements OnInit {
   @ViewChild('qrContainer') qrContainer!: ElementRef;
+  @ViewChildren('paymentRadio') paymentRadios!: QueryList<ElementRef<HTMLInputElement>>;
   settingsForm: FormGroup;
   otherSettingsForm: FormGroup;
   logoPreview: string | ArrayBuffer | null = null;
@@ -43,6 +46,8 @@ export class SettingsComponent implements OnInit {
   total: number = 0
   quantity: number = 0
   unitPrice: number = 0
+  manuelPayment: boolean = false
+  typePaymentSelected: string = ''
 
   // Propriétés
   discoveredPrinters: BleDevice[] = [];
@@ -52,8 +57,13 @@ export class SettingsComponent implements OnInit {
   connectingId = '';
   printerSearchDone = false;
   isMobileApp: boolean = false;
+  accountsNbers!: any
+  imgPaymentManuelPreview: string = '';
+  imgPaymentManuel: any = { name: '', file: '' }
 
-  constructor(private fb: FormBuilder, private publicService: PublicService) {
+  constructor(private fb: FormBuilder, private publicService: PublicService, private catalogService: CatalogService,
+    private adminService: AdminService
+  ) {
     this.settingsForm = this.fb.group({
       name: ['', Validators.required],
       phone: ['', Validators.required],
@@ -127,6 +137,26 @@ export class SettingsComponent implements OnInit {
     if (saved) this.selectedPrinter = JSON.parse(saved);
   }
 
+
+  onPaymentChange(payment: string) {
+    // Handle payment method change
+    this.typePaymentSelected = payment;
+    if (payment === 'manuel') {
+      this.manuelPayment = true
+      this.catalogService.getMyPayments().subscribe({
+        next: (res) => {
+          this.accountsNbers = res?.result || [];
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des méthodes de paiement :', err);
+          // Optional: showError or toastShow can be added here
+        }
+      });
+    } else {
+      this.manuelPayment = false
+    }
+  }
+
   calculateTotal(value?: number) {
     const qty = value ?? this.quantity;
     this.total = qty * this.unitPrice;
@@ -172,6 +202,74 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  uploadPaymentManuel(event: any) {
+    const reader = new FileReader();
+
+    if (event.target.files && event.target.files[0]) {
+      const [file] = event.target.files;
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        this.imgPaymentManuelPreview = reader.result as string;
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
+
+        const data = {
+          data: this.imgPaymentManuel
+        };
+
+        // this.publicService.postSettingEtprise(data).subscribe({
+        //   next: () => {
+        //     toastShow('success', '✅ Logo mis à jour avec succès');
+        //     this.errors = [];
+        //   },
+        //   error: (err) => {
+        //     this.errors = err?.error?.errors || [];
+        //     showError(err, err.status, this.errors, err.error);
+        //   }
+        // });
+      };
+      reader.onerror = (e) => {
+        toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
+      };
+    }
+  }
+
+
+  confirmPayement() {
+    if (this.typePaymentSelected === 'manuel') {
+      // Envoyer les données de paiement manuel à l'API
+      const data = {
+        checker: 'paymentWhatsappMsg',
+        typePayment: 'manuel',
+        nbreWhatasapp: this.quantity,
+        imgPayment: this.imgPaymentManuel
+      };
+      this.adminService.postInvoice(data).subscribe({
+        next: (res: any) => {
+          toastShow('success', '✅ Paiement traité avec succès');
+          this.errors = [];
+          this.quantity = 0;
+          this.total = 0;
+          this.typePaymentSelected = '';
+          this.manuelPayment = false;
+          this.imgPaymentManuel = { name: '', file: '' };
+          this.imgPaymentManuelPreview = '';
+          // Décoche tous les radios visuellement
+          this.paymentRadios.forEach(radio => {
+            radio.nativeElement.checked = false;
+          });
+          document.getElementById('closeModalPayment')?.click()
+        },
+        error: (err) => {
+          this.errors = err?.error?.errors || [];
+          showError(err, err.status, this.errors, err.error);
+        }
+      })
+    }
+  }
+
+
   onLogoChange(event: any) {
     const reader = new FileReader();
 
@@ -205,6 +303,7 @@ export class SettingsComponent implements OnInit {
       };
     }
   }
+
 
   saveWarehouseOther(event: any) {
     this.whSecondary = event.target.checked

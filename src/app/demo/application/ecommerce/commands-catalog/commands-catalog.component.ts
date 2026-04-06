@@ -83,7 +83,7 @@ export class CommandsCatalogComponent implements OnInit {
     this.userInfo = this.authService.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
     this.publicService.enterpriseCustomisation$.subscribe({
       next: (res: any) => {

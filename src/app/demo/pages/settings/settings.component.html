@@ -363,46 +363,155 @@
 
 <div class="modal fade" id="exampleModalWhatsapp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Acheter message whatsapp</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content modern-modal">
+
+            <!-- Header -->
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold">
+                    💬 Acheter des messages WhatsApp
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label for="inputActualQty4" class="form-label">Quantité actuelle</label>
-                        <input type="number" [value]="settingSite?.nberWhatsappMsg" readonly class="form-control form-control-sm"
-                            id="inputActualQty4">
-                    </div>
-                    <div class="col-7">
-                        <label for="inputBuyQty4" class="form-label">Quantité à acheter</label>
-                        <input (ngModelChange)="calculateTotal($event)" [(ngModel)]="quantity" name="actualQty"
-                            type="number" class="form-control form-control-sm" id="inputBuyQty4">
-                    </div>
-                    <div class="col-1 text-center d-flex align-items-center justify-content-center">
-                        <strong>X</strong>
-                    </div>
-                    <div class="col-4" *ngIf="adminSetting$ | async as settingAdmin">
-                        <label for="inputUnitPrice4" class="form-label">P.U</label>
-                        <div class="input-group input-group-sm mb-3">
-                            <input [(ngModel)]="unitPrice" name="unitPrice" readonly type="number" class="form-control"
-                                [value]="settingAdmin?.pub_whatsapp">
-                            <span class="input-group-text" id="basic-addon2">{{settingSite?.devise}}</span>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <label for="inputTotal4" class="form-label">Total</label>
-                        <div class="input-group input-group-sm mb-3">
-                            <input [(ngModel)]="total" name="total" type="number" readonly class="form-control">
-                            <span class="input-group-text" id="basic-addon2">{{settingSite?.devise}}</span>
-                        </div>
+
+            <div class="modal-body pt-2">
+
+                <!-- Current Balance -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Quantité actuelle</span>
+                        <span class="fw-bold fs-5">
+                            {{ settingSite?.nberWhatsappMsg }} messages
+                        </span>
                     </div>
                 </div>
+
+                <!-- Purchase Section -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <!-- Quantity -->
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Quantité</label>
+                                <input type="number" min="1" [(ngModel)]="quantity"
+                                    (ngModelChange)="calculateTotal($event)" class="form-control form-control-sm"
+                                    placeholder="Ex: 100">
+                                <small class="text-danger">{{ errors?.quantity }}</small>
+                            </div>
+
+                            <!-- Unit Price -->
+                            <div class="col-md-4" *ngIf="adminSetting$ | async as settingAdmin">
+                                <label class="form-label small text-muted">Prix unitaire</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" [(ngModel)]="unitPrice" readonly class="form-control">
+                                    <span class="input-group-text">
+                                        {{ settingSite?.devise }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Total</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" [(ngModel)]="total" readonly class="form-control fw-bold">
+                                    <span class="input-group-text">
+                                        {{ settingSite?.devise }}
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+
+                        <h6 class="mb-3">Méthode de paiement</h6>
+
+                        <div class="row g-3">
+
+                            <!-- Payment Card -->
+                            <!-- <div class="col-6 col-md-3" *ngFor="let method of [
+            {key: 'wave', img: 'wave.png', label: 'Wave'},
+            {key: 'momo', img: 'mtn.png', label: 'Momo'},
+            {key: 'orange', img: 'orange-money.png', label: 'Orange'},
+            {key: 'manuel', img: 'manuel.jpg', label: 'Manuel'}
+            ]"> -->
+                            <div class="col-6 col-md-3" *ngFor="let method of [
+                                {key: 'manuel', img: 'manuel.jpg', label: 'Manuel'}
+                            ]">
+
+                                <input #paymentRadio type="radio" class="btn-check" name="payment"
+                                    [id]="'pay-' + method.key" (change)="onPaymentChange(method.key)">
+
+                                <label class="payment-card" [for]="'pay-' + method.key">
+                                    <img [src]="'assets/images/payments/' + method.img" />
+                                    <span>{{ method.label }}</span>
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <small class="text-danger d-block mt-2">
+                            {{ errors?.type_payment }}
+                        </small>
+
+                    </div>
+                </div>
+
+                <!-- Manual Payment -->
+                <div class="card shadow-sm border-0" *ngIf="manuelPayment">
+                    <div class="card-body">
+
+                        <h6 class="mb-2">Paiement manuel</h6>
+
+                        <p class="small text-muted mb-2">
+                            Faites un dépôt sur l'un des numéros suivants :
+                        </p>
+
+                        <ul class="small mb-3">
+                            <li *ngFor="let item of accountsNbers">
+                                <b>{{ item?.type_payment }} :</b> {{ item?.account_nber }}
+                            </li>
+                        </ul>
+
+                        <!-- Upload -->
+                        <small><b>Télécharger la capture d'écran du paiement effectué pour vérification.</b></small>
+                        <div class="d-flex align-items-center gap-3">
+                            <label class="btn btn-outline-primary btn-sm">
+                                📤 Ajouter une preuve
+                                <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*">
+                            </label>
+
+                            <img *ngIf="imgPaymentManuelPreview" [src]="imgPaymentManuelPreview | image"
+                                class="preview-img">
+                        </div>
+
+                        <small class="text-danger d-block mt-2">
+                            {{ errors?.image }}
+                        </small>
+
+                    </div>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-sm btn-primary">Acheter</button>
+
+            <!-- Footer -->
+            <div class="modal-footer border-0">
+                <button class="btn btn-light btn-sm" id="closeModalPayment" data-bs-dismiss="modal">
+                    Fermer
+                </button>
+
+                <button class="btn btn-primary btn-sm px-4" [disabled]="!quantity || !total"
+                    (click)="confirmPayement()">
+                    Acheter
+                </button>
             </div>
         </div>
     </div>

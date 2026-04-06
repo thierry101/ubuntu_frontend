@@ -235,8 +235,17 @@ export const NavigationItems: NavigationItem[] = [
     roles: ['big_root'],
     type: 'item',
     classes: 'nav-item',
-    url: '/list-all-enterprisese', //edit-faq
+    url: '/list-all-enterprise', //edit-faq
     icon: 'ti ti-building'
+  },
+  {
+    id: 'list_faq',
+    title: 'Vérif paiement',
+    roles: ['big_root'],
+    type: 'item',
+    classes: 'nav-item',
+    url: '/check-payment',
+    icon: 'ti ti-report-money'
   },
   {
     id: 'pay_partner',

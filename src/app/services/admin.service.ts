@@ -195,4 +195,9 @@ export class AdminService {
     );
   }
 
+
+  postInvoice(data:any){
+    return this.http.post(`${environment.apiUrl}/upload-payment`, data, { withCredentials: true });
+  }
+
 }

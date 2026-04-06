@@ -49,8 +49,8 @@ export class NavItemComponent implements OnInit {
 
   // Vérifie si l'utilisateur est Admin et qu'il a un whStor défini
   isAdminWithWarehouse(userInfo: any) {
-    // console.log("the boolean is", userInfo.role === 'Admin' && !!userInfo.whStor)
-    this.adminHasWarehouse = userInfo.role === 'Admin' && !!userInfo.whStor;
+    // console.log("the boolean is", userInfo.role === 'Admin' && !!userInfo.whStore)
+    this.adminHasWarehouse = userInfo.role === 'Admin' && !!userInfo.whStore;
   }
 
 

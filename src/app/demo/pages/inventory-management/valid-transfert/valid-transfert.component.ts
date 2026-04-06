@@ -66,7 +66,7 @@ export class ValidTransfertComponent implements OnInit {
     this.userInfo = this.authService.currentUser
     this.role = this.userInfo?.role
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
     this.fetchItemsValidate(1);
     this.yes_url = this.current_url?.includes('valid-product') //yes_url vérifie l'url pour afficher les boutiques ou entrepôts

@@ -15,6 +15,7 @@ import { Permission, PermissionDefinition, User } from 'src/app/interfaces/globa
 import { SelectedComponent } from '../../../reusableComponents/selected/selected.component';
 import { SpinnersComponent } from '../../../reusableComponents/spinners/spinners.component';
 import { SubmitSpinnerComponent } from '../../../reusableComponents/submit-spinner/submit-spinner.component';
+import { of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-list-permissions',
@@ -26,7 +27,7 @@ import { SubmitSpinnerComponent } from '../../../reusableComponents/submit-spinn
 export class ListPermissionsComponent implements OnInit {
   users: User[] = []
   searchTerm: string = ''
-  searchTermUsr:string= ''
+  searchTermUsr: string = ''
   editPerm: boolean = false
   isSaving: boolean = false
   permissionToEdit !: Permission
@@ -90,18 +91,31 @@ export class ListPermissionsComponent implements OnInit {
   savePermission() {
     this.isLoading = true;
     this.isSaving = true;
-    const payload = this.formPermission.getRawValue(); // ✅ inclut read_p même désactivé
-    this.authService.postPermission(payload).subscribe({
+
+    const payload = this.formPermission.getRawValue();
+
+    this.authService.postPermission(payload).pipe(
+      switchMap(() => { // après avoir posté la permission, on vérifie si c'est pour l'utilisateur actuel si oui on refresh la session pour mettre à jour les permissions en temps réel
+        // ✅ Vérifier si la permission assignée concerne l'utilisateur connecté
+        const currentUserId = this.authService.currentUser?.id;
+        const targetUserId = payload.user;
+
+        if (currentUserId === targetUserId) {
+          return this.authService.refreshSession(); // ✅ refresh uniquement si c'est lui-même
+        }
+
+        return of(null); // ✅ autre utilisateur → pas besoin de refresh
+      })
+    ).subscribe({
       next: () => {
         this.fetchPermissions(1);
-        toastShow("success", "✅ Permission créée avec succès");
-        // Reset de l’UI
+        toastShow("success", "✅ Permission assignée avec succès");
+
         this.searchTerm = '';
         this.errors = [];
         this.isSaving = false;
         this.isLoading = false;
 
-        // 1️⃣ Réinitialiser le formulaire
         this.formPermission.reset({
           user: null,
           permission: 'Choisir...',
@@ -111,25 +125,19 @@ export class ListPermissionsComponent implements OnInit {
           delete_p: false
         });
 
-        // 2️⃣ Réactiver read_p (au cas où il était disabled)
         this.formPermission.get('read_p')?.enable();
 
-        // 3️⃣ Masquer les droits
         this.showRead = false;
         this.showCreate = false;
         this.showEdit = false;
         this.showDelete = false;
 
-        // 4️⃣ Fermer le modal
         document.getElementById('closeModalPermission')?.click();
       },
-
       error: (err) => {
         this.isSaving = false;
         this.isLoading = false;
-
         this.errors = err.error?.errors || [];
-
         showError(
           err,
           err.status,
@@ -194,7 +202,7 @@ export class ListPermissionsComponent implements OnInit {
     this.searchTermUsr = ''
     this.titleModal = 'Ajouter une permission';
     this.editPerm = false;
- 
+
     // cacher tous les droits
     this.showRead = false;
     this.showCreate = false;

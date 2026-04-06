@@ -86,7 +86,7 @@ export class InputInvoiceComponent implements OnInit {
     this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
     this.fetchInvoice(1)
     this.publicService.enterpriseCustomisation$.subscribe({

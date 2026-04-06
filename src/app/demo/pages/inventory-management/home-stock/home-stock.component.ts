@@ -2,7 +2,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Enterprise } from 'src/app/interfaces/global';
-import { RoleNamePipe } from 'src/app/pipes/role-name.pipe';
 import { AuthService } from 'src/app/services/auth.service';
 import { PublicService } from 'src/app/services/public.service';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
@@ -10,7 +9,7 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
 @Component({
   selector: 'app-home-stock',
   standalone: true,
-  imports: [SharedModule, RouterModule, RoleNamePipe],
+  imports: [SharedModule, RouterModule],
   templateUrl: './home-stock.component.html',
   styleUrls: ['./home-stock.component.scss']
 })
@@ -31,7 +30,7 @@ export class HomeStockComponent implements OnInit {
     this.userInfo = this.authService.currentUser;
     this.role = this.userInfo?.role;
     if (this.role === 'Admin') {
-      this.adminHasWarehouse = !!this.userInfo.whStor;
+      this.adminHasWarehouse = !!this.userInfo.whStore;
     }
 
     this.publicService.enterpriseCustomisation$.subscribe({

@@ -31,6 +31,13 @@ export class AuthService {
   }
 
 
+  refreshSession(): Observable<{ isAuth: boolean }> {
+    this.currentUser$.next(null);
+    this.permissions$.next(null);
+    return this.isAuthenticated();
+  }
+
+
   isAuthenticated(): Observable<{ isAuth: boolean }> {
     return this.http.get<{ result: any; permissions: string[]; nber_wh_stores: number }>
       (`${environment.apiUrl}/state-user`, { withCredentials: true }).pipe(
