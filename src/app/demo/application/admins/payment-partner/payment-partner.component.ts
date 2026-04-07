@@ -70,12 +70,12 @@ export class PaymentPartnerComponent implements OnInit {
   }
 
 
-  onPageChangeInvoice(page: number) {
+  onPageChangeFaq(page: number) {
     this.fetchFaq(page);
   }
 
 
-  onSearchChangeStock(term: string) {
+  onSearchChangeFaq(term: string) {
     this.searchTerm = term;
     this.fetchFaq(1);
   }

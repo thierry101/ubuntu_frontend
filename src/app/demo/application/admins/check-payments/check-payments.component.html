@@ -1,1 +1,120 @@
-<p>check-payments works!</p>
+<div class="container mt-2">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="ti ti-building me-2"></i> Historique des paiements
+            </h5>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Filtres -->
+            <div class="d-flex gap-2 p-3 border-bottom flex-wrap">
+
+                <!-- Filtre statut -->
+                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterStatus">
+                    <option value="">Tous les statuts</option>
+                    <option value="En attente de validation">En attente</option>
+                    <option value="Validé">Validé</option>
+                    <option value="Rejeté">Rejeté</option>
+                </select>
+
+                <!-- Filtre méthode de paiement -->
+                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterMethod">
+                    <option value="">Toutes les méthodes</option>
+                    <option value="wave">Wave</option>
+                    <option value="momo">Momo</option>
+                    <option value="orange">Orange</option>
+                    <option value="manuel">Manuel</option>
+                </select>
+
+                <!-- Filtre service -->
+                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterService">
+                    <option value="">Tous les services</option>
+                    <option value="whatsapp_msg">WhatsApp Message</option>
+                    <option value="whatsapp_msg_pub">WhatsApp Pub</option>
+                </select>
+
+                <!-- Reset -->
+                <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">
+                    <i class="ti ti-x"></i> Réinitialiser
+                </button>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Entreprise</th>
+                            <th>Uploadé par</th>
+                            <th>Montant</th>
+                            <th>Méthode</th>
+                            <th>Service</th>
+                            <th>Qté</th>
+                            <th>Preuve</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let payment of listPayments">
+
+                            <td class="fw-semibold">{{ payment?.enterprise?.nameEtprise }}</td>
+
+                            <td>
+                                <div class="lh-sm">
+                                    <span class="d-block">{{ payment?.user_uploaded?.surname }} {{
+                                        payment?.user_uploaded?.name }}</span>
+                                    <small class="text-muted">{{ payment?.user_uploaded?.phone }}</small>
+                                </div>
+                            </td>
+
+                            <td class="fw-bold text-primary">{{ payment?.amount | number:'1.0-0' }}
+                                {{payment?.enterprise?.devise}}</td>
+
+                            <td class="text-capitalize">{{ payment?.payment_method }}</td>
+
+                            <td><small>{{ payment?.type_service }}</small></td>
+
+                            <td>{{ payment?.quantity }}</td>
+
+                            <td>
+                                <img *ngIf="payment?.img_payment" [src]="payment?.img_payment" alt="Preuve" width="40"
+                                    height="40" class="rounded-1" style="object-fit: cover; cursor: pointer;"
+                                    (click)="openImage(payment?.img_payment)" />
+                                <span *ngIf="!payment?.img_payment" class="text-muted">—</span>
+                            </td>
+
+                            <td><small>{{ payment?.date_payment | date: 'dd/MM/yy HH:mm' }}</small></td>
+
+                            <td>
+                                <select class="form-select form-select-sm" [ngClass]="{
+      'border-warning text-warning': payment.status_payment === 'En attente de validation',
+      'border-success text-success': payment.status_payment === 'Validé',
+      'border-danger text-danger': payment.status_payment === 'Rejeté'
+    }" [(ngModel)]="payment.status_payment" (change)="onStatusChange(payment)"
+                                    [disabled]="payment.status_payment === 'Validé'">
+
+                                    <option value="En attente de validation">En attente de validation</option>
+                                    <option value="Validé">Validé</option>
+                                    <option value="Rejeté">Rejeté</option>
+                                </select>
+                            </td>
+
+                        </tr>
+
+                        <tr *ngIf="listPayments?.length === 0">
+                            <td colspan="9" class="text-center text-muted py-3">Aucun paiement.</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
+                [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
+                (pageChange)="onPageChangePaymentsPayments($event)">
+            </app-set-pagination>
+        </div>
+    </div>
+</div>

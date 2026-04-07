@@ -196,8 +196,33 @@ export class AdminService {
   }
 
 
-  postInvoice(data:any){
+  postInvoice(data: any) {
     return this.http.post(`${environment.apiUrl}/upload-payment`, data, { withCredentials: true });
+  }
+
+
+  getAllPayments(page: number = 1, search: any = '', enterprise: string = '', type_service: string = ''): Observable<{ results: Enterprise }> {
+    const params: string[] = [];
+    params.push(`page=${page}`);
+    if (search) {
+      params.push(`search=${encodeURIComponent(search)}`);
+    }
+    if (enterprise) {
+      params.push(`start_date=${encodeURIComponent(enterprise)}`);
+    }
+
+    if (type_service) {
+      params.push(`end_date=${encodeURIComponent(type_service)}`);
+    }
+
+    const queryString = params.join('&');
+    return this.http.get<{ results: Enterprise }>(`${environment.apiUrl}/upload-payment?${queryString}`, { withCredentials: true });
+  }
+
+
+    putPayment(idPayment: number, data: any) {
+    return this.http.put(`${environment.apiUrl}/update-qty-whatsapp/${idPayment}`, data, { withCredentials: true }
+    );
   }
 
 }

@@ -12,7 +12,7 @@
                         🔍 Recherchez une facture
                     </label>
 
-                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeFaq($event)">
                     </app-search-list>
                 </div>
 
@@ -45,7 +45,7 @@
             <!-- Pagination -->
             <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
                 [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
-                (pageChange)="onPageChangeInvoice($event)">
+                (pageChange)="onPageChangeFaq($event)">
             </app-set-pagination>
         </div>
     </div>
