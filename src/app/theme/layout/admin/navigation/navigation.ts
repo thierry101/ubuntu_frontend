@@ -244,7 +244,7 @@ export const NavigationItems: NavigationItem[] = [
     roles: ['big_root'],
     type: 'item',
     classes: 'nav-item',
-    url: '/check-payment',
+    url: '/historik-payment',
     icon: 'ti ti-report-money'
   },
   {

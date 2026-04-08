@@ -20,9 +20,9 @@ const routes: Routes = [
     canActivate: [accessBasedRoleGuard(['big_root'])]
   },
   {
-    path: 'check-payment',
+    path: 'historik-payment',
     loadComponent: () => import('./check-payments/check-payments.component').then((c) => c.CheckPaymentsComponent),
-    canActivate: [accessBasedRoleGuard(['big_root'])]
+    canActivate: [accessBasedRoleGuard(['big_root', 'Admin', 'Daf'])]
   },
   {
     path: 'admin-faq',

@@ -220,8 +220,14 @@ export class AdminService {
   }
 
 
-    putPayment(idPayment: number, data: any) {
+    putQtyMsg(idPayment: number, data: any) {
     return this.http.put(`${environment.apiUrl}/update-qty-whatsapp/${idPayment}`, data, { withCredentials: true }
+    );
+  }
+
+
+  putPayment(idPayment: number, data: any) {
+    return this.http.put(`${environment.apiUrl}/update-payment/${idPayment}`, data, { withCredentials: true }
     );
   }
 

@@ -2,15 +2,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdminService } from 'src/app/services/admin.service';
-import { setPagination, showError, toastShow } from 'src/app/share/shared';
+import { servicesProvided, setPagination, showError, toastShow } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import Swal from 'sweetalert2';
 import { SetPaginationComponent } from "../../reusableComponents/set-pagination/set-pagination.component";
+import { AuthService } from 'src/app/services/auth.service';
+import { ImagePipe } from 'src/app/pipes/image.pipe';
+import { SubmitSpinnerComponent } from "../../reusableComponents/submit-spinner/submit-spinner.component";
 
 @Component({
   selector: 'app-check-payments',
   standalone: true,
-  imports: [SharedModule, SetPaginationComponent],
+  imports: [SharedModule, SetPaginationComponent, ImagePipe, SubmitSpinnerComponent],
   templateUrl: './check-payments.component.html',
   styleUrl: './check-payments.component.scss'
 })
@@ -19,9 +22,16 @@ export class CheckPaymentsComponent implements OnInit {
   isLoading: boolean = false
   searchTerm: string = ''
   pages: number[] = [];
+  paymentPreview: string = ''
+  imgPaymentManuel: any = { name: '', file: '' }
   filterStatus = '';
   filterMethod = '';
   filterService = '';
+  userInfo!: any;
+  idPayment!: any;
+  role: string = '';
+  isCheckingPayment: boolean = false;
+  allServices: any = servicesProvided;
   errors: any = []
   listPayments: any[] = []
   pagination: any = {
@@ -31,10 +41,12 @@ export class CheckPaymentsComponent implements OnInit {
     nextPage: null,
   };
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.fetchPayments(1)
+    this.userInfo = this.authService.currentUser;
+    this.role = this.userInfo?.role;
   }
 
 
@@ -76,8 +88,7 @@ export class CheckPaymentsComponent implements OnInit {
       statusPayment: payment.status_payment,
       checker: 'whatsappMsg'
     }
-    console.log('Payment status changed:', payment?.status_payment);
-    this.adminService.putPayment(payment?.id, data).subscribe({
+    this.adminService.putQtyMsg(payment?.id, data).subscribe({
       next: (res: any) => {
         console.log("the result is ", res)
         toastShow('success', '✅ Statut de paiement mis à jour avec succès.')
@@ -90,10 +101,61 @@ export class CheckPaymentsComponent implements OnInit {
   }
 
 
+  updateProofPayment(idPayment: number) {
+    this.idPayment = idPayment
+  }
+
+
+  updatePaymentImg() {
+    const data = {
+      checker:'whatsapp_msg',
+      'payment_proof': this.imgPaymentManuel
+    }
+    this.adminService.putPayment(this.idPayment, data).subscribe({
+      next: (res: any) => {
+        console.log("the result is ", res)
+        toastShow('success', '✅ Preuve de paiement mise à jour avec succès.')
+        this.errors = []
+        this.paymentPreview = '';
+        document.getElementById('closeModalPayment01')?.click()
+        this.fetchPayments(this.pagination.currentPage);
+      },
+      error: (err) => {
+        this.errors = err?.error?.errors || [];
+        showError(err, err.status, this.errors, err.error);
+      }
+    })
+  }
+
+
+  onImgPaymentChange(event: any) {
+    const reader = new FileReader();
+
+    if (event.target.files && event.target.files[0]) {
+      const [file] = event.target.files;
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        this.paymentPreview = reader.result as string;
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
+      };
+      reader.onerror = () => {
+        toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
+      };
+    }
+  }
+
+
   resetFilters(): void {
     this.filterStatus = '';
     this.filterMethod = '';
     this.filterService = '';
+  }
+
+
+  getServiceName(value: string): string | undefined {
+    return this.allServices.find((service: any) => service.value === value)?.name;
   }
 
   openImage(url: string): void {

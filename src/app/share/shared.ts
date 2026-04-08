@@ -337,6 +337,19 @@ export const otherRoles = [
 ]
 
 
+export const servicesProvided = [
+  {
+    "name": "Message WhatsApp", "value": "whatsapp_msg"
+  },
+  {
+    "name": "Message WhatsApp publicitaire", "value": "whatsapp_msg_public"
+  },
+  {
+    "name": "Abonnement", "value": "abonnement"
+  }
+]
+
+
 export const roles = [
   {
     "name": "Administrateur",

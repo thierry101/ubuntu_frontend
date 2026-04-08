@@ -61,6 +61,13 @@
                         <div class="menu-label">Établir facture avoir</div>
                     </a>
                 </div>
+                <div *ngIf="['Admin', 'Daf']?.includes(role)"
+                    class="col-12 col-md-6 col-lg-4">
+                    <a [routerLink]="['/historik-payment']" class="menu-card btn w-100 bg-info text-white">
+                        <div class="menu-icon">📄</div>
+                        <div class="menu-label">Historique des paiements</div>
+                    </a>
+                </div>
 
             </div>
         </div>

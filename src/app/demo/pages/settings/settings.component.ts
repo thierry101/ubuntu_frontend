@@ -214,20 +214,6 @@ export class SettingsComponent implements OnInit {
         this.imgPaymentManuel.name = file.name;
         this.imgPaymentManuel.file = reader.result;
 
-        const data = {
-          data: this.imgPaymentManuel
-        };
-
-        // this.publicService.postSettingEtprise(data).subscribe({
-        //   next: () => {
-        //     toastShow('success', '✅ Logo mis à jour avec succès');
-        //     this.errors = [];
-        //   },
-        //   error: (err) => {
-        //     this.errors = err?.error?.errors || [];
-        //     showError(err, err.status, this.errors, err.error);
-        //   }
-        // });
       };
       reader.onerror = (e) => {
         toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
