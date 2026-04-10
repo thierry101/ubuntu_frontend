@@ -201,21 +201,22 @@ export class AdminService {
   }
 
 
-  getAllPayments(page: number = 1, search: any = '', enterprise: string = '', type_service: string = ''): Observable<{ results: Enterprise }> {
+  getAllPayments(page: number = 1, search: any = '', statusPayment: string = '', typeService: string = ''): Observable<{ results: Enterprise }> {
     const params: string[] = [];
     params.push(`page=${page}`);
     if (search) {
       params.push(`search=${encodeURIComponent(search)}`);
     }
-    if (enterprise) {
-      params.push(`start_date=${encodeURIComponent(enterprise)}`);
+    if (statusPayment) {
+      params.push(`status_payment=${encodeURIComponent(statusPayment)}`);
     }
 
-    if (type_service) {
-      params.push(`end_date=${encodeURIComponent(type_service)}`);
+    if (typeService) {
+      params.push(`type_service=${encodeURIComponent(typeService)}`);
     }
 
     const queryString = params.join('&');
+    console.log("query string is ", queryString)
     return this.http.get<{ results: Enterprise }>(`${environment.apiUrl}/upload-payment?${queryString}`, { withCredentials: true });
   }
 

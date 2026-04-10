@@ -10,8 +10,15 @@
             <!-- Filtres -->
             <div class="d-flex gap-2 p-3 border-bottom flex-wrap">
 
+                <!-- Filtre search -->
+                <div class="w-auto">
+                    <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchPayment($event)">
+                    </app-search-list>
+                </div>
+
                 <!-- Filtre statut -->
-                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterStatus">
+                <select class="form-select form-select-sm w-auto" (change)="filterByStatus()"
+                    [(ngModel)]="filterStatus">
                     <option value="">Tous les statuts</option>
                     <option value="En attente de validation">En attente</option>
                     <option value="Validé">Validé</option>
@@ -19,16 +26,16 @@
                 </select>
 
                 <!-- Filtre méthode de paiement -->
-                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterMethod">
+                <!-- <select class="form-select form-select-sm w-auto" [(ngModel)]="filterMethod">
                     <option value="">Toutes les méthodes</option>
                     <option value="wave">Wave</option>
                     <option value="momo">Momo</option>
                     <option value="orange">Orange</option>
                     <option value="manuel">Manuel</option>
-                </select>
+                </select> -->
 
                 <!-- Filtre service -->
-                <select class="form-select form-select-sm w-auto" [(ngModel)]="filterService">
+                <select (change)="filterByService()" class="form-select form-select-sm w-auto" [(ngModel)]="filterService">
                     <option value="">Tous les services</option>
                     <option value="whatsapp_msg">WhatsApp Message</option>
                     <option value="whatsapp_msg_pub">WhatsApp Pub</option>
@@ -41,7 +48,10 @@
 
             </div>
 
-            <div class="table-responsive">
+            <!-- Loading Spinner -->
+            <app-spinners *ngIf="loading" message="Chargement des paiements..."></app-spinners>
+
+            <div *ngIf="!loading" class="table-responsive">
                 <table class="table table-hover table-sm align-middle mb-0">
                     <thead class="table-light">
                         <tr>
@@ -102,7 +112,8 @@
                                 </select>
                             </td>
                             <td *ngIf="role!=='big_root'">
-                                <button (click)="updateProofPayment(payment?.id)" [disabled]="payment?.status_payment === 'Validé'" class="btn btn-warning btn-sm"
+                                <button (click)="updateProofPayment(payment?.id)"
+                                    [disabled]="payment?.status_payment === 'Validé'" class="btn btn-warning btn-sm"
                                     data-bs-toggle="modal" data-bs-target="#modalImgPayment"><i class="ti ti-edit"></i>
                                     <app-tooltip message="Modifier la preuve de paiement"></app-tooltip>
                                 </button>
@@ -154,7 +165,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="closeModalPayment01" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" id="closeModalPayment01" class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal">Fermer</button>
                 <app-submit-spinner [loading]="isCheckingPayment" label="Mettre à jour" icon="ti ti-refresh me-1"
                     cssClass="btn btn-warning btn-sm mt-2" (clicked)="updatePaymentImg()">
                 </app-submit-spinner>

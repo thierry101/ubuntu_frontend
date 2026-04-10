@@ -28,6 +28,7 @@ export class InvoicesComponent implements OnInit {
   country: string = ''
   searchTerm: string = ''
   percentage: number = 0
+  manuelPayment: boolean = false
   pages: number[] = [];
   pagination: any = {
     currentPage: 1,
@@ -60,6 +61,7 @@ export class InvoicesComponent implements OnInit {
     });
   }
 
+
   getPaymentDetail(invoice: InvoiceDue) {
     // console.log(invoice)
     this.uploadedFile = null
@@ -72,6 +74,7 @@ export class InvoicesComponent implements OnInit {
       next: (res: { result: CountryPayment[] }) => {
         this.myPayments = res?.result
         this.methodPayment = invoice?.type_payment
+        console.log(this.myPayments)
         this.typePayment = this.myPayments.find(p => p?.type_payment === invoice?.type_payment) || null;
         if (invoice?.file_payment) {
           this.previewImage = invoice?.file_payment
@@ -134,14 +137,19 @@ export class InvoicesComponent implements OnInit {
   }
 
 
-  returnStringAsDate(dateString1: string, dateString2: string): Date {
+  returnStringAsDate(dateString1: string, dateString2: string): string {
     const dateString = `${dateString2}-${dateString1}`;
-    return new Date(dateString);
+    return dateString;
   }
 
   selectPayment(event: any) {
     this.methodPayment = event.target.value
-    this.typePayment = this.myPayments.find(p => p?.type_payment === this.methodPayment);
+    if (this.methodPayment === 'manuel') {
+      this.manuelPayment = true
+    } else {
+      this.manuelPayment = false
+      this.typePayment = this.myPayments.find(p => p?.type_payment === this.methodPayment);
+    }
   }
 
 

@@ -97,7 +97,7 @@ const routes: Routes = [
         },
       },
         {
-        path: 'my-invoice',
+        path: 'my-invoices',
         loadComponent: () => import('../invoices/invoices.component').then((c) => c.InvoicesComponent),
         canActivate: [rolePermissionGuard()],
         data: {

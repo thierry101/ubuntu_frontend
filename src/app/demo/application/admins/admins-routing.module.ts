@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: 'list-commission',
     loadComponent: () => import('./partners-commission/partners-commission.component').then((c) => c.PartnersCommissionComponent),
-    canActivate: [accessBasedRoleGuard(['Partner'])]
+    canActivate: [accessBasedRoleGuard(['big_root', 'Partner'])]
   },
   {
     path: 'all-invoices-enterprises',
@@ -26,6 +26,11 @@ const routes: Routes = [
   },
   {
     path: 'admin-faq',
+    loadComponent: () => import('./faq/faq.component').then((c) => c.FaqComponent),
+    canActivate: [accessBasedRoleGuard(['big_root'])]
+  },
+   {
+    path: 'check-buy-partner',
     loadComponent: () => import('./payment-partner/payment-partner.component').then((c) => c.PaymentPartnerComponent),
     canActivate: [accessBasedRoleGuard(['big_root'])]
   },

@@ -42,8 +42,8 @@
                             <tr *ngFor="let invoice of allInvoices; trackBy: invoice?.id" class="invoice-row">
                                 <td class="fw-medium text-dark">{{ invoice?.invoice_number }}</td>
                                 <td class="text-capitalize">
-                                    {{ returnStringAsDate(invoice?.month_invoice, invoice?.year_invoice)
-                                    | date:'MMMM/yyyy':'':'fr' }}
+                                    {{ returnStringAsDate(invoice?.month_invoice, invoice?.year_invoice )
+                                    | date:'MMM yyyy' }}
                                 </td>
                                 <td class="text-end fw-semibold text-dark">
                                     {{ invoice?.amount_to_pay | number:'1.0-0' }} {{ devise }}
@@ -143,7 +143,52 @@
                                 </label>
                             </ng-container>
                         </ng-container>
+                        <!-- Manuel -->
+                        <ng-container>
+                            <input type="radio" name="paymentMethod" class="btn-check" [id]="'manuel-'" value="manuel"
+                                (click)="selectPayment($event)" />
+
+                            <label class="btn payment-btn payment-orange" [for]="'manuel-'">
+                                <img style="height: 40px; width: 40px;" src="assets/images/payments/manuel.jpg"
+                                    class="manuel-logo">
+                                <span>Manuel</span>
+                            </label>
+                        </ng-container>
                         <small class="text-danger">{{errors?.paymentMethod}}</small>
+                    </div>
+                    <!-- Manual Payment -->
+                    <div class="card shadow-sm border-0" *ngIf="manuelPayment">
+                        <div class="card-body">
+
+                            <h6 class="mb-2">Paiement manuel</h6>
+
+                            <p class="small text-muted mb-2">
+                                Faites un dépôt sur l'un des numéros suivants :
+                            </p>
+
+                            <ul class="small mb-3">
+                                <li *ngFor="let item of accountsNbers">
+                                    <b>{{ item?.type_payment }} :</b> {{ item?.account_nber }}
+                                </li>
+                            </ul>
+
+                            <!-- Upload -->
+                            <small><b>Télécharger la capture d'écran du paiement effectué pour vérification.</b></small>
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="btn btn-outline-primary btn-sm">
+                                    📤 Ajouter une preuve
+                                    <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*">
+                                </label>
+
+                                <img *ngIf="imgPaymentManuelPreview" [src]="imgPaymentManuelPreview | image"
+                                    class="preview-img">
+                            </div>
+
+                            <small class="text-danger d-block mt-2">
+                                {{ errors?.image }}
+                            </small>
+
+                        </div>
                     </div>
                     <small class="text-danger">{{errors?.invoice}}</small>
                     <p *ngIf="typePayment" class="payment-instructions">

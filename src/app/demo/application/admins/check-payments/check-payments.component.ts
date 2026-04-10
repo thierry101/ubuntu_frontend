@@ -9,17 +9,20 @@ import { SetPaginationComponent } from "../../reusableComponents/set-pagination/
 import { AuthService } from 'src/app/services/auth.service';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { SubmitSpinnerComponent } from "../../reusableComponents/submit-spinner/submit-spinner.component";
+import { SearchListComponent } from "../../reusableComponents/search-list/search-list.component";
+import { SpinnersComponent } from '../../reusableComponents/spinners/spinners.component';
 
 @Component({
   selector: 'app-check-payments',
   standalone: true,
-  imports: [SharedModule, SetPaginationComponent, ImagePipe, SubmitSpinnerComponent],
+  imports: [SharedModule, SetPaginationComponent, ImagePipe, SubmitSpinnerComponent, SearchListComponent, SpinnersComponent],
   templateUrl: './check-payments.component.html',
   styleUrl: './check-payments.component.scss'
 })
 export class CheckPaymentsComponent implements OnInit {
 
   isLoading: boolean = false
+  loading: boolean = false
   searchTerm: string = ''
   pages: number[] = [];
   paymentPreview: string = ''
@@ -52,6 +55,7 @@ export class CheckPaymentsComponent implements OnInit {
 
   fetchPayments(page: number = 1) {
     this.isLoading = true;
+    this.loading = true;
     setPagination(
       this.adminService.getAllPayments.bind(this.adminService) as (page: number, searchTerm: any, startDate?: string, endDate?: string
       ) => Observable<any>,
@@ -59,18 +63,25 @@ export class CheckPaymentsComponent implements OnInit {
       this.searchTerm,
       (data: any) => {
         this.pagination = data;
-        console.log(data)
         this.listPayments = data?.listItems;
         this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
         this.isLoading = false;
-      }
-      // startDate and endDate are not passed — that's OK
+        this.loading = false;
+      },
+      this.filterStatus,
+      this.filterService
     );
   }
 
 
   onPageChangePaymentsPayments(page: number) {
     this.fetchPayments(page);
+  }
+
+
+  onSearchPayment(term: string) {
+    this.searchTerm = term;
+    this.fetchPayments(1);
   }
 
 
@@ -108,7 +119,7 @@ export class CheckPaymentsComponent implements OnInit {
 
   updatePaymentImg() {
     const data = {
-      checker:'whatsapp_msg',
+      checker: 'whatsapp_msg',
       'payment_proof': this.imgPaymentManuel
     }
     this.adminService.putPayment(this.idPayment, data).subscribe({
@@ -144,6 +155,15 @@ export class CheckPaymentsComponent implements OnInit {
         toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
       };
     }
+  }
+
+
+  filterByStatus() {
+    this.fetchPayments(1);
+  }
+
+  filterByService() {
+    this.fetchPayments(1);
   }
 
 

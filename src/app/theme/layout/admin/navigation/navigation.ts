@@ -173,16 +173,6 @@ export const NavigationItems: NavigationItem[] = [
     url: '/space-partner',
     icon: 'ti ti-settings'
   },
-  {
-    id: 'comission',
-    title: 'Mes commissions',
-    roles: ['Partner'],
-    type: 'item',
-    classes: 'nav-item',
-    url: '/list-commission',
-    icon: 'ti ti-settings'
-  },
-
   // About the super admin
   {
     id: 'global_setting',
@@ -203,15 +193,6 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'ti ti-settings'
   },
   {
-    id: 'list_partners',
-    title: 'Partenaires',
-    roles: ['big_root'],
-    type: 'item',
-    classes: 'nav-item',
-    url: '/list-all-partners',
-    icon: 'ti ti-users'
-  },
-  {
     id: 'list_enterprises',
     title: 'Entreprises',
     roles: ['big_root'],
@@ -219,6 +200,15 @@ export const NavigationItems: NavigationItem[] = [
     classes: 'nav-item',
     url: '/list-all-enterprises',
     icon: 'ti ti-building'
+  },
+  {
+    id: 'list_partners',
+    title: 'Partenaires',
+    roles: ['big_root'],
+    type: 'item',
+    classes: 'nav-item',
+    url: '/list-all-partners',
+    icon: 'ti ti-users'
   },
   {
     id: 'list_invoices_client',
@@ -230,12 +220,21 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'ti ti-building'
   },
   {
+    id: 'comission',
+    title: 'Commissions',
+    roles: ['big_root', 'Partner'],
+    type: 'item',
+    classes: 'nav-item',
+    url: '/list-commission',
+    icon: 'ti ti-settings'
+  },
+  {
     id: 'list_faq',
     title: 'Payer partenaire',
     roles: ['big_root'],
     type: 'item',
     classes: 'nav-item',
-    url: '/list-all-enterprise', //edit-faq
+    url: '/check-buy-partner', //edit-faq
     icon: 'ti ti-building'
   },
   {
