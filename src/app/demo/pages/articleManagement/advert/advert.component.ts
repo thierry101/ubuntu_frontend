@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
@@ -8,17 +9,22 @@ import { SetPaginationComponent } from "src/app/demo/application/reusableCompone
 import { SpinnersComponent } from 'src/app/demo/application/reusableComponents/spinners/spinners.component';
 import { SearchListComponent } from "src/app/demo/application/reusableComponents/search-list/search-list.component";
 import { PublicService } from 'src/app/services/public.service';
+import { CatalogService } from 'src/app/services/catalog.service';
+import { AdminService } from 'src/app/services/admin.service';
+import { ImagePipe } from 'src/app/pipes/image.pipe';
 
 @Component({
   selector: 'app-advert',
   standalone: true,
-  imports: [SharedModule, SubmitSpinnerComponent, SetPaginationComponent, SpinnersComponent, SearchListComponent, SubmitSpinnerComponent],
+  imports: [SharedModule, SubmitSpinnerComponent, SetPaginationComponent, SpinnersComponent, SearchListComponent,
+    SubmitSpinnerComponent, ImagePipe],
   templateUrl: './advert.component.html',
   styleUrl: './advert.component.scss'
 })
 export class AdvertComponent implements OnInit {
 
   nameAdvertising: string = ''
+  typePaymentSelected: string = ''
   headerMsg: string = ''
   headerContent: string = "Salut 👋"
   footer1Msg: string = "Cliquez sur le bouton ci-dessous pour y accéder 👇"
@@ -26,6 +32,7 @@ export class AdvertComponent implements OnInit {
   contentMsg: string = ''
   isSaving: boolean = false
   isLoading: boolean = false
+  manuelPayment: boolean = false
   currentTime: Date = new Date();
   pagination: any = {
     currentPage: 1,
@@ -55,8 +62,15 @@ export class AdvertComponent implements OnInit {
   nberWhatsappMsg: number = 0
   idTemplate: number = 0
   isSend: boolean = false
+  isPayment: boolean = false
+  accountsNbers!: any
+  // imgPaymentManuelPreview: string = '';
+  imgPaymentManuelPreview: string | ArrayBuffer | null = null;
+  fileType: string | 'image' | 'pdf' | null = null;
+  imgPaymentManuel: any = { name: '', file: '' }
 
-  constructor(private articleManagementService: ArticleManagementService, private publicService: PublicService) { }
+  constructor(private articleManagementService: ArticleManagementService, private publicService: PublicService,
+    private catalogService: CatalogService, private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.fetchAdvertising(1)
@@ -196,6 +210,129 @@ export class AdvertComponent implements OnInit {
         showError(err, err.status, this.errors, err.error, document.getElementById('closeModelPromo009'));
       }
     })
+  }
+
+
+    uploadPaymentManuel(event: any) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    // this.uploadedFile = file;
+
+    // Detect file type
+    if (file.type === 'application/pdf') {
+      this.fileType = 'pdf';
+
+      // Convert PDF to Base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imgPaymentManuelPreview = reader.result;  // <-- PDF Base64 stored here
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+      return;
+    }
+
+    if (file.type.startsWith('image/')) {
+      this.fileType = 'image';
+
+      // Convert image to Base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imgPaymentManuelPreview = reader.result;  // <-- Image Base64 stored here
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage() {
+    this.imgPaymentManuelPreview = null;
+    // this.uploadedFile = null;
+    this.fileType = null;
+    this.imgPaymentManuel = { name: '', file: '' };
+  }
+
+
+  // uploadPaymentManuel(event: any) {
+  //   const reader = new FileReader();
+
+  //   if (event.target.files && event.target.files[0]) {
+  //     const [file] = event.target.files;
+  //     reader.readAsDataURL(file);
+
+  //     reader.onload = () => {
+  //       this.imgPaymentManuelPreview = reader.result as string;
+  //       this.imgPaymentManuel.name = file.name;
+  //       this.imgPaymentManuel.file = reader.result;
+
+  //     };
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     reader.onerror = (e) => {
+  //       toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
+  //     };
+  //   }
+  // }
+
+
+  onPaymentChange(payment: string) {
+    // Handle payment method change
+    this.typePaymentSelected = payment;
+    if (payment === 'manuel') {
+      this.manuelPayment = true
+      this.catalogService.getMyPayments().subscribe({
+        next: (res) => {
+          this.accountsNbers = res?.result || [];
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des méthodes de paiement :', err);
+          // Optional: showError or toastShow can be added here
+        }
+      });
+    } else {
+      this.manuelPayment = false
+    }
+  }
+
+
+  confirmPayement() {
+    if (this.typePaymentSelected === 'manuel') {
+      this.isPayment = true
+      // Envoyer les données de paiement manuel à l'API
+      const data = {
+        checker: 'paymentWhatsappMsgPub',
+        typePayment: 'manuel',
+        nbreWhatasapp: this.quantity,
+        imgPayment: this.imgPaymentManuel
+      };
+      this.adminService.postInvoice(data).subscribe({
+        next: (res: any) => {
+          toastShow('success', '✅ Paiement traité avec succès');
+          this.errors = [];
+          this.quantity = 0;
+          this.total = 0;
+          this.typePaymentSelected = '';
+          this.manuelPayment = false;
+          this.imgPaymentManuel = { name: '', file: '' };
+          this.isPayment = false
+          this.imgPaymentManuelPreview = '';
+          // Décoche tous les radios visuellement
+          //     // this.paymentRadios.forEach(radio => {
+          //     //   radio.nativeElement.checked = false;
+          //     // });
+          document.getElementById('modalPubMsg')?.click()
+        },
+        error: (err) => {
+          this.errors = err?.error?.errors || [];
+          showError(err, err.status, this.errors, err.error);
+          this.isPayment = false
+        }
+      })
+    }
   }
 
 }

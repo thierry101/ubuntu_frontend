@@ -216,7 +216,6 @@ export class AdminService {
     }
 
     const queryString = params.join('&');
-    console.log("query string is ", queryString)
     return this.http.get<{ results: Enterprise }>(`${environment.apiUrl}/upload-payment?${queryString}`, { withCredentials: true });
   }
 

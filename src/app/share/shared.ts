@@ -342,10 +342,10 @@ export const servicesProvided = [
     "name": "Message WhatsApp", "value": "whatsapp_msg"
   },
   {
-    "name": "Message WhatsApp publicitaire", "value": "whatsapp_msg_public"
+    "name": "Message WhatsApp publicitaire", "value": "whatsapp_msg_pub"
   },
   {
-    "name": "Abonnement", "value": "abonnement"
+    "name": "Abonnement mensuel", "value": "invoice"
   }
 ]
 

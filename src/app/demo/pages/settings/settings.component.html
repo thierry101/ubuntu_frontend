@@ -482,11 +482,12 @@
                         </ul>
 
                         <!-- Upload -->
-                        <small><b>Télécharger la capture d'écran du paiement effectué pour vérification.</b></small>
+                        <small><b>Télécharger la capture d'écran ou le reçu pdf du paiement effectué pour
+                                vérification.</b></small>
                         <div class="d-flex align-items-center gap-3">
                             <label class="btn btn-outline-primary btn-sm">
                                 📤 Ajouter une preuve
-                                <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*">
+                                <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*,application/pdf">
                             </label>
 
                             <img *ngIf="imgPaymentManuelPreview" [src]="imgPaymentManuelPreview | image"
@@ -507,11 +508,14 @@
                 <button class="btn btn-light btn-sm" id="closeModalPayment" data-bs-dismiss="modal">
                     Fermer
                 </button>
+                <app-submit-spinner [loading]="isPayment" label="Valider l'achat" icon="ti ti-send me-1"
+                    cssClass="btn btn-primary btn-sm mt-2" (clicked)="confirmPayement()">
+                </app-submit-spinner>
 
-                <button class="btn btn-primary btn-sm px-4" [disabled]="!quantity || !total"
+                <!-- <button class="btn btn-primary btn-sm px-4" [disabled]="!quantity || !total"
                     (click)="confirmPayement()">
                     Acheter
-                </button>
+                </button> -->
             </div>
         </div>
     </div>

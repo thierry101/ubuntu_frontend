@@ -13,11 +13,12 @@ import { BleClient, BleDevice } from '@capacitor-community/bluetooth-le';
 import { TooltipComponent } from '../../application/reusableComponents/tooltip/tooltip.component';
 import { CatalogService } from 'src/app/services/catalog.service';
 import { AdminService } from 'src/app/services/admin.service';
+import { SubmitSpinnerComponent } from '../../application/reusableComponents/submit-spinner/submit-spinner.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent],
+  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -41,6 +42,7 @@ export class SettingsComponent implements OnInit {
   checkDefective: boolean = false
   enableWhatsap: boolean = false
   expiredProd: boolean = false
+  isPayment: boolean = false
   typePayments!: any
   adminSetting$ = this.publicService.adminSetting$;
   total: number = 0
@@ -202,6 +204,7 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+
   uploadPaymentManuel(event: any) {
     const reader = new FileReader();
 
@@ -225,6 +228,7 @@ export class SettingsComponent implements OnInit {
   confirmPayement() {
     if (this.typePaymentSelected === 'manuel') {
       // Envoyer les données de paiement manuel à l'API
+      this.isPayment = true
       const data = {
         checker: 'paymentWhatsappMsg',
         typePayment: 'manuel',
@@ -241,6 +245,7 @@ export class SettingsComponent implements OnInit {
           this.manuelPayment = false;
           this.imgPaymentManuel = { name: '', file: '' };
           this.imgPaymentManuelPreview = '';
+          this.isPayment = false
           // Décoche tous les radios visuellement
           this.paymentRadios.forEach(radio => {
             radio.nativeElement.checked = false;
@@ -250,6 +255,7 @@ export class SettingsComponent implements OnInit {
         error: (err) => {
           this.errors = err?.error?.errors || [];
           showError(err, err.status, this.errors, err.error);
+          this.isPayment = false
         }
       })
     }

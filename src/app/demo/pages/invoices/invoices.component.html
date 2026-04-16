@@ -60,7 +60,7 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <button (click)="getPaymentDetail(invoice)"
+                                    <button [disabled]="invoice?.status_payment!=='En attente de paiement'" (click)="getPaymentDetail(invoice)"
                                         class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="Payer"
                                         data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         <i class="ti ti-eye"></i>
@@ -109,8 +109,7 @@
                     </div>
 
                     <div class="btn-group payment-group w-100" role="group">
-                        <ng-container *ngFor="let p of myPayments; let i = index">
-                            <!-- Wave -->
+                        <!-- <ng-container *ngFor="let p of myPayments; let i = index">
                             <ng-container *ngIf="p?.type_payment === 'wave' && waveContries.includes(p?.country)">
                                 <input type="radio" name="paymentMethod" class="btn-check" [id]="'wave-' + i"
                                     [value]="p?.type_payment" (click)="selectPayment($event)" [checked]="i === 0" />
@@ -121,7 +120,6 @@
                                 </label>
                             </ng-container>
 
-                            <!-- MoMo -->
                             <ng-container *ngIf="p?.type_payment === 'momo' && momoContries.includes(p?.country)">
                                 <input type="radio" name="paymentMethod" class="btn-check" [id]="'momo-' + i"
                                     [value]="p?.type_payment" (click)="selectPayment($event)" />
@@ -132,7 +130,6 @@
                                 </label>
                             </ng-container>
 
-                            <!-- Orange Money -->
                             <ng-container *ngIf="p?.type_payment === 'orange' && orangeContries.includes(p?.country)">
                                 <input type="radio" name="paymentMethod" class="btn-check" [id]="'orange-' + i"
                                     [value]="p?.type_payment" (click)="selectPayment($event)" />
@@ -142,13 +139,13 @@
                                     <span>Orange Money</span>
                                 </label>
                             </ng-container>
-                        </ng-container>
+                        </ng-container> -->
                         <!-- Manuel -->
                         <ng-container>
-                            <input type="radio" name="paymentMethod" class="btn-check" [id]="'manuel-'" value="manuel"
+                            <input type="radio" name="paymentMethod" class="btn-check" id="manuel001" value="manuel"
                                 (click)="selectPayment($event)" />
 
-                            <label class="btn payment-btn payment-orange" [for]="'manuel-'">
+                            <label class="btn payment-btn payment-orange" for="manuel001">
                                 <img style="height: 40px; width: 40px;" src="assets/images/payments/manuel.jpg"
                                     class="manuel-logo">
                                 <span>Manuel</span>
@@ -167,61 +164,72 @@
                             </p>
 
                             <ul class="small mb-3">
-                                <li *ngFor="let item of accountsNbers">
+                                <li *ngFor="let item of myPayments">
                                     <b>{{ item?.type_payment }} :</b> {{ item?.account_nber }}
                                 </li>
                             </ul>
 
                             <!-- Upload -->
-                            <small><b>Télécharger la capture d'écran du paiement effectué pour vérification.</b></small>
+                            <small><b>Télécharger la capture d'écran ou le reçu pdf du paiement effectué pour
+                                    vérification.</b></small>
                             <div class="d-flex align-items-center gap-3">
                                 <label class="btn btn-outline-primary btn-sm">
                                     📤 Ajouter une preuve
-                                    <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*">
+                                    <input type="file" hidden (change)="handleFileInput($event)"
+                                        accept="image/*,application/pdf">
                                 </label>
 
-                                <img *ngIf="imgPaymentManuelPreview" [src]="imgPaymentManuelPreview | image"
-                                    class="preview-img">
+                                <!-- Image Preview -->
+                                <div class="preview-container" *ngIf="previewImage && (fileType === 'image')">
+                                    <img [src]="previewImage | image" class="preview-image" alt="Aperçu capture" />
+                                    <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button>
+                                </div> 
+                                <!-- PDF Preview -->
+                                <div class="pdf-preview" *ngIf="fileType === 'pdf'">
+                                    <div class="pdf-box">
+                                        📄 <span>{{ uploadedFile?.name || "paymentInvoice.pdf" }}</span>
+                                        <small>{{uploadedFile?.name}}</small>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button>
+                                </div>
                             </div>
 
                             <small class="text-danger d-block mt-2">
-                                {{ errors?.image }}
+                                {{ errors?.file_payment }}
                             </small>
 
                         </div>
                     </div>
-                    <small class="text-danger">{{errors?.invoice}}</small>
+                    <!-- <small class="text-danger">{{errors?.invoice}}</small>
                     <p *ngIf="typePayment" class="payment-instructions">
                         Faites un dépôt de
                         <b>{{ amountToPay | number:'1.0-0' }} {{ devise }}</b>
                         sur le numéro
                         <b>{{ typePayment?.account_nber }}</b>
                         puis envoyez-nous une capture d’écran en pièce jointe.
-                    </p>
+                    </p> -->
                 </div>
 
                 <!-- Upload Section -->
-                <div *ngIf="typePayment" class="upload-box">
+                <!-- <div *ngIf="typePayment" class="upload-box">
                     <label class="upload-label">
                         <input type="file" accept="image/*,application/pdf" (change)="handleFileInput($event)" hidden />
                         📤 Télécharger une capture ou PDF
                     </label>
                     <small class="text-danger">{{errors?.file_payment}}</small>
-                    <!-- Image Preview -->
+
                     <div class="preview-container" *ngIf="previewImage && (fileType === 'image')">
                         <img [src]="previewImage | image" class="preview-image" alt="Aperçu capture" />
-                        <!-- <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button> -->
                     </div>
 
-                    <!-- PDF Preview -->
                     <div class="pdf-preview" *ngIf="fileType === 'pdf'">
                         <div class="pdf-box">
                             📄 <span>{{ uploadedFile?.name || "paymentInvoice.pdf" }}</span>
+                            <small>{{uploadedFile?.name}}</small>
                         </div>
-                        <!-- <button class="btn btn-danger btn-sm mt-2" (click)="removeImage()">Supprimer</button> -->
                     </div>
 
-                </div>
+                </div> -->
 
             </div>
             <div class="modal-footer">

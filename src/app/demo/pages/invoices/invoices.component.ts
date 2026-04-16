@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { CountryPayment, InvoiceDue } from 'src/app/interfaces/global';
@@ -9,6 +10,7 @@ import { SetPaginationComponent } from "../../application/reusableComponents/set
 import { SpinnersComponent } from '../../application/reusableComponents/spinners/spinners.component';
 import { SubmitSpinnerComponent } from "../../application/reusableComponents/submit-spinner/submit-spinner.component";
 import { ImagePipe } from 'src/app/pipes/image.pipe';
+import { AdminService } from 'src/app/services/admin.service';
 
 @Component({
   selector: 'app-invoices',
@@ -28,6 +30,7 @@ export class InvoicesComponent implements OnInit {
   country: string = ''
   searchTerm: string = ''
   percentage: number = 0
+  imgPaymentManuel: any = { name: '', file: '' }
   manuelPayment: boolean = false
   pages: number[] = [];
   pagination: any = {
@@ -38,7 +41,7 @@ export class InvoicesComponent implements OnInit {
   };
   errors: any = []
   previewImage: string | ArrayBuffer | null = null;
-  uploadedFile: File | null = null;
+  // uploadedFile: File | null = null;
   fileType: string | 'image' | 'pdf' | null = null;
   myPayments: CountryPayment[] = []
   allInvoices: InvoiceDue[] = [];
@@ -48,7 +51,7 @@ export class InvoicesComponent implements OnInit {
   momoContries: any = ["Cote D'Ivoire", "Cameroun", "République Démocratique du congo", "Gabon", "Tchad"]
 
 
-  constructor(private catalogService: CatalogService, private publicService: PublicService) { }
+  constructor(private catalogService: CatalogService, private publicService: PublicService, private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.fetchInvoices(1)
@@ -64,61 +67,77 @@ export class InvoicesComponent implements OnInit {
 
   getPaymentDetail(invoice: InvoiceDue) {
     // console.log(invoice)
-    this.uploadedFile = null
-    const path = invoice?.file_payment;
+    // this.uploadedFile = null
+    // const path = invoice?.file_payment;
+    // console.log(invoice?.file_payment)
 
     this.idInvoice = invoice?.id
     this.amountToPay = invoice?.amount_to_pay
     this.dateInvoice = JSON.stringify(invoice?.month_invoice) + '/' + JSON.stringify(invoice?.year_invoice)
-    this.catalogService.getMyPayments().subscribe({
-      next: (res: { result: CountryPayment[] }) => {
-        this.myPayments = res?.result
-        this.methodPayment = invoice?.type_payment
-        console.log(this.myPayments)
-        this.typePayment = this.myPayments.find(p => p?.type_payment === invoice?.type_payment) || null;
-        if (invoice?.file_payment) {
-          this.previewImage = invoice?.file_payment
-          const lastPart = path.split('.').pop();   // returns "10_2025_orange.pdf"
-          if (lastPart) {
-            if (lastPart === 'pdf') {
-              this.fileType = lastPart
-            }
-            else {
-              this.fileType = 'image'
-            }
-          }
-        }
-      }
-    })
+
   }
 
 
   validPayment() {
-    this.isSubmitPayment = true
-    const idModal = document.getElementById('idClosePaymentModal')
-    const data = {
-      paymentMethod: this.methodPayment, dateToPay: this.dateInvoice, idInvoice: this.idInvoice,
-      imgPayment: this.previewImage
+    if (this.methodPayment === 'manuel') {
+      // Envoyer les données de paiement manuel à l'API
+      const data = {
+        checker: 'invoice',
+        typePayment: 'manuel',
+        idInvoice: this.idInvoice,
+        imgPayment: this.imgPaymentManuel
+      };
+      this.adminService.postInvoice(data).subscribe({
+        next: (res: any) => {
+          toastShow('success', '✅ Paiement traité avec succès');
+          this.errors = [];
+          this.methodPayment = '';
+          this.manuelPayment = false;
+          this.imgPaymentManuel = { name: '', file: '' };
+          this.previewImage = '';
+          this.fetchInvoices(1)
+          // Décoche tous les radios visuellement
+          // this.paymentRadios.forEach(radio => {
+          //   radio.nativeElement.checked = false;
+          // });
+          document.getElementById('idClosePaymentModal')?.click()
+        },
+        error: (err) => {
+          this.errors = err?.error?.errors || [];
+          console.log(this.errors)
+          showError(err, err.status, this.errors, err.error);
+        }
+      })
     }
-    this.catalogService.postImagePayment(data).subscribe({
-      next: (res: { result: InvoiceDue }) => {
-        this.allInvoices = this.allInvoices.filter(item => item.id !== this.idInvoice);
-        this.allInvoices?.unshift(res?.result)
-        this.previewImage = null
-        this.typePayment = null
-        this.methodPayment = ''
-        this.errors = []
-        this.isSubmitPayment = false
-        idModal?.click()
-        toastShow("success", "✅ Paiement effectué avec succès");
-      },
-      error: (err) => {
-        this.isSubmitPayment = false
-        this.errors = err.error.errors || [];
-        showError(err, err.status, this.errors, err.error, idModal);
-      }
-    })
   }
+
+
+  // validPayment() {
+  //   this.isSubmitPayment = true
+  //   const idModal = document.getElementById('idClosePaymentModal')
+  //   const data = {
+  //     paymentMethod: this.methodPayment, dateToPay: this.dateInvoice, idInvoice: this.idInvoice,
+  //     imgPayment: this.previewImage
+  //   }
+  //   this.catalogService.postImagePayment(data).subscribe({
+  //     next: (res: { result: InvoiceDue }) => {
+  //       this.allInvoices = this.allInvoices.filter(item => item.id !== this.idInvoice);
+  //       this.allInvoices?.unshift(res?.result)
+  //       this.previewImage = null
+  //       this.typePayment = null
+  //       this.methodPayment = ''
+  //       this.errors = []
+  //       this.isSubmitPayment = false
+  //       idModal?.click()
+  //       toastShow("success", "✅ Paiement effectué avec succès");
+  //     },
+  //     error: (err) => {
+  //       this.isSubmitPayment = false
+  //       this.errors = err.error.errors || [];
+  //       showError(err, err.status, this.errors, err.error, idModal);
+  //     }
+  //   })
+  // }
 
 
   fetchInvoices(page: number = 1) { //instead of bind I can call arrow function like (page, term) => this.authService.getRegisterByAdmin(page, term)
@@ -146,6 +165,26 @@ export class InvoicesComponent implements OnInit {
     this.methodPayment = event.target.value
     if (this.methodPayment === 'manuel') {
       this.manuelPayment = true
+      this.catalogService.getMyPayments().subscribe({
+        next: (res: { result: CountryPayment[] }) => {
+          this.myPayments = res?.result
+          // this.methodPayment = invoice?.type_payment
+          console.log(this.myPayments)
+          // this.typePayment = this.myPayments.find(p => p?.type_payment === invoice?.type_payment) || null;
+          // if (invoice?.file_payment) {
+          //   this.previewImage = invoice?.file_payment
+          //   const lastPart = path.split('.').pop();   // returns "10_2025_orange.pdf"
+          //   if (lastPart) {
+          //     if (lastPart === 'pdf') {
+          //       this.fileType = lastPart
+          //     }
+          //     else {
+          //       this.fileType = 'image'
+          //     }
+          //   }
+          // }
+        }
+      })
     } else {
       this.manuelPayment = false
       this.typePayment = this.myPayments.find(p => p?.type_payment === this.methodPayment);
@@ -172,7 +211,7 @@ export class InvoicesComponent implements OnInit {
 
     if (!file) return;
 
-    this.uploadedFile = file;
+    // this.uploadedFile = file;
 
     // Detect file type
     if (file.type === 'application/pdf') {
@@ -182,6 +221,8 @@ export class InvoicesComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.previewImage = reader.result;  // <-- PDF Base64 stored here
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
       };
       reader.readAsDataURL(file);
 
@@ -195,6 +236,8 @@ export class InvoicesComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.previewImage = reader.result;  // <-- Image Base64 stored here
+        this.imgPaymentManuel.name = file.name;
+        this.imgPaymentManuel.file = reader.result;
       };
       reader.readAsDataURL(file);
     }
@@ -202,8 +245,9 @@ export class InvoicesComponent implements OnInit {
 
   removeImage() {
     this.previewImage = null;
-    this.uploadedFile = null;
+    // this.uploadedFile = null;
     this.fileType = null;
+    this.imgPaymentManuel = { name: '', file: '' };
   }
 
 

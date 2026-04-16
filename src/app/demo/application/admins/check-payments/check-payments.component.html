@@ -35,7 +35,8 @@
                 </select> -->
 
                 <!-- Filtre service -->
-                <select (change)="filterByService()" class="form-select form-select-sm w-auto" [(ngModel)]="filterService">
+                <select (change)="filterByService()" class="form-select form-select-sm w-auto"
+                    [(ngModel)]="filterService">
                     <option value="">Tous les services</option>
                     <option value="whatsapp_msg">WhatsApp Message</option>
                     <option value="whatsapp_msg_pub">WhatsApp Pub</option>
@@ -90,9 +91,19 @@
                             <td>{{ payment?.quantity || '-' }}</td>
 
                             <td>
-                                <img *ngIf="payment?.img_payment" [src]="payment?.img_payment" alt="Preuve" width="40"
-                                    height="40" class="rounded-1" style="object-fit: cover; cursor: pointer;"
-                                    (click)="openImage(payment?.img_payment)" />
+                                <!-- IMAGE -->
+                                <img *ngIf="checkTypeFile(payment?.img_payment) === 'image'"
+                                    [src]="payment?.img_payment" alt="Preuve" width="40" height="40" class="rounded-1"
+                                    style="object-fit: cover; cursor: pointer;" (click)="openImage(payment)" />
+
+                                <!-- PDF -->
+                                <div *ngIf="checkTypeFile(payment?.img_payment) === 'pdf'">
+                                    <button class="btn btn-sm btn-info" (click)="openPdf(payment?.img_payment)">
+                                        📄 Voir
+                                    </button>
+                                </div>
+
+                                <!-- EMPTY -->
                                 <span *ngIf="!payment?.img_payment" class="text-muted">—</span>
                             </td>
 

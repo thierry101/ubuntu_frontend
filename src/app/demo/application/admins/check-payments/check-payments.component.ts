@@ -23,6 +23,7 @@ export class CheckPaymentsComponent implements OnInit {
 
   isLoading: boolean = false
   loading: boolean = false
+  fileType: string | 'image' | 'pdf' | null = null;
   searchTerm: string = ''
   pages: number[] = [];
   paymentPreview: string = ''
@@ -178,16 +179,48 @@ export class CheckPaymentsComponent implements OnInit {
     return this.allServices.find((service: any) => service.value === value)?.name;
   }
 
-  openImage(url: string): void {
-    Swal.fire({
-      imageUrl: url,
-      imageAlt: 'Preuve de paiement',
-      showConfirmButton: false,
-      showCloseButton: true,
-      width: '30%'
-    });
+
+  openImage(paiement: any): void {
+    // this.typePayment = this.myPayments.find(p => p?.type_payment === invoice?.type_payment) || null;
+    if (paiement?.img_payment) {
+      // this.previewImage = paiement?.img_payment
+
+      Swal.fire({
+        imageUrl: paiement?.img_payment,
+        imageAlt: 'Preuve de paiement',
+        showConfirmButton: false,
+        showCloseButton: true,
+        width: '30%'
+      });
+    }
   }
 
+
+  openPdf(url: string | undefined) {
+    if (!url) return;
+
+    window.open(url, '_blank');
+  }
+
+
+  checkTypeFile(url: string | undefined): 'image' | 'pdf' | 'unknown' {
+    if (!url) return 'unknown';
+
+    const cleanUrl = url.split('?')[0];
+    const extension = cleanUrl.split('.').pop()?.toLowerCase();
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) {
+      return 'image';
+    }
+
+    if (extension === 'pdf') {
+      return 'pdf';
+    }
+
+    return 'unknown';
+  }
 }
+
+
 
 
