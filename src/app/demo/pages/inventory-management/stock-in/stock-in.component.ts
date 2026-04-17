@@ -20,7 +20,7 @@ import { SpinnersComponent } from 'src/app/demo/application/reusableComponents/s
 import { DeleteConfirmModalComponent } from "src/app/demo/application/reusableComponents/delete-confirm-modal/delete-confirm-modal.component";
 import JsBarcode from 'jsbarcode';
 import { SubmitSpinnerComponent } from 'src/app/demo/application/reusableComponents/submit-spinner/submit-spinner.component';
-import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { BarcodeScannerService } from 'android/services/barcode-scanner.service';
 
 @Component({
   selector: 'app-stock-in',
@@ -116,7 +116,7 @@ export class StockInComponent implements OnInit {
     private articleManagementService: ArticleManagementService, private columnVisibility: ColumnsVisibilityService,
     private fb: FormBuilder,
     private stockMvtService: StockMvtService,
-    private publicService: PublicService
+    private publicService: PublicService, private scanner: BarcodeScannerService
   ) {
     this.formProduct = this.fb.group({
       product: 0,
@@ -632,17 +632,13 @@ export class StockInComponent implements OnInit {
 
 
   async onBarcodeScannedAdd() {
-    await BarcodeScanner.requestPermissions();
-    const result = await BarcodeScanner.scan();
+    const code = await this.scanner.scan();
 
-    if (result.barcodes.length > 0) {
+    if (code) {
       playBeep(); // 🔊
-
-      const code = result.barcodes[0].rawValue;
       this.formProduct?.patchValue({
         barCode: code
       })
-
     }
   }
 

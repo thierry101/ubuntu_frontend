@@ -12,7 +12,7 @@ import { SearchListComponent } from "../../reusableComponents/search-list/search
 import { PublicService } from 'src/app/services/public.service';
 import { SpinnersComponent } from "../../reusableComponents/spinners/spinners.component";
 import { RouterModule } from '@angular/router';
-import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { BarcodeScannerService } from 'android/services/barcode-scanner.service';
 // import { NgxScannerQrcodeComponent, NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
 
 @Component({
@@ -55,7 +55,7 @@ export class StoreComponent implements OnInit {
 
   // Constructor
   constructor(private storeService: StoreService, private offcanvasService: NgbOffcanvas, private publicService: PublicService,
-    public router: Router) { }
+    public router: Router, private scanner: BarcodeScannerService) { }
 
   ngOnInit(): void {
     this.fetchProducts(1)
@@ -183,17 +183,19 @@ export class StoreComponent implements OnInit {
 
 
   async onBarcodeScanned() {
-    await BarcodeScanner.requestPermissions();
-    const result = await BarcodeScanner.scan();
-
-    if (result.barcodes.length > 0) {
+    const code = await this.scanner.scan();
+    if (code) {
       playBeep(); // 🔊
-      const code = result.barcodes[0].rawValue;
+      // const code = result.barcodes[0].rawValue;
       this.storeService.getDetailStockProduct(code).subscribe({
         next: (res: any) => {
-          this.selectedProduct = res?.result;
-          this.getRigthPrice(this.selectedProduct);
-          document.getElementById('launchModalAddCart')?.click();
+          if (res?.result) {
+            this.selectedProduct = res?.result;
+            this.getRigthPrice(this.selectedProduct);
+            document.getElementById('launchModalAddCart')?.click();
+          } else {
+            alert('Aucun article disponible avec ce code')
+          }
         },
         error: (err) => {
           showError(err, err.status, [], err.error, document.getElementById('launchModalAddCart'));
