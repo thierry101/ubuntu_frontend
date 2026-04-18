@@ -9,12 +9,28 @@ import { devises, invalidSelectValidator, isMobileApp, itermsNber, showError, to
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { QrCodeComponent } from 'ng-qrcode';
 import { Enterprise, globalInterface } from 'src/app/interfaces/global';
-import { BleClient, BleDevice } from '@capacitor-community/bluetooth-le';
+import { BleClient } from '@capacitor-community/bluetooth-le';
 import { TooltipComponent } from '../../application/reusableComponents/tooltip/tooltip.component';
 import { CatalogService } from 'src/app/services/catalog.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { SubmitSpinnerComponent } from '../../application/reusableComponents/submit-spinner/submit-spinner.component';
-import { BluetoothSerial } from 'capacitor-bluetooth-serial';
+import { registerPlugin } from '@capacitor/core';
+
+interface BluetoothClassicPlugin {
+  listPaired(): Promise<{ devices: { address: string; name: string }[] }>;
+  connect(options: { address: string }): Promise<void>;
+  disconnect(): Promise<void>;
+  write(options: { data: string }): Promise<void>;
+}
+
+const BluetoothClassic = registerPlugin<BluetoothClassicPlugin>('BluetoothClassic');
+
+export interface PrinterDevice {
+  deviceId: string;
+  name?: string;
+  _type: 'ble' | 'classic';
+}
+
 
 @Component({
   selector: 'app-settings',
@@ -53,8 +69,8 @@ export class SettingsComponent implements OnInit {
   typePaymentSelected: string = ''
 
   // Propriétés
-  discoveredPrinters: BleDevice[] = [];
-  selectedPrinter: BleDevice | null = null;
+  discoveredPrinters: PrinterDevice[] = [];
+  selectedPrinter: PrinterDevice | null = null;
   scanningPrinters = false;
   connectingPrinter = false;
   connectingId = '';
@@ -486,16 +502,35 @@ export class SettingsComponent implements OnInit {
       this.discoveredPrinters = [];
       this.printerSearchDone = false;
 
-      await BleClient.initialize({ androidNeverForLocation: false });
+      // 1. Appareils jumelés Bluetooth Classique
+      try {
+        const { devices } = await BluetoothClassic.listPaired();
+        for (const device of devices) {
+          this.discoveredPrinters.push({
+            deviceId: device.address,
+            name: device.name,
+            _type: 'classic'
+          });
+        }
+      } catch (e) {
+        console.warn('Bluetooth classique non disponible:', e);
+      }
 
+      // 2. Scan BLE
+      await BleClient.initialize({ androidNeverForLocation: true }); // ✅ true = cohérent avec le manifest
       await BleClient.requestLEScan({}, (result) => {
-        const exists = this.discoveredPrinters.find(d => d.deviceId === result.device.deviceId);
-        if (!exists && result.device.name) { // On filtre ceux qui ont un nom
-          this.discoveredPrinters.push(result.device);
+        const exists = this.discoveredPrinters.find(
+          d => d.deviceId === result.device.deviceId
+        );
+        if (!exists && result.device.name) {
+          this.discoveredPrinters.push({
+            deviceId: result.device.deviceId,
+            name: result.device.name,
+            _type: 'ble'
+          });
         }
       });
 
-      // Scan pendant 5 secondes
       await new Promise(resolve => setTimeout(resolve, 5000));
       await BleClient.stopLEScan();
 
@@ -507,12 +542,17 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async connectToPrinter(device: BleDevice) {
+  async connectToPrinter(device: PrinterDevice) {
     try {
       this.connectingPrinter = true;
       this.connectingId = device.deviceId;
 
-      await BleClient.connect(device.deviceId);
+      if (device._type === 'classic') {
+        await BluetoothClassic.connect({ address: device.deviceId }); // ✅ plugin natif
+      } else {
+        await BleClient.connect(device.deviceId);
+      }
+
       this.selectedPrinter = device;
       localStorage.setItem('posPrinter', JSON.stringify(device));
 
@@ -528,10 +568,13 @@ export class SettingsComponent implements OnInit {
   async disconnectPrinter() {
     try {
       if (this.selectedPrinter) {
-        await BleClient.disconnect(this.selectedPrinter.deviceId);
+        if (this.selectedPrinter._type === 'classic') {
+          await BluetoothClassic.disconnect(); // ✅ pas besoin d'adresse, socket géré côté Java
+        } else {
+          await BleClient.disconnect(this.selectedPrinter.deviceId);
+        }
       }
     } catch (err) {
-      // Déconnexion déjà effectuée ou appareil inaccessible
       console.warn('Bluetooth disconnect warning:', err);
     }
     this.selectedPrinter = null;

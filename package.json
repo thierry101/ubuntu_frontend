@@ -61,7 +61,6 @@
     "animate.css": "^4.1.1",
     "apexcharts": "^3.41.0",
     "bootstrap": "^5.3.2",
-    "capacitor-bluetooth-serial": "^0.0.4",
     "capacitor-thermal-printer": "^0.2.5",
     "chart.js": "^4.3.0",
     "cordova-plugin-zbtprinter": "^1.1.9",
