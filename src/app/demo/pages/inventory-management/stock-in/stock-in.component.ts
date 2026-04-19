@@ -422,7 +422,7 @@ export class StockInComponent implements OnInit {
       await exportAllOrFilterToPDF({
         fetchDataFn: (searchTerm) =>
           this.stockMvtService.getStockIn(1, searchTerm, false).pipe(
-            map((res: { result: StockMvt[] }) => res.result)
+            map((res: { result: StockMvt[] }) => res?.result)
           ),
         searchTerm: this.searchTermStock,
         columns: this.columns,
@@ -447,7 +447,7 @@ export class StockInComponent implements OnInit {
         fetchDataFn: (term) =>
           firstValueFrom(
             this.stockMvtService.getStockIn(1, term, false).pipe(
-              map((res: { result: StockMvt[] }) => res.result)
+              map((res: { result: StockMvt[] }) => res?.result)
             )
           ),
         searchTermStock: this.searchTermStock,

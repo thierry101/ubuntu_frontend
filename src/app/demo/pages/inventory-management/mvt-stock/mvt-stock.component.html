@@ -5,7 +5,7 @@
         <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
             <h5 class="mb-0">📊 Mouvement de stock</h5>
             <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
-                <button (click)="printReport()" class="btn btn-light btn-sm">🖨️ Imprimer</button>
+                <button *ngIf="!isMobileApp" (click)="printReport()" class="btn btn-light btn-sm">🖨️ Imprimer</button>
                 <button (click)="resetChoice()" class="btn btn-outline-light btn-sm">♻️ Réinitialiser</button>
             </div>
         </div>

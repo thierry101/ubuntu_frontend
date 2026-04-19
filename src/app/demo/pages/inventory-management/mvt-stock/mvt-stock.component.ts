@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { MovementStock, Product } from 'src/app/interfaces/global';
 import { AuthService } from 'src/app/services/auth.service';
 import { StockMvtService } from 'src/app/services/stock-mvt.service';
-import { setPaginationStockMvt } from 'src/app/share/shared';
+import { isMobileApp, setPaginationStockMvt } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import Swal from 'sweetalert2';
 import { SelectedComponent } from "src/app/demo/application/reusableComponents/selected/selected.component";
@@ -45,6 +45,7 @@ export class MvtStockComponent implements OnInit {
   sell_quantity: number = 0
   lost_quantity: number = 0
   typeOfMvt: any = 0
+  isMobileApp: boolean = false;
 
   constructor(private stockMvtService: StockMvtService, private authService: AuthService, private articleManagementService: ArticleManagementService,) { }
 
@@ -52,6 +53,8 @@ export class MvtStockComponent implements OnInit {
     this.listMvts = typesMvt
     this.fetchStockMovement(1);
     this.userInfo = this.authService.currentUser
+    this.isMobileApp = isMobileApp
+
   }
 
   resetChoice() {
@@ -70,22 +73,22 @@ export class MvtStockComponent implements OnInit {
       this.typeOfMvt,
       false
     )
-    .subscribe({
-      next: (data: any) => {
-        const originalData = this.all_stocks_mvments;
-        const originalPagination = this.pagination;
+      .subscribe({
+        next: (data: any) => {
+          const originalData = this.all_stocks_mvments;
+          const originalPagination = this.pagination;
 
-        this.all_stocks_mvments = data?.results || [];
+          this.all_stocks_mvments = data?.results || [];
 
-        setTimeout(() => {
-          const printContents = document.getElementById('print-section')?.innerHTML;
+          setTimeout(() => {
+            const printContents = document.getElementById('print-section')?.innerHTML;
 
-          if (printContents) {
-            const popupWin = window.open('', '_blank', 'width=900,height=700');
+            if (printContents) {
+              const popupWin = window.open('', '_blank', 'width=900,height=700');
 
-            if (popupWin) {
-              popupWin.document.open();
-              popupWin.document.write(`
+              if (popupWin) {
+                popupWin.document.open();
+                popupWin.document.write(`
               <html>
                 <head>
                   <title>Impression - Mouvement de stock</title>
@@ -105,26 +108,26 @@ export class MvtStockComponent implements OnInit {
                 </body>
               </html>
             `);
-              popupWin.document.close();
+                popupWin.document.close();
 
-              this.all_stocks_mvments = originalData;
-              this.pagination = originalPagination;
+                this.all_stocks_mvments = originalData;
+                this.pagination = originalPagination;
+              } else {
+                this.all_stocks_mvments = originalData;
+                this.pagination = originalPagination;
+                alert('Échec de l\'ouverture de la fenêtre d\'impression.');
+              }
             } else {
               this.all_stocks_mvments = originalData;
               this.pagination = originalPagination;
-              alert('Échec de l\'ouverture de la fenêtre d\'impression.');
+              alert('Aucun contenu à imprimer.');
             }
-          } else {
-            this.all_stocks_mvments = originalData;
-            this.pagination = originalPagination;
-            alert('Aucun contenu à imprimer.');
-          }
-        }, 300);
-      },
-      error: () => {
-        alert('Erreur lors de l\'impression');
-      }
-    });
+          }, 300);
+        },
+        error: () => {
+          alert('Erreur lors de l\'impression');
+        }
+      });
   }
 
 

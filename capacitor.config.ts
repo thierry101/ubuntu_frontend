@@ -13,7 +13,10 @@ const config: CapacitorConfig = {
     StatusBar: {
       overlaysWebView: false,
       style: 'DARK',
-      backgroundColor: '#1565C0'
+      backgroundColor: '#1565C0',
+    },
+    Filesystem: {
+      iosScheme: 'ionic'
     }
   }
 };

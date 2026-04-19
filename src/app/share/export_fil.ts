@@ -2,8 +2,9 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+// import * as FileSaver from 'file-saver';
 import { firstValueFrom, Observable } from 'rxjs';
+import { saveFile } from './exportFileInApp';
 
 // Function to export all the item in excel
 export async function exportToExcelAllItem({
@@ -21,26 +22,30 @@ export async function exportToExcelAllItem({
   theDate: string,
   fileName?: string
 }): Promise<void> {
-  try {
-    const data = await fetchDataFn(searchTermStock); // ✅ Just await the promise
+  const data = await fetchDataFn(searchTermStock);
+  const visibleColumns = columns.filter(col => col.visible && col.key !== 'actions');
+  const headers = visibleColumns.map(col => col.label);
+  const rows = getExportRows(data, visibleColumns);
 
-    const visibleColumns = columns.filter(col => col.visible && col.key !== 'actions');
-    const headers = visibleColumns.map(col => col.label);
-    const rows = getExportRows(data, visibleColumns);
-    const worksheetData = [headers, ...rows];
+  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const workbook: XLSX.WorkBook = {
+    Sheets: { 'Stock': worksheet },
+    SheetNames: ['Stock']
+  };
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Stock': worksheet },
-      SheetNames: ['Stock']
-    };
+  const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array' // ✅ Retourne un ArrayBuffer
+  });
 
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const dataBlob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(dataBlob, `${fileName}${theDate}.xlsx`);
-  } catch (error) {
-    console.error('Error exporting to Excel:', error);
-  }
+  const fullFileName = `${fileName}${theDate}.xlsx`;
+
+  // ✅ Gère Web et Mobile automatiquement
+  await saveFile(
+    excelBuffer,
+    fullFileName,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
 }
 
 
@@ -64,7 +69,6 @@ export async function exportAllOrFilterToPDF({
 }): Promise<void> {
   try {
     const data = await firstValueFrom(fetchDataFn(searchTerm));
-
     const visibleColumns = columns.filter(col => col.visible && col.key !== 'actions');
     const headers = visibleColumns.map(col => col.label);
     const rows = getExportRows(data, visibleColumns);
@@ -81,7 +85,12 @@ export async function exportAllOrFilterToPDF({
       headStyles: { fillColor: [41, 128, 185] }
     });
 
-    doc.save(`${nameFile}_${theDate}.pdf`);
+    const fullFileName = `${nameFile}_${theDate}.pdf`;
+
+    // ✅ Remplace doc.save() — gère Web et Mobile automatiquement
+    const pdfArrayBuffer = doc.output('arraybuffer');
+    await saveFile(pdfArrayBuffer, fullFileName, 'application/pdf');
+
   } catch (error) {
     console.error('Error exporting PDF:', error);
   }

@@ -145,7 +145,7 @@ export class ArticlesInStockComponent implements OnInit {
     exportAllOrFilterToPDF({
       fetchDataFn: (searchTerm) =>
         this.articleManagementService.getProductsInWarehouse(1, searchTerm, false, this.idWhStoreSelected).pipe(
-          map((res: { results: Product[] }) => res.results)
+          map((res: { result: Product[] }) => res.result)
         ),
       searchTerm: this.searchTerm,
       columns: this.columns,
@@ -162,7 +162,7 @@ export class ArticlesInStockComponent implements OnInit {
       fetchDataFn: (term) =>
         firstValueFrom(
           this.articleManagementService.getProductsInWarehouse(1, term, false, this.idWhStoreSelected).pipe(
-            map((res: { results: any[] }) => res.results)
+            map((res: { result: any[] }) => res.result)
           )
         ),
       searchTermStock: this.searchTerm,

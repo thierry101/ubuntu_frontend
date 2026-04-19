@@ -123,7 +123,7 @@ export class ArticleManagementService {
   }
 
 
-  getProductsInWarehouse(page: number = 1, search: any = '', pagination: boolean = true, whStoreId: any): Observable<{ results: Product[] }> {
+  getProductsInWarehouse(page: number = 1, search: any = '', pagination: boolean = true, whStoreId: any): Observable<{ result: Product[] }> {
     const params: string[] = [];
     params.push(`page=${page}`);
     params.push(`pagination=${pagination}`);
@@ -138,7 +138,7 @@ export class ArticleManagementService {
 
     const queryString = params.join('&');
 
-    return this.http.get<{ results: Product[] }>(`${environment.apiUrl}/get-product-warehouse?${queryString}`, { withCredentials: true });
+    return this.http.get<{ result: Product[] }>(`${environment.apiUrl}/get-product-warehouse?${queryString}`, { withCredentials: true });
   }
 
   getAllProductsFromStock(page: number = 1, search: string = ''): Observable<{ results: Product[] }> {
