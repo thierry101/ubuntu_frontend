@@ -4,7 +4,7 @@ import { Enterprise, Orders, Warehouse } from 'src/app/interfaces/global';
 import { AuthService } from 'src/app/services/auth.service';
 import { PublicService } from 'src/app/services/public.service';
 import { StoreService } from 'src/app/services/store.service';
-import { setPaginationForInvoice, showError, toastShow, typesPayment } from 'src/app/share/shared';
+import { isMobileApp, setPaginationForInvoice, showError, toastShow, typesPayment } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { SetPaginationComponent } from '../../reusableComponents/set-pagination/set-pagination.component';
 import { SpinnersComponent } from '../../reusableComponents/spinners/spinners.component';
@@ -57,6 +57,7 @@ export class DepositComponent implements OnInit {
   fetchedTypePayments: any[] = [];
   amounts: { [key: string]: number } = {};
   isLoadingItem: boolean = false
+  isMobileApp: boolean = false;
   @ViewChild('tableToPrint23', { static: false }) tableToPrint!: ElementRef;
 
 
@@ -65,6 +66,7 @@ export class DepositComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isMobileApp = isMobileApp
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');

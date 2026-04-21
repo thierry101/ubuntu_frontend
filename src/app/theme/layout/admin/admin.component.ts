@@ -30,7 +30,8 @@ export class AdminComponent implements OnInit {
   // Coordonnées de départ
   startY = 0;
   startX = 0;
-
+  startScrollY = 0;
+  isPulling = false;
   // États pour l'UI
   pullDistance = 0;
 
@@ -93,10 +94,10 @@ export class AdminComponent implements OnInit {
     }
   }
 
+
   onTouchStart(e: TouchEvent) {
     const x = e.touches[0].pageX;
 
-    // On ignore le geste s'il commence trop près du bord gauche (système Android/iOS)
     if (x < 25) {
       this.startX = -1;
       return;
@@ -104,7 +105,11 @@ export class AdminComponent implements OnInit {
 
     this.startY = e.touches[0].pageY;
     this.startX = x;
+    this.startScrollY = window.scrollY; // 👈 Capturer le scroll au début du geste
+    this.isPulling = false;             // 👈 Reset du flag
+    this.pullDistance = 0;
   }
+
 
   onTouchMove(e: TouchEvent) {
     const currentY = e.touches[0].pageY;
@@ -113,15 +118,18 @@ export class AdminComponent implements OnInit {
     const diffY = currentY - this.startY;
     const diffX = currentX - this.startX;
 
-    // --- LOGIQUE PULL-TO-REFRESH ---
-    // Si on tire vers le bas, qu'on est au sommet du scroll et que ce n'est pas un swipe horizontal
-    if (window.scrollY === 0 && diffY > 0 && Math.abs(diffX) < 30) {
-      this.pullDistance = Math.min(diffY / 1.8, 85); // Résistance pour fluidité
+    // 👇 Le geste doit avoir COMMENCÉ à scrollY=0, pas juste y arriver
+    if (this.startScrollY === 0 && diffY > 0 && Math.abs(diffX) < 30) {
+      this.isPulling = true;
+      this.pullDistance = Math.min(diffY / 1.8, 85);
+    } else if (!this.isPulling) {
+      // Si le geste ne répond pas aux critères, on ne pull pas
+      this.pullDistance = 0;
     }
   }
 
+
   onTouchEnd(e: TouchEvent) {
-    // Si le départ était dans la zone morte du bord, on ne fait rien
     if (this.startX === -1) return;
 
     const endX = e.changedTouches[0].pageX;
@@ -130,17 +138,17 @@ export class AdminComponent implements OnInit {
     const diffX = endX - this.startX;
     const diffY = Math.abs(endY - this.startY);
 
-    // ✅ PULL TO REFRESH
-    if (this.pullDistance >= this.refreshThreshold) {
+    // ✅ PULL TO REFRESH — uniquement si le flag est actif
+    if (this.isPulling && this.pullDistance >= this.refreshThreshold) {
       this.executeRefresh();
     }
 
-    // Retour arrière interne à l'app
     if (diffX > this.swipeThreshold && diffY < 60) {
       this.goBack();
     }
 
     this.pullDistance = 0;
+    this.isPulling = false; // 👈 Reset
   }
 
   executeRefresh() {

@@ -3,8 +3,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { Capacitor } from '@capacitor/core';
-import { StatusBar, Style } from '@capacitor/status-bar';
 import { App } from '@capacitor/app';
 @Component({
   selector: 'app-root',
@@ -23,12 +21,9 @@ export class AppComponent implements OnInit {
       if (canGoBack) {
         window.history.back();
       } else {
-        // Si on est à la racine, on peut décider de ne rien faire
-        // ou d'afficher une alerte "Voulez-vous quitter ?"
-        // console.log("On est à l'accueil, on ne ferme pas l'app");
+        App.exitApp()
       }
     });
-    // this.initStatusBar();
     this.authService.refreshToken().subscribe({
       next: (res) => {
         if (res?.access) {
@@ -91,15 +86,4 @@ export class AppComponent implements OnInit {
       modal.style.display = 'none';
     });
   }
-
-  // private async initStatusBar(): Promise<void> {
-  //   if (!Capacitor.isNativePlatform()) return;
-  //   try {
-  //     await StatusBar.setOverlaysWebView({ overlay: false });
-  //     await StatusBar.setStyle({ style: Style.Dark });
-  //     await StatusBar.setBackgroundColor({ color: '#1565C0' });
-  //   } catch (_e) {
-  //     // StatusBar non disponible — ignoré silencieusement
-  //   }
-  // }
 }

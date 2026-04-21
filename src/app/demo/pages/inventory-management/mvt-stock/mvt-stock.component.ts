@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
-import { MovementStock, Product } from 'src/app/interfaces/global';
+import { MovementStock, Product, Warehouse } from 'src/app/interfaces/global';
 import { AuthService } from 'src/app/services/auth.service';
 import { StockMvtService } from 'src/app/services/stock-mvt.service';
 import { isMobileApp, setPaginationStockMvt } from 'src/app/share/shared';
@@ -12,6 +12,7 @@ import { ArticleManagementService } from 'src/app/services/article-management.se
 import { SetPaginationComponent } from "src/app/demo/application/reusableComponents/set-pagination/set-pagination.component";
 import { SpinnersComponent } from 'src/app/demo/application/reusableComponents/spinners/spinners.component';
 import { typesMvt } from 'src/app/share/mouvment';
+import { PublicService } from 'src/app/services/public.service';
 
 @Component({
   selector: 'app-mvt-stock',
@@ -46,14 +47,26 @@ export class MvtStockComponent implements OnInit {
   lost_quantity: number = 0
   typeOfMvt: any = 0
   isMobileApp: boolean = false;
+  role: string = ''
+  warehouses: Warehouse[] = []
 
-  constructor(private stockMvtService: StockMvtService, private authService: AuthService, private articleManagementService: ArticleManagementService,) { }
+  constructor(private stockMvtService: StockMvtService, private authService: AuthService, private articleManagementService: ArticleManagementService,
+    private publicService: PublicService) { }
 
   ngOnInit(): void {
     this.listMvts = typesMvt
     this.fetchStockMovement(1);
     this.userInfo = this.authService.currentUser
     this.isMobileApp = isMobileApp
+
+    this.role = this.authService.currentUser?.role
+    if (this.role === 'Admin') {
+      this.publicService.getWarehouseStore().subscribe({
+        next: (res: { result: Warehouse[] }) => {
+          this.warehouses = res?.result;
+        }
+      });
+    }
 
   }
 
@@ -135,6 +148,7 @@ export class MvtStockComponent implements OnInit {
     this.isLoading = true;
     setPaginationStockMvt(this.stockMvtService.getStockMovement.bind(this.stockMvtService), page, this.searchTermP, (data: any) => {
       this.pagination = data;
+      console.log(this.pagination)
       this.all_stocks_mvments = data?.listItems;
       this.bad_quantity = data?.total_bad_quantity
       this.expired_quantity = data?.total_expired_quantity

@@ -1,4 +1,4 @@
- /* ── STYLES DE BASE ── */
+/* ── STYLES DE BASE ── */
 .product-card {
   background: #fff;
   border: 1px solid #e9ecef;
@@ -22,7 +22,7 @@
 }
 
 /* ════════════════════════════════
-  MOBILE — < 768px
+   MOBILE — < 768px
 ════════════════════════════════ */
 @media (max-width: 767px) {
 
@@ -236,11 +236,10 @@
     max-width: 100% !important;
     width: 100% !important;
     position: fixed !important;
-    bottom: 0 !important;
-    top: auto !important;
+    bottom: 28px !important; // 👈 hauteur exacte de ta navbar app (ajuste si besoin)
     left: 0 !important;
     right: 0 !important;
-    transform: none !important;
+    top: auto !important;
   }
 
   .modal.fade .modal-dialog {
@@ -253,60 +252,36 @@
   }
 
   .modal-content {
-    border-radius: 20px 20px 0 0 !important;
-    border: none !important;
-    max-height: 95vh !important;
+    height: calc(100dvh - 62px) !important; // 👈 même valeur
+    max-height: calc(100dvh - 62px) !important;
     display: flex !important;
     flex-direction: column !important;
+    border-radius: 20px 20px 0 0 !important;
     overflow: hidden !important;
-
-    &::before {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 4px;
-      background: #d0e4f7;
-      border-radius: 4px;
-      margin: 12px auto 0;
-      flex-shrink: 0;
-    }
+    border-bottom: none !important;
   }
 
   .modal-header {
-    flex-shrink: 0 !important;
-    padding: 12px 18px 14px !important;
-    border-bottom: 0.5px solid #e6f0fa !important;
-
-    h6 {
-      font-size: 14px !important;
-      font-weight: 600 !important;
-    }
-
-    .btn-close {
-      width: 28px !important;
-      height: 28px !important;
-      padding: 0 !important;
-    }
+    flex: 0 0 auto !important;
   }
 
   .modal-body {
+    flex: 1 1 auto !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    flex: 1 1 auto !important;
-    padding: 16px !important;
-    max-height: calc(95vh - 130px) !important;
     overscroll-behavior: contain !important;
+    padding: 16px !important;
+    // PAS de max-height ici
   }
 
   .modal-footer {
-    flex-shrink: 0 !important;
-    padding: 12px 16px !important;
+    flex: 0 0 auto !important; // 👈 sticky naturel via flexbox
+    position: static !important; // 👈 pas de sticky/absolute
     background: #fff !important;
-    border-top: 0.5px solid #e6f0fa !important;
+    border-top: 1px solid #eee !important;
+    padding: 12px 16px !important;
     gap: 8px !important;
-    position: sticky !important;
-    bottom: 20px !important;
-    z-index: 10 !important;
+    z-index: 10;
 
     .btn {
       flex: 1 !important;
@@ -320,41 +295,10 @@
   .modal-body.bg-light {
     background: #f8fbff !important;
     padding: 14px !important;
+    padding-bottom: 16px !important;
   }
 
   .modal-body form {
-
-    .col-12.col-md-4,
-    .col-12.col-md-3,
-    .col-6.col-md-2,
-    .col-12.col-sm-6.col-md-2,
-    .col-12.col-sm-6.col-md-1 {
-      width: 100% !important;
-      flex: 0 0 100% !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-
-    /* Référence + Quantité côte à côte */
-    .col-6.col-md-2:nth-child(2),
-    .col-6.col-md-2:nth-child(3) {
-      width: 50% !important;
-      flex: 0 0 50% !important;
-      padding: 0 4px !important;
-    }
-
-    .col-6.col-md-2:nth-child(2) {
-      padding-left: 0 !important;
-    }
-
-    .col-6.col-md-2:nth-child(3) {
-      padding-right: 0 !important;
-    }
-
-    .row {
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
 
     .form-label {
       font-size: 11px !important;
@@ -374,47 +318,95 @@
       margin-top: 12px !important;
     }
 
-    .form-control,
-    .form-select {
-      border: 0.5px solid #d0e4f7 !important;
-      border-radius: 8px !important;
-      padding: 10px 12px !important;
-      font-size: 13px !important;
-      min-height: 42px !important;
-      box-shadow: none !important;
+    /* ── Numéro de facture : pleine largeur ── */
+    .col-12.col-md-4 {
+      width: 100% !important;
+      flex: 0 0 100% !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
 
-      &:focus {
-        border-color: #1565C0 !important;
+    /* ── Fournisseur + Date : côte à côte 50/50 ── */
+    .col-6.col-md-4 {
+      width: 50% !important;
+      flex: 0 0 50% !important;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
+
+      &:first-of-type {
+        padding-left: 0 !important;
       }
 
-      &[readonly] {
-        background: #f8fbff !important;
-        color: #7a9ab8 !important;
+      &:last-of-type {
+        padding-right: 0 !important;
       }
     }
 
-    /* Input group code barre */
-    .input-group {
-      border: 0.5px solid #d0e4f7 !important;
-      border-radius: 8px !important;
-      overflow: hidden;
+    /* ── LIGNE AJOUT ARTICLE ── */
+    .row.align-items-end.mx-0 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr auto !important;
+      /* 3 colonnes */
+      gap: 10px !important;
+      padding: 0 !important;
+      margin: 0 !important;
 
-      .form-control {
-        border: none !important;
-        border-radius: 0 !important;
-        min-height: 42px !important;
+      /* Désignation → pleine largeur */
+      .col-8.col-md-3 {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
       }
 
-      .btn {
-        border: none !important;
-        border-left: 0.5px solid #d0e4f7 !important;
-        border-radius: 0 !important;
-        background: #f0f7ff !important;
-        color: #1565C0 !important;
-        font-size: 12px !important;
-        padding: 0 12px !important;
-        flex: 0 !important;
-        min-height: 42px !important;
+      /* Référence → colonne 1 */
+      .col-4.col-md-2:nth-child(2) {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      /* Quantité → colonne 2 */
+      .col-3.col-md-2 {
+        grid-column: 2 / -1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      /* P.U Achat → colonne 1 */
+      .col-4.col-md-2:nth-child(4) {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      /* Numéro de stocks → colonne 2, même ligne que P.U */
+      .col-5.col-sm-6.col-md-2 {
+        grid-column: 2 / 3 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      /* Bouton + → colonne 3, même ligne que P.U et stocks */
+      .col-12.col-sm-6.col-md-1 {
+        grid-column: 3 / 4 !important;
+        width: auto !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: flex-end !important;
+        justify-content: center !important;
+
+        button {
+          width: 34px !important;
+          height: 34px !important;
+          border-radius: 50% !important;
+          font-size: 18px !important;
+          flex-shrink: 0;
+        }
       }
     }
 
@@ -476,7 +468,6 @@
   #exampleModalProduct002 .modal-body {
     padding: 14px !important;
 
-    /* Deux colonnes → empilées */
     .row.g-4 {
       flex-direction: column !important;
     }
@@ -488,7 +479,6 @@
       padding: 0 !important;
     }
 
-    /* Cards internes */
     .card {
       border-radius: 12px !important;
       box-shadow: none !important;
@@ -508,7 +498,6 @@
       padding: 10px 14px !important;
     }
 
-    /* Product cards dans la liste */
     .product-card {
       padding: 12px !important;
       border-radius: 10px !important;
@@ -519,7 +508,6 @@
       }
     }
 
-    /* Alert résumé acompte */
     .alert-info {
       background: #e3f2fd !important;
       border: 0.5px solid #90caf9 !important;
@@ -531,7 +519,6 @@
       }
     }
 
-    /* Historique acomptes */
     .list-group-item {
       border-radius: 8px !important;
       padding: 10px 12px !important;
@@ -540,7 +527,6 @@
       font-size: 12px !important;
     }
 
-    /* Input nouvelle avance */
     #inputNewDeposit4 {
       border: 0.5px solid #d0e4f7 !important;
       border-radius: 8px !important;
@@ -571,11 +557,11 @@
   /* Modal lg/xl */
   .modal-lg .modal-content,
   .modal-xl .modal-content {
-    max-height: 95vh !important;
+    max-height: calc(100dvh - 62px) !important;
   }
 
   .modal-lg .modal-body,
   .modal-xl .modal-body {
-    max-height: calc(95vh - 130px) !important;
+    max-height: unset !important;
   }
 }

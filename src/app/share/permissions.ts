@@ -120,7 +120,7 @@ export const list_permissions = [
       rights: ["read"]
    },
    {
-      "name": "Gérer les publucités",
+      "name": "Gérer les publicités",
       "value": "handle_advertising",
       rights: ["read", "create"]
    },

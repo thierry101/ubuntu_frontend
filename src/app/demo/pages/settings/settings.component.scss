@@ -9,6 +9,10 @@
   border-radius: 12px;
 }
 
+.form-check-label {
+  pointer-events: none;
+}
+
 .payment-card {
   display: flex;
   flex-direction: column;

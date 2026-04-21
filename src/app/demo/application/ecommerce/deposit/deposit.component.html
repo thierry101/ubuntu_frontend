@@ -355,9 +355,9 @@
                         data-bs-target="#exampleModalInvoiceDeposit" id="radio80mm">
                     <label class="form-check-label" for="radio80mm">🧾 Impression 80mm</label>
                 </div>
-                <div class="form-check mt-2">
+                <div class="form-check mt-2" *ngIf="!isMobileApp">
                     <input class="form-check-input" type="radio" data-bs-toggle="modal"
-                        data-bs-target="#exampleModalBigFormat" id="radioA4">
+                        data-bs-target="#exampleModalBigFormat" id="radioA4"> 
                     <label class="form-check-label" for="radioA4">📄 Impression A4</label>
                 </div>
             </div>

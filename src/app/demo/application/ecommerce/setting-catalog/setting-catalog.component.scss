@@ -1,4 +1,8 @@
 /* ── STYLES DE BASE ── */
+.form-check-label {
+    pointer-events: none;
+}
+
 .minimal-upload {
     .upload-area {
         height: 38px;

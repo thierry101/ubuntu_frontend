@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Enterprise, Orders, Warehouse } from 'src/app/interfaces/global';
 import { AuthService } from 'src/app/services/auth.service';
 import { StoreService } from 'src/app/services/store.service';
-import { setPaginationMultiParams, showError, toastShow, typeSales, typesPayment } from 'src/app/share/shared';
+import { isMobileApp, setPaginationMultiParams, showError, toastShow, typeSales, typesPayment } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { SpinnersComponent } from '../../reusableComponents/spinners/spinners.component';
 import { SetPaginationComponent } from "../../reusableComponents/set-pagination/set-pagination.component";
@@ -55,10 +55,12 @@ export class HistorikComponent implements OnInit {
   wordCheck: string = '';
   allTypes: any = typeSales
   idInvoice: number = 0
+  isMobileApp: boolean = false;
 
   constructor(private storeService: StoreService, private authService: AuthService, private publicService: PublicService) { }
 
   ngOnInit(): void {
+    this.isMobileApp = isMobileApp
     this.role = this.authService.currentUser?.role
     this.typePayments = typesPayment
     this.fetchOrders(1)
@@ -166,7 +168,7 @@ export class HistorikComponent implements OnInit {
   }
 
 
-  filterByPayment(){
+  filterByPayment() {
     this.fetchOrders(1);
   }
 
@@ -186,10 +188,8 @@ export class HistorikComponent implements OnInit {
     this.storeService.getInvoiceDetail(idItem).subscribe({
       next: (res: any) => {
         this.order_to_print = res?.result
-        console.log("historik ", this.order_to_print)
         this.all_items = this.order_to_print?.listItems
         this.item_of_deposit = res?.deposit
-        console.log("the deposit is ", this.item_of_deposit)
       }
     })
   }

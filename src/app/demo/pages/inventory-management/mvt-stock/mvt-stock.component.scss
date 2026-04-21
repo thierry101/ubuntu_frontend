@@ -1,3 +1,18 @@
+/* ── FILTRES DESKTOP : tout sur une ligne ── */
+.filter-row {
+    flex-wrap: nowrap;
+
+    .filter-col {
+        min-width: 0; // évite le débordement
+    }
+
+    .filter-btn button {
+        white-space: nowrap;
+        height: 31px; // aligne avec form-control-sm
+    }
+}
+
+
 @media (max-width: 767px) {
 
     /* ── HEADER ── */
@@ -26,47 +41,74 @@
         padding: 14px !important;
     }
 
-    /* ── FILTRES ── */
-    .row.g-3.align-items-end.mb-4 {
+    /* ── FILTRES MOBILE ── */
+    .filter-row {
+        flex-wrap: wrap !important;
         background: #fff;
-        border-radius: 12px;
+        border-radius: 14px;
         border: 0.5px solid #d0e4f7;
         padding: 14px !important;
         margin: 0 0 12px !important;
-        gap: 10px 0 !important;
+        gap: 0 !important;
+        row-gap: 10px !important;
 
-        .col-md-3.col-6,
-        .col-md-2.col-6,
-        .col-md-1.col-12 {
+        .filter-col {
             width: 100% !important;
             flex: 0 0 100% !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
 
-        /* Dates côte à côte */
-        /* Désignation — pleine largeur */
-        .col-md-3.col-6:nth-child(2) {
+        /* Magasin + Désignation : 50/50 */
+        .filter-magasin {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+            margin-right: 8px !important;
+        }
+
+        .filter-designation {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+        }
+
+        /* Dates : 50/50 */
+        .filter-date-start {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+            margin-right: 8px !important;
+        }
+
+        .filter-date-end {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+        }
+
+        /* Type + Bouton : wrapper flex */
+        .filter-bottom-row {
+            display: flex !important;
+            align-items: flex-end !important;
+            gap: 8px !important;
             width: 100% !important;
             flex: 0 0 100% !important;
             padding: 0 !important;
-        }
 
-        /* Type de mouvement — côte à côte avec bouton */
-        .col-md-2.col-6 {
-            width: calc(60% - 4px) !important;
-            flex: 0 0 calc(60% - 4px) !important;
-            padding-left: 0 !important;
-            padding-right: 4px !important;
-        }
+            .filter-type-inner {
+                flex: 1 1 60% !important;
 
-        /* Bouton Valider — côte à côte avec type */
-        .col-md-1.col-12 {
-            width: 40% !important;
-            flex: 0 0 40% !important;
-            padding-left: 4px !important;
-            padding-right: 0 !important;
-            align-self: flex-end;
+                .form-select {
+                    width: 100% !important;
+                }
+            }
+
+            .filter-btn-inner {
+                flex: 0 0 40% !important;
+
+                button {
+                    width: 100% !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                }
+            }
         }
 
         .form-label {
@@ -82,22 +124,11 @@
         .form-select {
             border: 0.5px solid #d0e4f7 !important;
             border-radius: 8px !important;
-            padding: 9px 12px !important;
-            font-size: 13px !important;
-            min-height: 40px !important;
             box-shadow: none !important;
 
             &:focus {
                 border-color: #1565C0 !important;
             }
-        }
-
-        .btn.btn-primary {
-            width: 100% !important;
-            border-radius: 8px !important;
-            padding: 10px !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
         }
     }
 

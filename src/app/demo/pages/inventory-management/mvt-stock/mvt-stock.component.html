@@ -14,41 +14,53 @@
         <div (click)="clickOutsideModalAddItem()" class="card-body">
 
             <!-- ── FILTRES ── -->
-            <div class="row g-3 align-items-end mb-4">
-                <div class="col-md-3 col-6">
-                    <label class="form-label fw-semibold">Désignation</label>
+            <div class="row g-2 align-items-end mb-4 filter-row">
+
+                <div *ngIf="role === 'Admin'" class="col filter-col filter-magasin">
+                    <label class="form-label fw-semibold small text-muted">
+                        <i class="ti ti-shop me-1"></i> Magasin
+                    </label>
+                    <select (change)="filterWhStore()" [(ngModel)]="selectWhShop" class="form-select form-select-sm">
+                        <option value="0">Tous</option>
+                        <option *ngFor="let item of warehouses" [value]="item?.id">{{ item?.nameWh }}</option>
+                    </select>
+                </div>
+
+                <div class="col filter-col filter-designation">
+                    <label class="form-label fw-semibold small text-muted">Désignation</label>
                     <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTermP"
                         [results]="all_products" [displayField]="'indiceStock'" [error]="errors?.product"
                         [showResults]="!!all_products?.length" (search)="searchProduct($event)"
                         (select)="selectProduct($event)">
                     </app-selected>
                 </div>
-                <!-- Date début + Date fin sur la même ligne -->
-                <div class="col-12 col-md-6 px-0">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 
-                        <div>
-                            <label class="form-label fw-semibold">Date de début</label>
-                            <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
-                        </div>
+                <div class="col filter-col filter-date-start">
+                    <label class="form-label fw-semibold small text-muted">Date début</label>
+                    <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
+                </div>
 
-                        <div>
-                            <label class="form-label fw-semibold">Date de fin</label>
-                            <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
-                        </div>
+                <div class="col filter-col filter-date-end">
+                    <label class="form-label fw-semibold small text-muted">Date fin</label>
+                    <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
+                </div>
 
+                <!-- Type + Bouton dans un seul wrapper -->
+                <div class="col filter-col filter-bottom-row">
+                    <div class="filter-type-inner">
+                        <label class="form-label fw-semibold small text-muted">Type de mouvement</label>
+                        <select [(ngModel)]="typeOfMvt" name="mvt" class="form-select form-select-sm">
+                            <option value="0">Choisir...</option>
+                            <option *ngFor="let item of listMvts" value="{{item?.value}}">{{item?.name}}</option>
+                        </select>
+                    </div>
+                    <div class="filter-btn-inner">
+                        <button (click)="filterStock()" class="btn btn-primary btn-sm">
+                            <i class="ti ti-filter me-1"></i> Valider
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <label class="form-label">Type de mouvement</label>
-                    <select [(ngModel)]="typeOfMvt" name="mvt" class="form-select form-select-sm">
-                        <option value="0">Choisir...</option>
-                        <option *ngFor="let item of listMvts" value="{{item?.value}}">{{item?.name}}</option>
-                    </select>
-                </div>
-                <div class="col-md-1 col-12 d-flex flex-wrap gap-2">
-                    <button (click)="filterStock()" class="btn btn-primary btn-sm flex-fill">Valider</button>
-                </div>
+
             </div>
 
             <!-- ── RAPPORT ── -->

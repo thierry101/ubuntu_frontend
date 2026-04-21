@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'AnKeCRM',
   webDir: 'dist',
   server: {
-    // url: 'https://ankecrm.app',
-    url: 'http://192.168.1.7:4200',
+    url: 'https://ankecrm.app',
+    // url: 'http://192.168.1.7:4200',
     cleartext: true
   },
   plugins: {
@@ -17,6 +17,17 @@ const config: CapacitorConfig = {
     },
     Filesystem: {
       iosScheme: 'ionic'
+    },
+    SplashScreen: {
+      launchShowDuration: 2000,        // durée d'affichage en ms
+      launchAutoHide: true,            // masquer automatiquement
+      backgroundColor: '#ffffff',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+      iosSpinnerStyle: 'small',
+      splashFullScreen: true,
+      splashImmersive: true,
     }
   }
 };

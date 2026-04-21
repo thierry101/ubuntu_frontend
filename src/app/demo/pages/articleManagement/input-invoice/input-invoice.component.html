@@ -158,7 +158,7 @@
 
             <div class="modal-body bg-light rounded-bottom-3">
                 <span class="text-danger">{{errors?.permission}}</span>
-                <form class="row g-3">
+                <form class="row">
                     <!-- 🧾 Invoice Information -->
                     <div class="col-12">
                         <h6 class="fw-semibold text-primary border-bottom pb-2">
@@ -199,7 +199,7 @@
                     </div>
 
                     <!-- Add Product Line -->
-                    <div class="row g-3 align-items-end mx-0">
+                    <div class="row align-items-end mx-0">
                         <div class="col-8 col-md-3">
                             <label class="form-label fw-semibold">Désignation</label>
                             <app-selected [placeholder]="'Choisir l\'article...'" [(searchTerm)]="searchTerm"
@@ -222,14 +222,14 @@
                         </div>
 
                         <div class="col-4 col-md-2">
-                            <label class="form-label fw-semibold" for="inputUnitPrice3">Prix unitaire</label>
+                            <label class="form-label fw-semibold" for="inputUnitPrice3">P.U achat</label>
                             <input min="0" [(ngModel)]="productEntry.unitPrice" name="unitPrice" type="number"
                                 class="form-control form-control-sm rounded-3" id="inputUnitPrice3">
                         </div>
 
                         <!-- Barcode -->
                         <div class="col-5 col-sm-6 col-md-2">
-                            <label class="form-label fw-semibold">Numéro de stock</label>
+                            <label class="form-label fw-semibold">Numéro de stocks</label>
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control form-control-sm rounded-start-3" name="barCode"
                                     [(ngModel)]="productEntry.barCode" />

@@ -422,7 +422,7 @@
             Impression 80mm
           </label>
         </div>
-        <div class="form-check">
+        <div class="form-check" *ngIf="!isMobileApp">
           <input data-bs-toggle="modal" data-bs-target="#exampleModalBigFormat" class="form-check-input" type="radio"
             name="radioDefault" id="radioDefault2">
           <label class="form-check-label" for="radioDefault2">

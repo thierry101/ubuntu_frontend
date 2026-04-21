@@ -200,6 +200,6 @@ $pc-secondary: map-get($preset-colors, 'preset-1', 'secondary');
 
 
 // Pour désactiver les interactions sur les labels des bouttons switch
-.form-check-label {
-  pointer-events: none;
-}
+// .form-check-label {
+//   pointer-events: none;
+// }
