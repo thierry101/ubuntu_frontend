@@ -143,16 +143,17 @@ export function setPagination(
 }
 
 export function setPaginationStockMvt(
-  callService: (page: number, searchTerm: any, startDate?: any, endDate?: any, typeOfMvt?: any) => Observable<any>,
+  callService: (page: number, searchTerm: any, startDate?: any, endDate?: any, typeOfMvt?: any, whStore?:any) => Observable<any>,
   page: number = 1,
   searchTerm: any,
   setState: (...args: any[]) => void,
   startDate?: any,
   endDate?: any,
   typeOfMvt?: any,
+  whStore?: any,
   onError?: (error: any) => void
 ): Subscription {
-  return callService(page, searchTerm, startDate, endDate, typeOfMvt).subscribe({
+  return callService(page, searchTerm, startDate, endDate, typeOfMvt, whStore).subscribe({
     next: (data: any) => {
       setState({
         listItems: data?.results,
@@ -166,6 +167,7 @@ export function setPaginationStockMvt(
         total_gift_quantity: data?.total_gift_quantity,
         total_sell_quantity: data?.total_sell_quantity,
         total_lost_quantity: data?.total_lost_quantity,
+        standby_quantity: data?.standby_quantity,
         nber_pages: data?.num_pages,
         editSoldPrice: data?.editSoldPrice
       });

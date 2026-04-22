@@ -200,7 +200,7 @@ export class StockMvtService {
   }
 
 
-  getStockMovement(page: number = 1, search: any = '', startDate?: string, endDate?: string, typeOfMvt?: any, pagination: boolean = true): Observable<{ results: MovementStock[] }> {
+  getStockMovement(page: number = 1, search: any = '', startDate?: string, endDate?: string, typeOfMvt?: any, selectWhShop?:any, pagination: boolean = true): Observable<{ results: MovementStock[] }> {
     const params: string[] = [];
     params.push(`page=${page}`);
 
@@ -217,6 +217,9 @@ export class StockMvtService {
     }
     if (typeOfMvt) {
       params.push(`typeOfMvt=${encodeURIComponent(typeOfMvt)}`);
+    }
+    if (selectWhShop) {
+      params.push(`selectWhShop=${encodeURIComponent(selectWhShop)}`);
     }
 
     const queryString = params.join('&');

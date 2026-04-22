@@ -90,7 +90,13 @@
                     <!-- Article sélectionné -->
                     <h6 *ngIf="searchTermP" class="fw-semibold mb-3">
                         Article : <span class="text-primary">{{ nameProduct }}</span>,
-                        indice : <span class="text-primary">{{ searchTermP }}</span>
+                        numéro de stock : <span class="text-primary">{{ searchTermP }}</span>,
+                        <span *ngIf="startDate && endDate">
+                            quantité à la veille ({{ getPreviousDay(startDate) | date:'d MMMM y' }}) :
+                            <span class="text-primary">
+                                {{ pagination?.standby_quantity | number }}
+                            </span>
+                        </span>
                     </h6>
 
                     <!-- Badges résumé -->
@@ -133,18 +139,23 @@
                                         item?.product?.indiceStock }})</td>
                                     <td>{{ item?.move_type || '—' }}</td>
                                     <td>
-                                        <ng-container *ngIf="item?.from_warehouse">Magasin : {{
-                                            item?.from_warehouse?.nameWh }}</ng-container>
-                                        <ng-container *ngIf="item?.from_provider">Fournisseur : {{
-                                            item?.from_provider?.name }}</ng-container>
-                                        <ng-container *ngIf="item?.from_client">Client : {{ item?.from_client?.name
-                                            }}</ng-container>
+                                        <ng-container *ngIf="item?.from_warehouse">Magasin :
+                                            {{ item?.from_warehouse?.nameWh }}
+                                        </ng-container>
+                                        <ng-container *ngIf="item?.from_provider">Fournisseur :
+                                            {{ item?.from_provider?.name }}
+                                        </ng-container>
+                                        <ng-container *ngIf="item?.from_client">Client :
+                                            {{ item?.from_client?.name }}
+                                        </ng-container>
                                     </td>
                                     <td>
-                                        <ng-container *ngIf="item?.to_warehouse">Magasin : {{ item?.to_warehouse?.nameWh
-                                            }}</ng-container>
-                                        <ng-container *ngIf="item?.to_Client">Client : {{ item?.to_Client?.name
-                                            }}</ng-container>
+                                        <ng-container *ngIf="item?.to_warehouse">Magasin :
+                                            {{ item?.to_warehouse?.nameWh }}
+                                        </ng-container>
+                                        <ng-container *ngIf="item?.to_Client">Client :
+                                            {{ item?.to_Client?.name }}
+                                        </ng-container>
                                         <ng-container *ngIf="item?.to_trash">{{ item?.to_trash }}</ng-container>
                                     </td>
                                     <td><strong>{{ item?.quantity | number }}</strong></td>

@@ -46,6 +46,7 @@ export class MvtStockComponent implements OnInit {
   sell_quantity: number = 0
   lost_quantity: number = 0
   typeOfMvt: any = 0
+  selectWhShop: number = 0
   isMobileApp: boolean = false;
   role: string = ''
   warehouses: Warehouse[] = []
@@ -148,7 +149,7 @@ export class MvtStockComponent implements OnInit {
     this.isLoading = true;
     setPaginationStockMvt(this.stockMvtService.getStockMovement.bind(this.stockMvtService), page, this.searchTermP, (data: any) => {
       this.pagination = data;
-      console.log(this.pagination)
+      console.log("the stock final is ", this.pagination)
       this.all_stocks_mvments = data?.listItems;
       this.bad_quantity = data?.total_bad_quantity
       this.expired_quantity = data?.total_expired_quantity
@@ -160,18 +161,33 @@ export class MvtStockComponent implements OnInit {
     },
       this.startDate,
       this.endDate,
-      this.typeOfMvt
+      this.typeOfMvt,
+      this.selectWhShop,
     );
   }
 
 
+  getPreviousDay(date: string | Date): Date {
+    const d = new Date(date);
+    d.setDate(d.getDate() - 1);
+    return d;
+  }
+
+
   filterStock() {
+    console.log("azerty test")
     if (this.startDate && this.endDate && this.startDate > this.endDate) {
       Swal.fire("La date de début ne peut pas être après la date de fin.");
       return;
     }
     this.fetchStockMovement(1);
   }
+
+
+  filterWhStore() {
+    this.fetchStockMovement(1)
+  }
+
 
   // Product search/selection
   fetchProducts(page: number = 1) {

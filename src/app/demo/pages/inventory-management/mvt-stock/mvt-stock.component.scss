@@ -1,17 +1,35 @@
 /* ── FILTRES DESKTOP : tout sur une ligne ── */
 .filter-row {
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
+    align-items: flex-end !important;
 
     .filter-col {
-        min-width: 0; // évite le débordement
+        min-width: 0;
+        flex: 1 1 0 !important;
     }
 
-    .filter-btn button {
-        white-space: nowrap;
-        height: 31px; // aligne avec form-control-sm
+    .filter-bottom-row {
+        display: contents !important;
+    }
+
+    .filter-type-inner {
+        flex: 1 1 0 !important;
+        min-width: 0;
+
+        .form-select {
+            width: 100% !important;
+        }
+    }
+
+    .filter-btn-inner {
+        flex: 0 0 auto !important;
+
+        button {
+            white-space: nowrap;
+            height: 31px;
+        }
     }
 }
-
 
 @media (max-width: 767px) {
 
