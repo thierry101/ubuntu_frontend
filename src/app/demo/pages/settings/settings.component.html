@@ -8,7 +8,9 @@
         </div>
 
         <!-- BODY -->
+        <app-spinners *ngIf="isLoading" message="Chargement ..."></app-spinners>
         <div class="card-body">
+
             <div class="row g-4">
                 <!-- Informations Entreprise -->
                 <div class="col-lg-6 border-lg-end pe-lg-4">
@@ -134,6 +136,7 @@
                         </div>
                     </form>
                 </div>
+
 
                 <!-- Paramètres Généraux -->
                 <div class="col-lg-6 ps-lg-4">
@@ -276,6 +279,8 @@
                                 </div>
                             </div>
                         </div>
+
+
 
                         <!-- Submit Button -->
                         <div class="col-12">
@@ -487,7 +492,8 @@
                         <div class="d-flex align-items-center gap-3">
                             <label class="btn btn-outline-primary btn-sm">
                                 📤 Ajouter une preuve
-                                <input type="file" hidden (change)="uploadPaymentManuel($event)" accept="image/*,application/pdf">
+                                <input type="file" hidden (change)="uploadPaymentManuel($event)"
+                                    accept="image/*,application/pdf">
                             </label>
 
                             <img *ngIf="imgPaymentManuelPreview" [src]="imgPaymentManuelPreview | image"

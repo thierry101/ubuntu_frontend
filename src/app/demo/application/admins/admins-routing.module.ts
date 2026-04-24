@@ -29,7 +29,7 @@ const routes: Routes = [
     loadComponent: () => import('./faq/faq.component').then((c) => c.FaqComponent),
     canActivate: [accessBasedRoleGuard(['big_root'])]
   },
-   {
+  {
     path: 'check-buy-partner',
     loadComponent: () => import('./payment-partner/payment-partner.component').then((c) => c.PaymentPartnerComponent),
     canActivate: [accessBasedRoleGuard(['big_root'])]

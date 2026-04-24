@@ -150,5 +150,6 @@ export class PublicService {
   get adminSettingSnapshot(): AdminSetting | null {
     return this.adminSettingSubject?.getValue();
   }
+
 }
 

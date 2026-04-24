@@ -15,6 +15,7 @@ import { CatalogService } from 'src/app/services/catalog.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { SubmitSpinnerComponent } from '../../application/reusableComponents/submit-spinner/submit-spinner.component';
 import { registerPlugin } from '@capacitor/core';
+import { SpinnersComponent } from '../../application/reusableComponents/spinners/spinners.component';
 
 interface BluetoothClassicPlugin {
   listPaired(): Promise<{ devices: { address: string; name: string }[] }>;
@@ -35,7 +36,7 @@ export interface PrinterDevice {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent],
+  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent, SpinnersComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -67,6 +68,7 @@ export class SettingsComponent implements OnInit {
   unitPrice: number = 0
   manuelPayment: boolean = false
   typePaymentSelected: string = ''
+  isLoading: boolean = false
 
   // Propriétés
   discoveredPrinters: PrinterDevice[] = [];
@@ -108,6 +110,7 @@ export class SettingsComponent implements OnInit {
     this.allDevises = devises
     this.items = itermsNber
     this.typePayments = typesPayment
+    this.isLoading = true
     this.publicService.getSettingEtprise().subscribe({
       next: (res: Enterprise) => {
         this.settingSite = res;
@@ -138,9 +141,12 @@ export class SettingsComponent implements OnInit {
           city: this.settingSite?.city || '0',
           itemNber: this.settingSite?.itemNber || '0',
         });
+        this.isLoading = false
       },
+
       error: (err) => {
-        console.error('Erreur lors de la récupération des paramètres du site :', err);
+        alert('Erreur lors de la récupération des paramètres du site');
+        this.isLoading = false
         // Optional: showError or toastShow can be added here
       }
     });
@@ -188,6 +194,7 @@ export class SettingsComponent implements OnInit {
 
   // ***************************** Update the logo image and numeric signature ************************************
   onNumericSignatureChange(event: any) {
+    this.isLoading = true
     const reader = new FileReader();
 
     if (event.target.files && event.target.files[0]) {
@@ -207,11 +214,13 @@ export class SettingsComponent implements OnInit {
         this.publicService.postSettingEtprise(data).subscribe({
           next: () => {
             toastShow('success', '✅ Signature mise à jour avec succès');
+            this.isLoading = false
             this.errors = [];
           },
           error: (err) => {
             this.errors = err?.error?.errors || [];
             showError(err, err.status, this.errors, err.error);
+            this.isLoading = false
           }
         });
       };
@@ -281,6 +290,7 @@ export class SettingsComponent implements OnInit {
 
   onLogoChange(event: any) {
     const reader = new FileReader();
+    this.isLoading = true
 
     if (event.target.files && event.target.files[0]) {
       const [file] = event.target.files;
@@ -300,10 +310,12 @@ export class SettingsComponent implements OnInit {
           next: () => {
             toastShow('success', '✅ Logo mis à jour avec succès');
             this.errors = [];
+            this.isLoading = false
           },
           error: (err) => {
             this.errors = err?.error?.errors || [];
             showError(err, err.status, this.errors, err.error);
+            this.isLoading = false
           }
         });
       };
@@ -316,6 +328,7 @@ export class SettingsComponent implements OnInit {
 
   saveWarehouseOther(event: any) {
     this.whSecondary = event.target.checked
+    this.isLoading = true
     const data = {
       checker: 'whStore',
       data: this.whSecondary
@@ -324,10 +337,12 @@ export class SettingsComponent implements OnInit {
       next: () => {
         toastShow('success', '✅ Mis à jour avec succès');
         this.errors = [];
+        this.isLoading = false
       },
       error: (err) => {
         this.errors = err?.error?.errors || [];
         showError(err, err.status, this.errors, err.error);
+        this.isLoading = false
       }
     })
   }
@@ -432,6 +447,7 @@ export class SettingsComponent implements OnInit {
 
   // ***************************** Update the settings form ************************************
   saveSettings() {
+    this.isLoading = true
     if (this.settingsForm.valid) {
       const payload = {
         checker: 'setting',
@@ -442,10 +458,12 @@ export class SettingsComponent implements OnInit {
         next: () => {
           toastShow('success', "✅ Paramètres mis à jour avec succès");
           this.errors = [];
+          this.isLoading = false
         },
         error: (err) => {
           this.errors = err?.error?.errors || [];
           showError(err, err.status, this.errors, err.error);
+          this.isLoading = false
         }
       });
     }
@@ -454,6 +472,7 @@ export class SettingsComponent implements OnInit {
 
   // ***************************** Update the other settings form ************************************
   saveOtherSettings() {
+    this.isLoading = true
     if (this.otherSettingsForm.valid) {
       const payload = { checker: 'other', data: this.otherSettingsForm?.value };
 
@@ -461,10 +480,12 @@ export class SettingsComponent implements OnInit {
         next: () => {
           toastShow('success', "✅ Paramètres mis à jour avec succès");
           this.errors = [];
+          this.isLoading = false
         },
         error: (err) => {
           this.errors = err?.error?.errors || [];
           showError(err, err.status, this.errors, err.error);
+          this.isLoading = false
         }
       });
     }
@@ -588,12 +609,11 @@ export class SettingsComponent implements OnInit {
         console.log('Payment created successfully', res);
       },
       error: (err) => {
-        console.log('Payment creation failed', err);
         this.errors = err.error.errors || [];
         showError(err, err.status, this.errors, err.error, document.getElementById('closeModalStock'));
       }
     }
     );
   }
+
 }
-// window.location.href = res.payment_url;
