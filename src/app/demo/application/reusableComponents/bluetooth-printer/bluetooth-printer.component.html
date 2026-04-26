@@ -1,0 +1,67 @@
+<ng-container *ngIf="isMobileApp">
+
+    <!-- Titre -->
+    <div class="d-flex align-items-center mb-3">
+        <i class="ti ti-printer me-2 text-primary"></i>
+        <h6 class="mb-0 fw-semibold text-dark">Paramètres d'impression</h6>
+    </div>
+
+    <!-- Imprimante connectée -->
+    <div *ngIf="selectedPrinter"
+        class="alert alert-success py-2 px-3 d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <i class="ti ti-bluetooth-connected text-success"></i>
+            <span class="fw-semibold small">
+                {{ selectedPrinter.name || selectedPrinter.deviceId }}
+            </span>
+        </div>
+        <button class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2" (click)="disconnectPrinter()">
+            <i class="ti ti-x me-1"></i> Déconnecter
+        </button>
+    </div>
+
+    <!-- Aucune imprimante connectée -->
+    <div *ngIf="!selectedPrinter" class="alert alert-secondary py-2 px-3 d-flex align-items-center gap-2 mb-3">
+        <i class="ti ti-bluetooth-off text-muted"></i>
+        <span class="small text-muted">Aucune imprimante connectée</span>
+    </div>
+
+    <!-- Bouton Scan -->
+    <button class="btn btn-outline-primary btn-sm w-100 rounded-3 mb-3" (click)="scanPrinters()"
+        [disabled]="scanningPrinters">
+        <span *ngIf="!scanningPrinters">
+            <i class="ti ti-bluetooth me-1"></i> Rechercher des imprimantes
+        </span>
+        <span *ngIf="scanningPrinters" class="d-flex align-items-center justify-content-center gap-2">
+            <span class="spinner-border spinner-border-sm"></span> Recherche en cours...
+        </span>
+    </button>
+
+    <!-- Liste des imprimantes détectées -->
+    <div *ngIf="discoveredPrinters.length > 0" class="list-group rounded-3">
+        <button *ngFor="let printer of discoveredPrinters" type="button"
+            class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3"
+            [class.active]="selectedPrinter?.deviceId === printer.deviceId" (click)="connectToPrinter(printer)"
+            [disabled]="connectingPrinter">
+            <div class="d-flex align-items-center gap-2">
+                <i class="ti ti-printer"></i>
+                <div>
+                    <div class="fw-semibold small">{{ printer.name || 'Appareil inconnu' }}</div>
+                    <div class="text-muted" style="font-size: 0.7rem;">{{ printer.deviceId }}</div>
+                </div>
+            </div>
+            <span *ngIf="selectedPrinter?.deviceId === printer.deviceId" class="badge bg-success rounded-pill">
+                <i class="ti ti-check"></i>
+            </span>
+            <span *ngIf="connectingPrinter && connectingId === printer.deviceId">
+                <span class="spinner-border spinner-border-sm text-primary"></span>
+            </span>
+        </button>
+    </div>
+
+    <!-- Aucune imprimante trouvée -->
+    <p *ngIf="printerSearchDone && discoveredPrinters.length === 0" class="text-muted small text-center mt-2">
+        <i class="ti ti-mood-sad me-1"></i> Aucune imprimante trouvée. Vérifiez que le Bluetooth est activé.
+    </p>
+
+</ng-container>

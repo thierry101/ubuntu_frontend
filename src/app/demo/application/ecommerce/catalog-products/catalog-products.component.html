@@ -186,8 +186,9 @@
                         <div class="col-md-3">
                             <label for="inputEmail4" class="form-label">Article en solde ?</label>
                             <div class="form-check form-switch">
-                                <input formControlName="isSold" class="form-check-input" type="checkbox" role="switch"
-                                    id="switchCheckChecked" [checked]="formCatalog.get('isSold')?.value">
+                                <input formControlName="isSold" (click)="checkSoldPrice()" class="form-check-input"
+                                    type="checkbox" role="switch" id="switchCheckChecked"
+                                    [checked]="formCatalog.get('isSold')?.value">
                                 <label *ngIf="formCatalog.get('isSold')?.value" class="form-check-label"
                                     for="switchCheckChecked">Oui</label>
                                 <label *ngIf="!formCatalog.get('isSold')?.value" class="form-check-label"

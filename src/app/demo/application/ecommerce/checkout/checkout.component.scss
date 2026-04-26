@@ -1,4 +1,48 @@
 /* ── STYLES DE BASE ── */
+/* ── COUPONS CLIENT — STYLES GLOBAUX ── */
+.coupon-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f8fbff;
+  border: 0.5px solid #e6f0fa;
+  border-radius: 10px;
+  margin-top: 10px;
+
+  .coupon-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7a9ab8;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .coupon-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .badge.text-bg-secondary {
+    background: #e3f2fd !important;
+    color: #1565C0 !important;
+    border: 0.5px solid #90caf9 !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 4px 10px !important;
+    font-family: 'DM Mono', monospace !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+
+// **************************************************************
 .table td,
 .table th {
   vertical-align: middle;
@@ -44,9 +88,29 @@ button:disabled {
 }
 
 /* ════════════════════════════════
-   MOBILE — < 768px
+  MOBILE — < 768px
 ════════════════════════════════ */
 @media (max-width: 767px) {
+  .coupon-row {
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    gap: 5px !important;
+
+    .coupon-label {
+      font-size: 10px !important;
+      width: 100% !important;
+      margin-bottom: 2px !important;
+    }
+
+    .coupon-pills {
+      gap: 5px !important;
+    }
+
+    .badge.text-bg-secondary {
+      font-size: 10px !important;
+      padding: 3px 8px !important;
+    }
+  }
 
   .card-header {
     padding: 12px 14px !important;

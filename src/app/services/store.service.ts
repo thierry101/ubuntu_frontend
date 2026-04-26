@@ -139,9 +139,15 @@ export class StoreService {
   }
 
 
-  postCheckCoupon(data: any): Observable<{ result: Orders }> {
-    return this.http.post<{ result: Orders }>(`${environment.apiUrl}/check-coupon`, data, { withCredentials: true });
+  postCheckCoupon(idClient: number, data: any): Observable<{ result: Orders }> {
+    return this.http.post<{ result: Orders }>(`${environment.apiUrl}/check-coupon/${idClient}`, data, { withCredentials: true });
   }
+
+
+  getAllCoupon(idClient: number): Observable<{ result: any }>{
+    return this.http.get<{ result: any }>(`${environment.apiUrl}/check-coupon/${idClient}`, { withCredentials: true });
+  }
+
 
   getOrdersDeposit(page: number = 1, search: any = '', selectWhShop?: number, startDate?: string, endDate?: string, payment?: string, pagination: boolean = true): Observable<{ results: Orders[] }> {
     const params: string[] = [];
@@ -167,6 +173,7 @@ export class StoreService {
 
     return this.http.get<{ results: Orders[] }>(`${environment.apiUrl}/retrieve-cart-deposit?${queryString}&pagination=${pagination}`, { withCredentials: true });
   }
+
 
   getOrderCartDeposit(idOrder: number): Observable<{ product: any }> {
     return this.http.get<{ product: any }>(`${environment.apiUrl}/retrieve-cart-deposit/${idOrder}`, { withCredentials: true });

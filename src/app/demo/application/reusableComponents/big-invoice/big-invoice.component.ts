@@ -25,7 +25,6 @@ export class BigInvoiceComponent implements OnInit {
     this.typePayments = typesPayment
     this.publicService.getSettingEtpriseForCustomisation().subscribe((res: any) => {
       this.setting = res?.result
-      console.log(this.setting)
     })
   }
 

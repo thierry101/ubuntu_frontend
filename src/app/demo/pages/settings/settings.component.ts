@@ -9,81 +9,64 @@ import { devises, invalidSelectValidator, isMobileApp, itermsNber, showError, to
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { QrCodeComponent } from 'ng-qrcode';
 import { Enterprise, globalInterface } from 'src/app/interfaces/global';
-import { BleClient } from '@capacitor-community/bluetooth-le';
 import { TooltipComponent } from '../../application/reusableComponents/tooltip/tooltip.component';
 import { CatalogService } from 'src/app/services/catalog.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { SubmitSpinnerComponent } from '../../application/reusableComponents/submit-spinner/submit-spinner.component';
-import { registerPlugin } from '@capacitor/core';
+import { PrintService, PrinterDevice } from 'src/app/services/print.service'; // ✅
 import { SpinnersComponent } from '../../application/reusableComponents/spinners/spinners.component';
-
-interface BluetoothClassicPlugin {
-  listPaired(): Promise<{ devices: { address: string; name: string }[] }>;
-  connect(options: { address: string }): Promise<void>;
-  disconnect(): Promise<void>;
-  write(options: { data: string }): Promise<void>;
-}
-
-const BluetoothClassic = registerPlugin<BluetoothClassicPlugin>('BluetoothClassic');
-
-export interface PrinterDevice {
-  deviceId: string;
-  name?: string;
-  _type: 'ble' | 'classic';
-}
-
+import { BluetoothPrinterComponent } from "../../application/reusableComponents/bluetooth-printer/bluetooth-printer.component";
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent, SpinnersComponent],
+  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent, SpinnersComponent, BluetoothPrinterComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
   @ViewChild('qrContainer') qrContainer!: ElementRef;
   @ViewChildren('paymentRadio') paymentRadios!: QueryList<ElementRef<HTMLInputElement>>;
+
   settingsForm: FormGroup;
   otherSettingsForm: FormGroup;
   logoPreview: string | ArrayBuffer | null = null;
   signaturePreview: string | ArrayBuffer | null = null;
   backgroundColor: string = '#ffffff';
-  settingSite !: Enterprise
-  allDevises: globalInterface[] = []
-  logo: any = { name: '', file: '' }
-  numericSignature: any = { name: '', file: '' }
-  errors: any = []
-  items: any = []
-  whSecondary: boolean = false
-  okToSold: boolean = false
-  stockVerif: boolean = false
-  checkDefective: boolean = false
-  enableWhatsap: boolean = false
-  expiredProd: boolean = false
-  isPayment: boolean = false
-  typePayments!: any
+  settingSite!: Enterprise;
+  allDevises: globalInterface[] = [];
+  logo: any = { name: '', file: '' };
+  numericSignature: any = { name: '', file: '' };
+  errors: any = [];
+  items: any = [];
+  whSecondary: boolean = false;
+  okToSold: boolean = false;
+  stockVerif: boolean = false;
+  checkDefective: boolean = false;
+  enableWhatsap: boolean = false;
+  expiredProd: boolean = false;
+  isPayment: boolean = false;
+  typePayments!: any;
   adminSetting$ = this.publicService.adminSetting$;
-  total: number = 0
-  quantity: number = 0
-  unitPrice: number = 0
-  manuelPayment: boolean = false
-  typePaymentSelected: string = ''
-  isLoading: boolean = false
+  total: number = 0;
+  quantity: number = 0;
+  unitPrice: number = 0;
+  manuelPayment: boolean = false;
+  typePaymentSelected: string = '';
+  isLoading: boolean = false;
 
-  // Propriétés
-  discoveredPrinters: PrinterDevice[] = [];
-  selectedPrinter: PrinterDevice | null = null;
-  scanningPrinters = false;
-  connectingPrinter = false;
-  connectingId = '';
-  printerSearchDone = false;
   isMobileApp: boolean = false;
-  accountsNbers!: any
+  accountsNbers!: any;
   imgPaymentManuelPreview: string = '';
-  imgPaymentManuel: any = { name: '', file: '' }
+  imgPaymentManuel: any = { name: '', file: '' };
 
-  constructor(private fb: FormBuilder, private publicService: PublicService, private catalogService: CatalogService,
-    private adminService: AdminService
+
+  constructor(
+    private fb: FormBuilder,
+    private publicService: PublicService,
+    private catalogService: CatalogService,
+    private adminService: AdminService,
+    private printService: PrintService // ✅
   ) {
     this.settingsForm = this.fb.group({
       name: ['', Validators.required],
@@ -100,28 +83,32 @@ export class SettingsComponent implements OnInit {
       country: ['0', [Validators.required, invalidSelectValidator]],
       city: ['0', [Validators.required, invalidSelectValidator]],
       itemNber: ['0', [Validators.required, invalidSelectValidator]],
-    })
+    });
   }
 
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.isMobileApp = isMobileApp
-    this.allDevises = devises
-    this.items = itermsNber
-    this.typePayments = typesPayment
-    this.isLoading = true
+  async ngOnInit(): Promise<void> {
+    // ✅ Restaure la connexion imprimante au démarrage
+    await this.printService.restoreConnection(() => {
+      toastShow('warning', 'Imprimante déconnectée');
+    });
+
+    this.isMobileApp = isMobileApp;
+    this.allDevises = devises;
+    this.items = itermsNber;
+    this.typePayments = typesPayment;
+    this.isLoading = true;
+
     this.publicService.getSettingEtprise().subscribe({
       next: (res: Enterprise) => {
         this.settingSite = res;
         this.logoPreview = this.settingSite?.logo || '';
         this.signaturePreview = this.settingSite?.signaturePreview || '';
-        this.whSecondary = this.settingSite?.yesWhSecond
-        this.okToSold = this.settingSite?.grantAgencyToSell
-        this.stockVerif = this.settingSite?.stockVerif
-        this.expiredProd = this.settingSite?.expiredProd
-        this.checkDefective = this.settingSite?.defective
-        this.enableWhatsap = this.settingSite?.allowWhatsapp
+        this.whSecondary = this.settingSite?.yesWhSecond;
+        this.okToSold = this.settingSite?.grantAgencyToSell;
+        this.stockVerif = this.settingSite?.stockVerif;
+        this.expiredProd = this.settingSite?.expiredProd;
+        this.checkDefective = this.settingSite?.defective;
+        this.enableWhatsap = this.settingSite?.allowWhatsapp;
         this.backgroundColor = this.settingSite?.backgroundColor || '#ffffff';
 
         this.settingsForm.patchValue({
@@ -134,20 +121,18 @@ export class SettingsComponent implements OnInit {
           niu: this.settingSite?.niu,
         });
 
-
         this.otherSettingsForm.patchValue({
           urlSite: this.settingSite?.url_site || '',
           country: this.settingSite?.country || '0',
           city: this.settingSite?.city || '0',
           itemNber: this.settingSite?.itemNber || '0',
         });
-        this.isLoading = false
-      },
 
+        this.isLoading = false;
+      },
       error: (err) => {
-        alert('Erreur lors de la récupération des paramètres du site');
-        this.isLoading = false
-        // Optional: showError or toastShow can be added here
+        toastShow('error', '❌ Erreur lors de la récupération des paramètres du site');
+        this.isLoading = false;
       }
     });
 
@@ -157,28 +142,27 @@ export class SettingsComponent implements OnInit {
         this.calculateTotal();
       }
     });
+  }
 
-    const saved = localStorage.getItem('posPrinter');
-    if (saved) this.selectedPrinter = JSON.parse(saved);
+  ngAfterViewInit() {
+    const canvas = this.qrContainer?.nativeElement?.querySelector('canvas');
   }
 
 
+  // ══════════════════════════════════════════════
+  // PARAMÈTRES
+  // ══════════════════════════════════════════════
+
   onPaymentChange(payment: string) {
-    // Handle payment method change
     this.typePaymentSelected = payment;
     if (payment === 'manuel') {
-      this.manuelPayment = true
+      this.manuelPayment = true;
       this.catalogService.getMyPayments().subscribe({
-        next: (res) => {
-          this.accountsNbers = res?.result || [];
-        },
-        error: (err) => {
-          console.error('Erreur lors de la récupération des méthodes de paiement :', err);
-          // Optional: showError or toastShow can be added here
-        }
+        next: (res) => { this.accountsNbers = res?.result || []; },
+        error: (err) => { console.error('Erreur lors de la récupération des méthodes de paiement :', err); }
       });
     } else {
-      this.manuelPayment = false
+      this.manuelPayment = false;
     }
   }
 
@@ -187,74 +171,43 @@ export class SettingsComponent implements OnInit {
     this.total = qty * this.unitPrice;
   }
 
-  ngAfterViewInit() {
-    // Debug: Check if canvas is rendered
-    const canvas = this.qrContainer?.nativeElement?.querySelector('canvas');
-  }
-
-  // ***************************** Update the logo image and numeric signature ************************************
   onNumericSignatureChange(event: any) {
-    this.isLoading = true
+    this.isLoading = true;
     const reader = new FileReader();
-
     if (event.target.files && event.target.files[0]) {
       const [file] = event.target.files;
       reader.readAsDataURL(file);
-
       reader.onload = () => {
         this.signaturePreview = reader.result as string;
         this.numericSignature.name = file.name;
         this.numericSignature.file = reader.result;
-
-        const data = {
-          checker: 'numericSignature',
-          data: this.numericSignature
-        };
-
+        const data = { checker: 'numericSignature', data: this.numericSignature };
         this.publicService.postSettingEtprise(data).subscribe({
-          next: () => {
-            toastShow('success', '✅ Signature mise à jour avec succès');
-            this.isLoading = false
-            this.errors = [];
-          },
-          error: (err) => {
-            this.errors = err?.error?.errors || [];
-            showError(err, err.status, this.errors, err.error);
-            this.isLoading = false
-          }
+          next: () => { toastShow('success', '✅ Signature mise à jour avec succès'); this.isLoading = false; this.errors = []; },
+          error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isLoading = false; }
         });
       };
-      reader.onerror = (e) => {
-        toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
-      };
+      reader.onerror = () => { toastShow('error', '❌ Une erreur est survenue lors du chargement.'); };
     }
   }
 
-
   uploadPaymentManuel(event: any) {
     const reader = new FileReader();
-
     if (event.target.files && event.target.files[0]) {
       const [file] = event.target.files;
       reader.readAsDataURL(file);
-
       reader.onload = () => {
         this.imgPaymentManuelPreview = reader.result as string;
         this.imgPaymentManuel.name = file.name;
         this.imgPaymentManuel.file = reader.result;
-
       };
-      reader.onerror = (e) => {
-        toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
-      };
+      reader.onerror = () => { toastShow('error', '❌ Une erreur est survenue lors du chargement.'); };
     }
   }
 
-
   confirmPayement() {
     if (this.typePaymentSelected === 'manuel') {
-      // Envoyer les données de paiement manuel à l'API
-      this.isPayment = true
+      this.isPayment = true;
       const data = {
         checker: 'paymentWhatsappMsg',
         typePayment: 'manuel',
@@ -262,7 +215,7 @@ export class SettingsComponent implements OnInit {
         imgPayment: this.imgPaymentManuel
       };
       this.adminService.postInvoice(data).subscribe({
-        next: (res: any) => {
+        next: () => {
           toastShow('success', '✅ Paiement traité avec succès');
           this.errors = [];
           this.quantity = 0;
@@ -271,173 +224,88 @@ export class SettingsComponent implements OnInit {
           this.manuelPayment = false;
           this.imgPaymentManuel = { name: '', file: '' };
           this.imgPaymentManuelPreview = '';
-          this.isPayment = false
-          // Décoche tous les radios visuellement
-          this.paymentRadios.forEach(radio => {
-            radio.nativeElement.checked = false;
-          });
-          document.getElementById('closeModalPayment')?.click()
+          this.isPayment = false;
+          this.paymentRadios.forEach(radio => { radio.nativeElement.checked = false; });
+          document.getElementById('closeModalPayment')?.click();
         },
-        error: (err) => {
-          this.errors = err?.error?.errors || [];
-          showError(err, err.status, this.errors, err.error);
-          this.isPayment = false
-        }
-      })
+        error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isPayment = false; }
+      });
     }
   }
 
-
   onLogoChange(event: any) {
     const reader = new FileReader();
-    this.isLoading = true
-
+    this.isLoading = true;
     if (event.target.files && event.target.files[0]) {
       const [file] = event.target.files;
       reader.readAsDataURL(file);
-
       reader.onload = () => {
         this.logoPreview = reader.result as string;
         this.logo.name = file.name;
         this.logo.file = reader.result;
-
-        const data = {
-          checker: 'logo',
-          data: this.logo
-        };
-
+        const data = { checker: 'logo', data: this.logo };
         this.publicService.postSettingEtprise(data).subscribe({
-          next: () => {
-            toastShow('success', '✅ Logo mis à jour avec succès');
-            this.errors = [];
-            this.isLoading = false
-          },
-          error: (err) => {
-            this.errors = err?.error?.errors || [];
-            showError(err, err.status, this.errors, err.error);
-            this.isLoading = false
-          }
+          next: () => { toastShow('success', '✅ Logo mis à jour avec succès'); this.errors = []; this.isLoading = false; },
+          error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isLoading = false; }
         });
       };
-      reader.onerror = (e) => {
-        toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.');
-      };
+      reader.onerror = () => { toastShow('error', '❌ Une erreur est survenue lors du chargement du logo.'); };
     }
   }
 
-
   saveWarehouseOther(event: any) {
-    this.whSecondary = event.target.checked
-    this.isLoading = true
-    const data = {
-      checker: 'whStore',
-      data: this.whSecondary
-    }
+    this.whSecondary = event.target.checked;
+    this.isLoading = true;
+    const data = { checker: 'whStore', data: this.whSecondary };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-        this.isLoading = false
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-        this.isLoading = false
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; this.isLoading = false; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isLoading = false; }
+    });
   }
 
   saveWareOkToSold(event: any) {
-    this.okToSold = event.target.checked
-    const data = {
-      checker: 'grantSold',
-      data: this.okToSold
-    }
+    this.okToSold = event.target.checked;
+    const data = { checker: 'grantSold', data: this.okToSold };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); }
+    });
   }
 
   saveStockVerification(event: any) {
-    this.stockVerif = event.target.checked
-    const data = {
-      checker: 'stockVerif',
-      data: this.stockVerif
-    }
+    this.stockVerif = event.target.checked;
+    const data = { checker: 'stockVerif', data: this.stockVerif };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); }
+    });
   }
-
 
   saveCheckDefectiveProd(event: any) {
-    this.checkDefective = event.target.checked
-    const data = {
-      checker: 'defective',
-      data: this.checkDefective
-    }
+    this.checkDefective = event.target.checked;
+    const data = { checker: 'defective', data: this.checkDefective };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); }
+    });
   }
-
 
   enableWhatsappMsg(event: any) {
-    this.enableWhatsap = event.target.checked
-    const data = {
-      checker: 'whatsapp',
-      data: this.enableWhatsap
-    }
+    this.enableWhatsap = event.target.checked;
+    const data = { checker: 'whatsapp', data: this.enableWhatsap };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); }
+    });
   }
 
-
   enableExpiredProduct(event: any) {
-    this.expiredProd = event.target.checked
-    const data = {
-      checker: 'expired',
-      data: this.expiredProd
-    }
+    this.expiredProd = event.target.checked;
+    const data = { checker: 'expired', data: this.expiredProd };
     this.publicService.postSettingEtprise(data).subscribe({
-      next: () => {
-        toastShow('success', '✅ Mis à jour avec succès');
-        this.errors = [];
-      },
-      error: (err) => {
-        this.errors = err?.error?.errors || [];
-        showError(err, err.status, this.errors, err.error);
-      }
-    })
+      next: () => { toastShow('success', '✅ Mis à jour avec succès'); this.errors = []; },
+      error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); }
+    });
   }
 
   onBackgroundChange(event: any) {
@@ -445,69 +313,31 @@ export class SettingsComponent implements OnInit {
     this.settingsForm.patchValue({ background: this.backgroundColor });
   }
 
-  // ***************************** Update the settings form ************************************
   saveSettings() {
-    this.isLoading = true
+    this.isLoading = true;
     if (this.settingsForm.valid) {
-      const payload = {
-        checker: 'setting',
-        data: this.settingsForm?.value
-      };
-
+      const payload = { checker: 'setting', data: this.settingsForm?.value };
       this.publicService.postSettingEtprise(payload).subscribe({
-        next: () => {
-          toastShow('success', "✅ Paramètres mis à jour avec succès");
-          this.errors = [];
-          this.isLoading = false
-        },
-        error: (err) => {
-          this.errors = err?.error?.errors || [];
-          showError(err, err.status, this.errors, err.error);
-          this.isLoading = false
-        }
+        next: () => { toastShow('success', '✅ Paramètres mis à jour avec succès'); this.errors = []; this.isLoading = false; },
+        error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isLoading = false; }
       });
     }
   }
 
-
-  // ***************************** Update the other settings form ************************************
   saveOtherSettings() {
-    this.isLoading = true
+    this.isLoading = true;
     if (this.otherSettingsForm.valid) {
       const payload = { checker: 'other', data: this.otherSettingsForm?.value };
-
       this.publicService.postSettingEtprise(payload).subscribe({
-        next: () => {
-          toastShow('success', "✅ Paramètres mis à jour avec succès");
-          this.errors = [];
-          this.isLoading = false
-        },
-        error: (err) => {
-          this.errors = err?.error?.errors || [];
-          showError(err, err.status, this.errors, err.error);
-          this.isLoading = false
-        }
+        next: () => { toastShow('success', '✅ Paramètres mis à jour avec succès'); this.errors = []; this.isLoading = false; },
+        error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isLoading = false; }
       });
     }
   }
 
-
-  // ***************************** Select city based on country selected ************************************ 
-  // choiceCountry() {
-  //   const result = this.countries.find((obj: any) => obj?.name === this.otherSettingsForm.get('country')?.value);
-  //   this.cities = result?.cities
-  // }
-
-  // Download the qr code
   downloadQRCode() {
-    const canvas: HTMLCanvasElement | null =
-      this.qrContainer.nativeElement.querySelector('canvas');
-
-    if (!canvas) {
-      console.error('QR Code canvas not found.');
-      return;
-    }
-
+    const canvas: HTMLCanvasElement | null = this.qrContainer.nativeElement.querySelector('canvas');
+    if (!canvas) { console.error('QR Code canvas not found.'); return; }
     const imageData = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = imageData;
@@ -515,105 +345,13 @@ export class SettingsComponent implements OnInit {
     a.click();
   }
 
-
-
-  async scanPrinters() {
-    try {
-      this.scanningPrinters = true;
-      this.discoveredPrinters = [];
-      this.printerSearchDone = false;
-
-      // 1. Appareils jumelés Bluetooth Classique
-      try {
-        const { devices } = await BluetoothClassic.listPaired();
-        for (const device of devices) {
-          this.discoveredPrinters.push({
-            deviceId: device.address,
-            name: device.name,
-            _type: 'classic'
-          });
-        }
-      } catch (e) {
-        console.warn('Bluetooth classique non disponible:', e);
-      }
-
-      // 2. Scan BLE
-      await BleClient.initialize({ androidNeverForLocation: true }); // ✅ true = cohérent avec le manifest
-      await BleClient.requestLEScan({}, (result) => {
-        const exists = this.discoveredPrinters.find(
-          d => d.deviceId === result.device.deviceId
-        );
-        if (!exists && result.device.name) {
-          this.discoveredPrinters.push({
-            deviceId: result.device.deviceId,
-            name: result.device.name,
-            _type: 'ble'
-          });
-        }
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      await BleClient.stopLEScan();
-
-    } catch (err) {
-      console.error(err);
-    } finally {
-      this.scanningPrinters = false;
-      this.printerSearchDone = true;
-    }
-  }
-
-  async connectToPrinter(device: PrinterDevice) {
-    try {
-      this.connectingPrinter = true;
-      this.connectingId = device.deviceId;
-
-      if (device._type === 'classic') {
-        await BluetoothClassic.connect({ address: device.deviceId }); // ✅ plugin natif
-      } else {
-        await BleClient.connect(device.deviceId);
-      }
-
-      this.selectedPrinter = device;
-      localStorage.setItem('posPrinter', JSON.stringify(device));
-
-    } catch (err) {
-      console.error(err);
-      alert(`Impossible de se connecter à ${device.name || device.deviceId}`);
-    } finally {
-      this.connectingPrinter = false;
-      this.connectingId = '';
-    }
-  }
-
-  async disconnectPrinter() {
-    try {
-      if (this.selectedPrinter) {
-        if (this.selectedPrinter._type === 'classic') {
-          await BluetoothClassic.disconnect(); // ✅ pas besoin d'adresse, socket géré côté Java
-        } else {
-          await BleClient.disconnect(this.selectedPrinter.deviceId);
-        }
-      }
-    } catch (err) {
-      console.warn('Bluetooth disconnect warning:', err);
-    }
-    this.selectedPrinter = null;
-    localStorage.removeItem('posPrinter');
-  }
-
-
   sendPayment() {
     this.publicService.createPayment({ amount: 5000 }).subscribe({
-      next: (res: any) => {
-        console.log('Payment created successfully', res);
-      },
+      next: (res: any) => { console.log('Payment created successfully', res); },
       error: (err) => {
         this.errors = err.error.errors || [];
         showError(err, err.status, this.errors, err.error, document.getElementById('closeModalStock'));
       }
-    }
-    );
+    });
   }
-
 }

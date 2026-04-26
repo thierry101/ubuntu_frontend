@@ -56,7 +56,7 @@ export class CatalogProductsComponent implements OnInit {
   };
   formCatalog!: FormGroup
   isSaving: boolean = false
-  searchTermCatalog:string = ''
+  searchTermCatalog: string = ''
 
   constructor(private fb: FormBuilder, private catalogService: CatalogService, private publicService: PublicService) { }
 
@@ -124,7 +124,7 @@ export class CatalogProductsComponent implements OnInit {
     this.fetchCatalogs(page);
   }
 
-    onSearchChangeStock(term: string) {
+  onSearchChangeStock(term: string) {
     this.searchTermCatalog = term;
     this.fetchCatalogs(1);
   }
@@ -171,6 +171,12 @@ export class CatalogProductsComponent implements OnInit {
     })
   }
 
+
+  checkSoldPrice() {
+    this.calculSoldPrice()
+  }
+
+
   calculSoldPrice() {
     const sellPrice = this.formCatalog.get('sellPrice')?.value || 0;
     const percentageSold = this.formCatalog.get('percentagSold')?.value || 0;
@@ -189,13 +195,13 @@ export class CatalogProductsComponent implements OnInit {
       next: (res: { result: Catalog }) => {
         this.all_catalogs = this.all_catalogs.filter((prod: any) => prod.id !== this.itemToEdit?.id)
         this.all_catalogs?.unshift(res?.result)
-    this.isSaving = false
+        this.isSaving = false
         btnClose?.click()
         toastShow("success", "✅ Aricle Modifié")
       },
       error: (err) => {
         this.errors = [];
-    this.isSaving = false
+        this.isSaving = false
         this.errors = err.error.errors;
         this.isLoading = false
         showError(err, err.status, this.errors, err.error, btnClose);
@@ -295,6 +301,7 @@ export class CatalogProductsComponent implements OnInit {
       };
       this.formCatalog.patchValue({ // Set form values based on selected product to send in backend
         product: produ?.id,
+        sellPrice: Math.trunc(produ?.sell_price ?? 0)
       });
     }
   }
