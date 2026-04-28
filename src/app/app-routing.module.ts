@@ -95,6 +95,11 @@ const routes: Routes = [
 
       },
       {
+        path: 'madette',
+        loadComponent: () => import('./demo/pages/check-debt/check-debt.component').then((c) => c.CheckDebtComponent),
+
+      },
+      {
         path: 'private-policy',
         loadComponent: () => import('./demo/pages/prv-policy/prv-policy.component').then((c) => c.PrvPolicyComponent)
       },

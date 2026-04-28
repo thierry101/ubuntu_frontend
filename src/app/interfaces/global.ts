@@ -299,6 +299,7 @@ export interface Enterprise {
   nberWhatsappMsg: number;
   backgroundColor: string;
   url_site: string;
+  url_debt: string;
   logo: string;
   signaturePreview: string;
   state_setting: boolean;
@@ -403,6 +404,7 @@ export interface AdminSetting {
   logo: string;
   rccm: string;
   niu: string;
+  url_debt: string;
   item_per_page: number;
   state_setting: boolean;
   partner_percentag: number;

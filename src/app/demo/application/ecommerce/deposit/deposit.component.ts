@@ -208,12 +208,14 @@ export class DepositComponent implements OnInit {
   }
 
   viewItems(item: any) {
+    console.log("clicked")
     this.amounts = {}
     this.idOrder = item?.id
     this.isLoadingItem = true
     this.storeService.getOrderCartDeposit(item?.id).subscribe({
       next: (res: any) => {
         this.deposits = res?.result
+        console.log("deposits ", this.deposits)
         this.order_to_print = res?.serializer_order
         this.all_items = this.order_to_print?.listItems
         this.isLoadingItem = false

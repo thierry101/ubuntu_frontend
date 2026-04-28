@@ -47,6 +47,7 @@ export class GlobalSettingComponent implements OnInit {
   isSavingGlobalSetting: boolean = false;
   itemToEdit!: CountryPayment
   editPayment: boolean = false
+  urlDebt: string = ''
 
   constructor(private fb: FormBuilder, private adminService: AdminService) {
     this.formPartner = this.fb.group({
@@ -95,6 +96,7 @@ export class GlobalSettingComponent implements OnInit {
         this.formPartner.patchValue({
           partnerPercentage: this.globalSetting?.partner_percentag || 0
         })
+        this.urlDebt = this.globalSetting?.url_debt || ''
         const result = this.countries.find((obj: any) => obj?.name === this.globalSetting?.country);
         this.cities = result?.cities || [];
         this.logoPreview = this.globalSetting?.logo
@@ -121,6 +123,21 @@ export class GlobalSettingComponent implements OnInit {
 
   updateSettingPartner() {
     const data = { checker: 'partnerConfig', data: this.formPartner?.value }
+    this.adminService.putAdminSetting(data).subscribe({
+      next: () => {
+        toastShow('success', '✅ Paramètres mis à jour avec succès.')
+        this.errors = []
+      },
+      error: (err) => {
+        this.errors = err?.error?.errors || [];
+        showError(err, err.status, this.errors, err.error);
+      }
+    })
+  }
+
+
+    updateUrlDebt() {
+    const data = { checker: 'urlDebt', data: {urlDebt: this.urlDebt} }
     this.adminService.putAdminSetting(data).subscribe({
       next: () => {
         toastShow('success', '✅ Paramètres mis à jour avec succès.')

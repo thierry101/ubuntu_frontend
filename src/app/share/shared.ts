@@ -97,19 +97,50 @@ export function swalWithApprobation(icon: any, title: string, message: string, c
 }
 
 
-export function showError(error: any, status: any, table: string[], allErrors: any, idModalToClose?: HTMLElement | null) {
-  if (error && status == 400) { //if we have 403 when clicking modal in component, we need first to close this modal. So 
-    table = allErrors           //idModalToClose is the modal in the component where we click to have 403 error
+const messages: Record<number, [string, string, string]> = {
+  0: ['error', 'Erreur réseau', 'Vérifiez votre connexion internet'],
+  400: ['error', 'Requête invalide', 'Vérifiez les données envoyées'],
+  404: ['error', 'Introuvable', 'Ressource non trouvée'],
+  409: ['warning', 'Conflit', 'Cette ressource existe déjà'],
+  413: ['error', 'Fichier trop volumineux', 'Réduisez la taille du fichier'],
+  415: ['error', 'Format non supporté', 'Type de fichier invalide'],
+  422: ['warning', 'Données invalides', 'Vérifiez les champs saisis'],
+  500: ['error', 'Erreur serveur', 'Veuillez contacter l’administrateur'],
+  502: ['error', 'Serveur indisponible', 'Veuillez réessayer'],
+  503: ['error', 'Service indisponible', 'Réessayez plus tard'],
+  504: ['error', 'Temps dépassé', 'Le serveur met trop de temps à répondre']
+};
+
+export function showError(
+  error: any,
+  status: any,
+  table: string[],
+  allErrors: any,
+  idModalToClose?: HTMLElement | null
+) {
+  // Cas particulier 400
+  if (error && status == 400) {
+    table = allErrors;
   }
-  else if (status == 500) {
-    SwallModal('error', 'Erreur', "Veuillez contacter l'administrateur")
-  }
+
+  // Cas 403 spécifique (droits)
   else if (status == 403) {
     if (idModalToClose) {
-      idModalToClose.click(); // ✅ Close modal
+      idModalToClose.click(); // fermer le modal
     }
-    SwallModal('warning', 'Action non autorisée', "Vous n'avez pas les droits nécessaires, contactez l'administrateur")
+
+    SwallModal(
+      'warning',
+      'Action non autorisée',
+      "Vous n'avez pas les droits nécessaires, contactez l'administrateur"
+    );
+    return;
   }
+
+  // Cas généraux basés sur le mapping
+  const msg = messages[status] || messages[0];
+
+  SwallModal(msg[0], msg[1], msg[2]);
 }
 
 
@@ -143,7 +174,7 @@ export function setPagination(
 }
 
 export function setPaginationStockMvt(
-  callService: (page: number, searchTerm: any, startDate?: any, endDate?: any, typeOfMvt?: any, whStore?:any) => Observable<any>,
+  callService: (page: number, searchTerm: any, startDate?: any, endDate?: any, typeOfMvt?: any, whStore?: any) => Observable<any>,
   page: number = 1,
   searchTerm: any,
   setState: (...args: any[]) => void,

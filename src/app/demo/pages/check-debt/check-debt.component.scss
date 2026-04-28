@@ -1,0 +1,489 @@
+/* ══════════════════════════════════
+   DEBT TRACKER — STYLES COMPLETS
+══════════════════════════════════ */
+
+.debt-card {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    border: 0.5px solid #e0eaf5;
+    overflow: hidden;
+}
+
+/* ── HEADER ── */
+.debt-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    background: #1565C0;
+    color: #fff;
+
+    h5 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .debt-header-icon {
+        width: 30px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+    }
+}
+
+/* ── FORMULAIRE ── */
+.debt-form-wrap {
+    padding: 20px 24px;
+    border-bottom: 0.5px solid #e0eaf5;
+    background: #f8fbff;
+}
+
+.debt-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+
+    .field {
+        label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            color: #7a9ab8;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            border: 0.5px solid #d0e4f7;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 13px;
+            min-height: 40px;
+            box-shadow: none;
+            background: #fff;
+
+            &:focus {
+                border-color: #1565C0;
+                box-shadow: none;
+            }
+        }
+    }
+
+    .field-btn {
+        .btn {
+            height: 40px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 0 18px;
+        }
+    }
+}
+
+/* ── RÉSULTATS ── */
+.debt-results {
+    padding: 20px 24px;
+}
+
+/* ── CLIENT ── */
+.client-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.client-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e3f2fd;
+    color: #1565C0;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.client-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0d1b2a;
+    margin-bottom: 3px;
+}
+
+.client-meta {
+    font-size: 12px;
+    color: #7a9ab8;
+
+    .sep {
+        margin: 0 6px;
+        opacity: 0.5;
+    }
+}
+
+/* ── DIVIDER ── */
+.divider {
+    height: 0.5px;
+    background: #e0eaf5;
+    margin: 18px 0;
+}
+
+/* ── MÉTRIQUES ── */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.metric {
+    background: #f4f8fd;
+    border-radius: 10px;
+    padding: 14px 16px;
+
+    .metric-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #7a9ab8;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+    }
+
+    .metric-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0d1b2a;
+        font-family: 'DM Mono', monospace;
+
+        &.success {
+            color: #0ba360;
+        }
+
+        &.danger {
+            color: #e53935;
+        }
+    }
+}
+
+/* ── PROGRESS ── */
+.prog-wrap {
+    .prog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+    }
+
+    .prog-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0d1b2a;
+    }
+
+    .prog-amounts {
+        font-size: 12px;
+        color: #7a9ab8;
+    }
+
+    .prog-bg {
+        height: 8px;
+        background: #e0eaf5;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .prog-fill {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient(90deg, #0ba360, #20c997);
+        transition: width 1.2s ease;
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            height: 100%;
+            width: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-20deg);
+            animation: shine 2s infinite;
+        }
+    }
+
+    .prog-pct {
+        font-size: 11px;
+        color: #7a9ab8;
+        text-align: right;
+    }
+}
+
+@keyframes shine {
+    100% {
+        left: 120%;
+    }
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #7a9ab8;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 16px;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+    position: relative;
+    padding-left: 22px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 8px;
+        bottom: 8px;
+        width: 1px;
+        background: #e0eaf5;
+    }
+}
+
+.t-item {
+    position: relative;
+    margin-bottom: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s ease forwards;
+
+    @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.07}s;
+        }
+    }
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.t-dot {
+    position: absolute;
+    left: -22px;
+    top: 14px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid;
+
+    &.dot-ok {
+        background: #e8f5e9;
+        border-color: #0ba360;
+    }
+
+    &.dot-late {
+        background: #fff0f0;
+        border-color: #e53935;
+    }
+
+    &.dot-upcoming {
+        background: #fff8e1;
+        border-color: #f59e0b;
+    }
+}
+
+.t-card {
+    background: #fff;
+    border: 0.5px solid #e0eaf5;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: 0 2px 12px rgba(21, 101, 192, 0.07);
+        border-color: #c0d8f5;
+    }
+}
+
+.t-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.t-date {
+    font-size: 11px;
+    color: #7a9ab8;
+}
+
+.t-amt {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0ba360;
+    font-family: 'DM Mono', monospace;
+}
+
+.t-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.t-echo {
+    font-size: 11px;
+    color: #7a9ab8;
+}
+
+/* ── BADGES ── */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+
+    &.badge-ok {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    &.badge-late {
+        background: #fff0f0;
+        color: #e53935;
+    }
+
+    &.badge-upcoming {
+        background: #fff8e1;
+        color: #8a6200;
+    }
+}
+
+/* ── VIDE ── */
+.debt-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: #7a9ab8;
+
+    i {
+        font-size: 36px;
+        display: block;
+        margin-bottom: 10px;
+        opacity: 0.5;
+    }
+
+    p {
+        font-size: 13px;
+        margin: 0;
+    }
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE MOBILE
+══════════════════════════════════ */
+@media (max-width: 767px) {
+
+    .debt-card {
+        border-radius: 14px;
+    }
+
+    .debt-header {
+        padding: 14px 16px;
+
+        h5 {
+            font-size: 14px;
+        }
+    }
+
+    .debt-form-wrap {
+        padding: 14px 16px;
+    }
+
+    .debt-form {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+
+        .field-btn {
+            grid-column: 1 / -1;
+        }
+    }
+
+    .debt-results {
+        padding: 16px;
+    }
+
+    .client-row {
+        gap: 10px;
+    }
+
+    .client-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 12px;
+    }
+
+    .client-name {
+        font-size: 14px;
+    }
+
+    .client-meta {
+        font-size: 11px;
+
+        .sep {
+            margin: 0 4px;
+        }
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .metric {
+        padding: 12px;
+
+        .metric-value {
+            font-size: 14px;
+        }
+    }
+
+    .t-card {
+        &:hover {
+            box-shadow: none;
+        }
+    }
+
+    .t-top {
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 6px;
+    }
+
+    .t-amt {
+        font-size: 15px;
+    }
+}

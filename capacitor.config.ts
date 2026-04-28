@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'AnKeCRM',
   webDir: 'dist',
   server: {
-    // url: 'https://ankecrm.app',
-    url: 'http://192.168.1.7:4200',
+    url: 'https://ankecrm.app',
+    // url: 'http://192.168.1.7:4200',
     cleartext: true
   },
   plugins: {

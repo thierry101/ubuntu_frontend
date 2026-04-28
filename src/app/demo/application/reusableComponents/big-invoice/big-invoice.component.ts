@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, Input, OnInit } from '@angular/core';
 import { PublicService } from 'src/app/services/public.service';
-import { typesPayment } from 'src/app/share/shared';
+import { isMobileApp, typesPayment } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { ImagePipe } from "../../../../pipes/image.pipe";
 import { SubmitSpinnerComponent } from "../submit-spinner/submit-spinner.component";
@@ -19,9 +19,14 @@ export class BigInvoiceComponent implements OnInit {
   setting!: any
   typePayments!: any
   isPrinting: boolean = false;
+  isMobileApp: boolean = false;
+
+
+
   constructor(private publicService: PublicService) { }
 
   ngOnInit(): void {
+    this.isMobileApp = isMobileApp;
     this.typePayments = typesPayment
     this.publicService.getSettingEtpriseForCustomisation().subscribe((res: any) => {
       this.setting = res?.result

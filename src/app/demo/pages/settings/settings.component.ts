@@ -25,7 +25,8 @@ import { BluetoothPrinterComponent } from "../../application/reusableComponents/
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
-  @ViewChild('qrContainer') qrContainer!: ElementRef;
+  // @ViewChild('qrContainer') qrContainer!: ElementRef;
+  @ViewChild('qrCanvas', { static: false }) qrCanvas: any;
   @ViewChildren('paymentRadio') paymentRadios!: QueryList<ElementRef<HTMLInputElement>>;
 
   settingsForm: FormGroup;
@@ -80,6 +81,7 @@ export class SettingsComponent implements OnInit {
     });
     this.otherSettingsForm = this.fb.group({
       urlSite: [''],
+      urlDebt: [''],
       country: ['0', [Validators.required, invalidSelectValidator]],
       city: ['0', [Validators.required, invalidSelectValidator]],
       itemNber: ['0', [Validators.required, invalidSelectValidator]],
@@ -123,6 +125,7 @@ export class SettingsComponent implements OnInit {
 
         this.otherSettingsForm.patchValue({
           urlSite: this.settingSite?.url_site || '',
+          urlDebt: this.settingSite?.url_debt || '',
           country: this.settingSite?.country || '0',
           city: this.settingSite?.city || '0',
           itemNber: this.settingSite?.itemNber || '0',
@@ -144,9 +147,9 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() {
-    const canvas = this.qrContainer?.nativeElement?.querySelector('canvas');
-  }
+  // ngAfterViewInit() {
+  //   const canvas = this.qrCanvas?.nativeElement?.querySelector('canvas');
+  // }
 
 
   // ══════════════════════════════════════════════
@@ -335,15 +338,35 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  // downloadQRCode() {
+  //   const canvas: HTMLCanvasElement | null = this.qrContainer.nativeElement.querySelector('canvas');
+  //   if (!canvas) { console.error('QR Code canvas not found.'); return; }
+  //   const imageData = canvas.toDataURL('image/png');
+  //   const a = document.createElement('a');
+  //   a.href = imageData;
+  //   a.download = 'qr-code.png';
+  //   a.click();
+  // }
+
   downloadQRCode() {
-    const canvas: HTMLCanvasElement | null = this.qrContainer.nativeElement.querySelector('canvas');
-    if (!canvas) { console.error('QR Code canvas not found.'); return; }
-    const imageData = canvas.toDataURL('image/png');
+    const canvas = this.qrCanvas.qrcElement.nativeElement.querySelector('canvas');
+    const image = canvas.toDataURL('image/png');
+
     const a = document.createElement('a');
-    a.href = imageData;
-    a.download = 'qr-code.png';
+    a.href = image;
+    a.download = 'qrcode.png';
     a.click();
   }
+
+  //   downloadQRCodeDebt() {
+  //   const canvas: HTMLCanvasElement | null = this.qrContainer.nativeElement.querySelector('canvas');
+  //   if (!canvas) { console.error('QR Code canvas not found.'); return; }
+  //   const imageData = canvas.toDataURL('image/png');
+  //   const a = document.createElement('a');
+  //   a.href = imageData;
+  //   a.download = 'qr-code.png';
+  //   a.click();
+  // }
 
   sendPayment() {
     this.publicService.createPayment({ amount: 5000 }).subscribe({

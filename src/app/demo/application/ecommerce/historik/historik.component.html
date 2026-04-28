@@ -155,6 +155,10 @@
 
                         <div class="card-body">
 
+                            <app-spinners *ngIf="isLoadingProd"
+                                message="⏳ Chargement des historiques ..."></app-spinners>
+
+
                             <!-- TABLE DESKTOP -->
                             <div class="table-responsive d-none d-md-block">
                                 <table class="table table-hover align-middle table-bordered text-center">
@@ -186,12 +190,12 @@
                                                     title="Voir facture">
                                                     <i class="ti ti-eye"></i>
                                                 </button>
-                                                <button (click)="deleteInvoice(item)" data-bs-toggle="modal"
+                                                <!-- <button (click)="deleteInvoice(item)" data-bs-toggle="modal"
                                                     data-bs-target="#exampleModalDelete"
                                                     class="btn btn-outline-danger btn-sm rounded-circle mx-1"
                                                     title="Supprimer facture">
                                                     <i class="ti ti-trash"></i>
-                                                </button>
+                                                </button> -->
                                             </td>
                                         </tr>
                                         <tr *ngIf="all_orders?.length === 0">
@@ -236,10 +240,10 @@
                                         <button class="btn-ocm-view" (click)="viewItems(item?.id)">
                                             👁 Voir
                                         </button>
-                                        <button class="btn-ocm-del" (click)="deleteInvoice(item)" data-bs-toggle="modal"
+                                        <!-- <button class="btn-ocm-del" (click)="deleteInvoice(item)" data-bs-toggle="modal"
                                             data-bs-target="#exampleModalDelete">
                                             🗑
-                                        </button>
+                                        </button> -->
                                     </div>
 
                                 </div>

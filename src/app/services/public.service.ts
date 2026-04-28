@@ -151,5 +151,10 @@ export class PublicService {
     return this.adminSettingSubject?.getValue();
   }
 
+
+  getPaiementClient(nberInvoice: string, phone:string): Observable<{ result: any[], serialOpenHour: OpenHour[] }> {
+    return this.http.get<{ result: any[], serialOpenHour: OpenHour[] }>(`${environment.apiUrl}/retrieve-paiement-invoice/${nberInvoice}/${phone}`, { withCredentials: true })
+  }
+
 }
 

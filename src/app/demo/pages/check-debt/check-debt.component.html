@@ -1,0 +1,159 @@
+<div class="container py-4">
+    <div class="debt-card">
+
+        <!-- HEADER -->
+        <div class="debt-header">
+            <div class="debt-header-icon">
+                <i class="ti ti-search"></i>
+            </div>
+            <h5 class="mb-0">Suivi de ma dette</h5>
+        </div>
+
+        <!-- FORMULAIRE -->
+        <div class="debt-form-wrap">
+            <form class="debt-form" (ngSubmit)="filterInvoice()">
+                <div class="field">
+                    <label>Numéro de facture</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="invoiceNumber"
+                        name="invoiceNumber" placeholder="INV-1234" required>
+                </div>
+                <div class="field">
+                    <label>Téléphone</label>
+                    <input type="tel" class="form-control form-control-sm" [(ngModel)]="phone" name="phone"
+                        placeholder="06 00 00 00 00" required>
+                </div>
+                <div class="field field-btn">
+                    <button class="btn btn-primary btn-sm w-100" [disabled]="loading">
+                        <span *ngIf="!loading">
+                            <i class="ti ti-search me-1"></i> Rechercher
+                        </span>
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- LOADER -->
+        <app-spinners *ngIf="loading" message="⏳ Chargement des factures ..."></app-spinners>
+
+        <!-- RESULTATS -->
+        <div *ngIf="!loading" class="debt-results">
+
+            <!-- CLIENT -->
+            <div class="client-row">
+                <div class="client-avatar">
+                    {{ client?.name | slice:0:2 | uppercase }}
+                </div>
+                <div>
+                    <div class="client-name">{{ client?.name }}</div>
+                    <div class="client-meta">
+                        {{ client?.phone }}
+                        <span class="sep">·</span>
+                        {{ client?.email }}
+                        <span class="sep">·</span>
+                        {{ order?.nberInvoice }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- METRIQUES -->
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-label">Total dette</div>
+                    <div class="metric-value">
+                        {{ totalDebt | number }} {{ currency }}
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Déjà payé</div>
+                    <div class="metric-value success">
+                        {{ totalPaid | number }} {{ currency }}
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Reste à payer</div>
+                    <div class="metric-value danger">
+                        {{ totalDebt - totalPaid | number }} {{ currency }}
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Avancement</div>
+                    <div class="metric-value">{{ progressPercent | number:'1.0-0' }}%</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- PROGRESS -->
+            <div class="prog-wrap">
+                <div class="prog-header">
+                    <span class="prog-label">Remboursement</span>
+                    <span class="prog-amounts">
+                        {{ totalPaid | number }} / {{ totalDebt | number }} {{ currency }}
+                    </span>
+                </div>
+                <div class="prog-bg">
+                    <div class="prog-fill" [style.width.%]="progressPercent"></div>
+                </div>
+                <div class="prog-pct">{{ progressPercent | number:'1.0-0' }}%</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- TIMELINE -->
+            <div class="section-title">Historique des paiements</div>
+
+            <div class="timeline">
+                <div class="t-item" *ngFor="let d of deposits">
+
+                    <div class="t-dot" [ngClass]="{
+              'dot-ok': !d?.nextPaymentDate,
+              'dot-late': d?.nextPaymentDate && isLate(d?.nextPaymentDate),
+              'dot-upcoming': d?.nextPaymentDate && !isLate(d?.nextPaymentDate)
+            }">
+                    </div>
+
+                    <div class="t-card">
+                        <div class="t-top">
+                            <span class="t-date">
+                                {{ d?.created_at | date:'dd MMMM yyyy' }}
+                            </span>
+                            <span class="t-amt">
+                                +{{ d?.amountPaid | number }} {{ currency }}
+                            </span>
+                        </div>
+                        <div class="t-bottom">
+                            <span class="t-echo">
+                                {{
+                                d?.nextPaymentDate
+                                ? ('Prochaine échéance : ' + (d?.nextPaymentDate | date:'dd/MM/yyyy'))
+                                : 'Aucune échéance'
+                                }}
+                            </span>
+                            <span class="badge-status" [ngClass]="{
+                'badge-ok': !d?.nextPaymentDate,
+                'badge-late': d?.nextPaymentDate && isLate(d?.nextPaymentDate),
+                'badge-upcoming': d?.nextPaymentDate && !isLate(d?.nextPaymentDate)
+                }">
+                                <span *ngIf="!d?.nextPaymentDate">Terminé</span>
+                                <span *ngIf="d?.nextPaymentDate && isLate(d?.nextPaymentDate)">En retard</span>
+                                <span *ngIf="d?.nextPaymentDate && !isLate(d?.nextPaymentDate)">À venir</span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- VIDE -->
+        <div *ngIf="!loading && !client" class="debt-empty">
+            <i class="ti ti-file-search"></i>
+            <p>Aucune donnée à afficher</p>
+        </div>
+
+    </div>
+</div>

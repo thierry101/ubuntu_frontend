@@ -92,7 +92,8 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Prix SMS Whatsapp</label>
-                            <input formControlName="simpleWhatsapp" type="number" class="form-control form-control-sm" />
+                            <input formControlName="simpleWhatsapp" type="number"
+                                class="form-control form-control-sm" />
                             <small class="text-danger">{{errors?.simpleWhatsapp}}</small>
                         </div>
                         <div class="col-md-6">
@@ -134,17 +135,30 @@
                         <!-- Pourcentage partenaire -->
                         <div class="col-md-12">
                             <label class="form-label fw-semibold">Pourcentage partenaire</label>
-                            <input formControlName="partnerPercentage" type="number" min="0"
-                                class="form-control form-control-sm" />
+                            <div class="input-group input-group-sm">
+                                <input formControlName="partnerPercentage" type="number" min="0" class="form-control">
+                                <button (click)="updateSettingPartner()" class="btn btn-outline-warning" type="button"
+                                    id="button-addon2">
+                                    <i class="ti ti-refresh me-1"></i> Mettre à jour
+                                </button>
+                            </div>
                             <small class="text-danger">{{ errors?.partnerPercentage }}</small>
                         </div>
 
-                        <!-- Update button -->
-                        <div class="col-12 text-end">
-                            <button (click)="updateSettingPartner()" class="btn btn-warning btn-sm mt-2">
-                                <i class="ti ti-refresh me-1"></i> Mettre à jour
-                            </button>
+                        <!-- URL vérification dette cliente -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">URL vérification dette cliente</label>
+                            <div class="input-group input-group-sm">
+                                <input [(ngModel)]="urlDebt" name="debt" type="text" class="form-control"
+                                [ngModelOptions]="{standalone: true}">
+                                <button (click)="updateUrlDebt()" class="btn btn-outline-warning" type="button"
+                                    id="button-addon2">
+                                    <i class="ti ti-refresh me-1"></i> Mettre à jour
+                                </button>
+                            </div>
+                            <small class="text-danger">{{ errors?.urlDebt }}</small>
                         </div>
+
 
                         <hr class="mt-3" />
 

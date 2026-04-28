@@ -56,6 +56,7 @@ export class HistorikComponent implements OnInit {
   allTypes: any = typeSales
   idInvoice: number = 0
   isMobileApp: boolean = false;
+isLoadingProd:boolean = false
 
   constructor(private storeService: StoreService, private authService: AuthService, private publicService: PublicService) { }
 
@@ -185,11 +186,18 @@ export class HistorikComponent implements OnInit {
 
 
   viewItems(idItem: any) {
+    this.isLoadingProd = true
     this.storeService.getInvoiceDetail(idItem).subscribe({
       next: (res: any) => {
         this.order_to_print = res?.result
         this.all_items = this.order_to_print?.listItems
         this.item_of_deposit = res?.deposit
+        this.isLoadingProd = false
+      },
+      error: (err) => {
+        this.errors = err.error.errors || [];
+        showError(err, err.status, this.errors, err.error, document.getElementById('closeModalDelete01'));
+        this.isLoadingProd = false
       }
     })
   }

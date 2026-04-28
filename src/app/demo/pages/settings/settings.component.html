@@ -152,7 +152,25 @@
                             <div class="d-flex align-items-center gap-3">
                                 <input readonly formControlName="urlSite" class="form-control form-control-sm bg-light">
                                 <div style="cursor: pointer;" (click)="downloadQRCode()" class="position-relative">
-                                    <qr-code [value]="otherSettingsForm.get('urlSite')?.value" size="50"
+                                    <qr-code #qrCanvas [value]="otherSettingsForm.get('urlSite')?.value" size="50"
+                                        errorCorrectionLevel="M" class="border rounded-2"></qr-code>
+                                    <span
+                                        class="position-absolute top-100 start-50 translate-middle-x text-muted small mt-1">
+                                        Télécharger
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">URL pour suivre les dettes clientes
+                                <app-tooltip
+                                            message="Cet url est partagée aux clients pour suivre leurs dettes."></app-tooltip>
+                            </label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input readonly formControlName="urlDebt" class="form-control form-control-sm bg-light">
+                                <div style="cursor: pointer;"  class="position-relative">
+                                    <qr-code [value]="otherSettingsForm.get('urlDebt')?.value" size="50"
                                         errorCorrectionLevel="M" class="border rounded-2"></qr-code>
                                     <span
                                         class="position-absolute top-100 start-50 translate-middle-x text-muted small mt-1">
