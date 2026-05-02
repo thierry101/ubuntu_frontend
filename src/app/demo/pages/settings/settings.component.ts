@@ -26,7 +26,9 @@ import { BluetoothPrinterComponent } from "../../application/reusableComponents/
 })
 export class SettingsComponent implements OnInit {
   // @ViewChild('qrContainer') qrContainer!: ElementRef;
-  @ViewChild('qrCanvas', { static: false }) qrCanvas: any;
+  // @ViewChild('qrCanvas', { static: false }) qrCanvas: any;
+  @ViewChild('qrCanvas', { static: false, read: ElementRef }) qrCanvas!: ElementRef;
+  @ViewChild('qrDebt', { read: ElementRef }) qrDebt!: ElementRef;
   @ViewChildren('paymentRadio') paymentRadios!: QueryList<ElementRef<HTMLInputElement>>;
 
   settingsForm: FormGroup;
@@ -348,15 +350,72 @@ export class SettingsComponent implements OnInit {
   //   a.click();
   // }
 
-  downloadQRCode() {
-    const canvas = this.qrCanvas.qrcElement.nativeElement.querySelector('canvas');
-    const image = canvas.toDataURL('image/png');
+  // downloadQRCode() {
+  //   const value = this.otherSettingsForm.get('urlSite')?.value;
 
-    const a = document.createElement('a');
-    a.href = image;
-    a.download = 'qrcode.png';
-    a.click();
+  //   if (!value) return;
+
+  //   // Crée un canvas plus grand
+  //   const canvas = document.createElement('canvas');
+  //   const size = 500; // 👈 taille du QR téléchargé (modifiable)
+  //   canvas.width = size;
+  //   canvas.height = size;
+
+  //   const ctx = canvas.getContext('2d');
+
+  //   // Utilise une librairie QR (si angularx-qrcode est basé sur qrcode)
+  //   import('qrcode').then(QRCode => {
+  //     QRCode.toCanvas(canvas, value, {
+  //       width: size,
+  //       margin: 2
+  //     }, (error: any) => {
+  //       if (error) {
+  //         console.error(error);
+  //         return;
+  //       }
+
+  //       const image = canvas.toDataURL('image/png');
+
+  //       const link = document.createElement('a');
+  //       link.href = image;
+  //       link.download = 'qrcode.png';
+  //       link.click();
+  //     });
+  //   });
+  // }
+
+  downloadQRCode(type: 'site' | 'debt') {
+    const value = type === 'site'
+      ? this.otherSettingsForm.get('urlSite')?.value
+      : this.otherSettingsForm.get('urlDebt')?.value;
+
+    if (!value) return;
+
+    const size = 500; // taille HD
+
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    import('qrcode').then(QRCode => {
+      QRCode.toCanvas(canvas, value, {
+        width: size,
+        margin: 2
+      }, (error: any) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = type === 'site' ? 'qrcode-site.png' : 'qrcode-dette.png';
+        link.click();
+      });
+    });
   }
+
+
 
   //   downloadQRCodeDebt() {
   //   const canvas: HTMLCanvasElement | null = this.qrContainer.nativeElement.querySelector('canvas');

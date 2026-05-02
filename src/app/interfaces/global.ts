@@ -104,7 +104,7 @@ export interface Orders {
   totalCart: number;
   created_at: number;
   amount_tva: number;
-  statusPayment:boolean
+  statusPayment: boolean
 }
 
 export interface CartProducts {
@@ -414,6 +414,9 @@ export interface AdminSetting {
   digit_length: number,
   simple_whatsapp: number,
   pub_whatsapp: number,
+  monthly_rent: 0,
+  shop_addition: 0,
+  devise: ''
 }
 
 export interface Provider {

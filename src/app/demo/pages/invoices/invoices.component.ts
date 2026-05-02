@@ -49,19 +49,31 @@ export class InvoicesComponent implements OnInit {
   waveContries: any = ["Cote D'Ivoire", "Sénégal", "Burkina Faso", "Mali", "Togo"]
   orangeContries: any = ["Cote D'Ivoire", "Cameroun", "République Démocratique du congo", "Gabon", "Tchad"]
   momoContries: any = ["Cote D'Ivoire", "Cameroun", "République Démocratique du congo", "Gabon", "Tchad"]
+  statusPayment: any = ["En attente de paiement"]
+  monthly_rent: number = 0
+  shop_addition: number = 0
+  nberWarehouses: number = 0
+  montantRent: number = 0
 
 
   constructor(private catalogService: CatalogService, private publicService: PublicService, private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.fetchInvoices(1)
-    this.publicService.enterpriseCustomisation$.subscribe({
-      next: (res: any) => {
-        this.percentage = res?.percentage;
-        this.devise = res?.devise;
-        this.country = res?.country;
-      }
+    // this.publicService.enterpriseCustomisation$.subscribe({
+    //   next: (res: any) => {
+    //     this.percentage = res?.percentage;
+    //     this.devise = res?.devise;
+    //     this.country = res?.country;
+    //   }
+    // });
+
+    this.publicService.adminSetting$.subscribe(value => {
+      this.monthly_rent = value?.monthly_rent || 0
+      this.shop_addition = value?.shop_addition || 0
+      this.devise = value?.devise || 'XOF'
     });
+
   }
 
 
@@ -112,42 +124,15 @@ export class InvoicesComponent implements OnInit {
   }
 
 
-  // validPayment() {
-  //   this.isSubmitPayment = true
-  //   const idModal = document.getElementById('idClosePaymentModal')
-  //   const data = {
-  //     paymentMethod: this.methodPayment, dateToPay: this.dateInvoice, idInvoice: this.idInvoice,
-  //     imgPayment: this.previewImage
-  //   }
-  //   this.catalogService.postImagePayment(data).subscribe({
-  //     next: (res: { result: InvoiceDue }) => {
-  //       this.allInvoices = this.allInvoices.filter(item => item.id !== this.idInvoice);
-  //       this.allInvoices?.unshift(res?.result)
-  //       this.previewImage = null
-  //       this.typePayment = null
-  //       this.methodPayment = ''
-  //       this.errors = []
-  //       this.isSubmitPayment = false
-  //       idModal?.click()
-  //       toastShow("success", "✅ Paiement effectué avec succès");
-  //     },
-  //     error: (err) => {
-  //       this.isSubmitPayment = false
-  //       this.errors = err.error.errors || [];
-  //       showError(err, err.status, this.errors, err.error, idModal);
-  //     }
-  //   })
-  // }
-
-
   fetchInvoices(page: number = 1) { //instead of bind I can call arrow function like (page, term) => this.authService.getRegisterByAdmin(page, term)
     this.isLoading = true;
     setPagination(this.catalogService.getInvoices.bind(this.catalogService), page, this.searchTerm, (data: any) => {
       this.pagination = data;
+      this.nberWarehouses = data?.devise || 0
       this.allInvoices = data?.listItems;
       this.isLoading = false;
       this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
-    })
+      this.montantRent = Number(this.monthly_rent) +( Number(this.shop_addition) * (Number(this.nberWarehouses) - 2));})
   }
 
 

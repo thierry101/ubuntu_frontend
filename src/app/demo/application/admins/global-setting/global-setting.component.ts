@@ -68,6 +68,9 @@ export class GlobalSettingComponent implements OnInit {
       nberDigit: 0,
       simpleWhatsapp: 0,
       pubWhatsapp: 0,
+      monthlyRent: 0,
+      shopAddition: 0,
+      devise: ''
     })
   }
 
@@ -92,6 +95,9 @@ export class GlobalSettingComponent implements OnInit {
           nberDigit: this.globalSetting?.digit_length || 0,
           simpleWhatsapp: this.globalSetting?.simple_whatsapp || 0,
           pubWhatsapp: this.globalSetting?.pub_whatsapp || 0,
+          monthlyRent: this.globalSetting?.monthly_rent || 0,
+          shopAddition: this.globalSetting?.shop_addition || 0,
+          devise: this.globalSetting?.devise || ''
         })
         this.formPartner.patchValue({
           partnerPercentage: this.globalSetting?.partner_percentag || 0

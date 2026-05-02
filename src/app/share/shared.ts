@@ -98,8 +98,7 @@ export function swalWithApprobation(icon: any, title: string, message: string, c
 
 
 const messages: Record<number, [string, string, string]> = {
-  0: ['error', 'Erreur réseau', 'Vérifiez votre connexion internet'],
-  400: ['error', 'Requête invalide', 'Vérifiez les données envoyées'],
+  // 0: ['error', 'Erreur réseau', 'Vérifiez votre connexion internet'],
   404: ['error', 'Introuvable', 'Ressource non trouvée'],
   409: ['warning', 'Conflit', 'Cette ressource existe déjà'],
   413: ['error', 'Fichier trop volumineux', 'Réduisez la taille du fichier'],
@@ -378,7 +377,7 @@ export const servicesProvided = [
     "name": "Message WhatsApp publicitaire", "value": "whatsapp_msg_pub"
   },
   {
-    "name": "Abonnement mensuel", "value": "invoice"
+    "name": "Abonnement mensuel", "value": "abonnement"
   }
 ]
 

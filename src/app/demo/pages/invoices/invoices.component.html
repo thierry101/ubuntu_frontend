@@ -15,10 +15,10 @@
                 <!-- Pourcentage prélevé -->
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="fw-semibold mb-0 text-secondary">
-                        Pourcentage prélevé :
+                        Montant abonnement mensuel :
                     </h6>
                     <span class="badge rounded-pill text-bg-primary px-3 py-2 shadow-sm fs-6">
-                        {{ percentage }} %
+                        {{ this.montantRent | number:'1.0-0' }} {{ this.devise }}
                     </span>
                 </div>
 
@@ -60,16 +60,16 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <button [disabled]="invoice?.status_payment!=='En attente de paiement'" (click)="getPaymentDetail(invoice)"
+                                    <button [disabled]="!statusPayment?.includes(invoice?.status_payment)" (click)="getPaymentDetail(invoice)"
                                         class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="Payer"
                                         data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         <i class="ti ti-eye"></i>
                                     </button>
-                                    <button *ngIf="invoice?.status_payment === 'Payée'"
+                                    <!-- <button *ngIf="invoice?.status_payment === 'Payée'"
                                         class="btn btn-outline-success btn-sm rounded-circle shadow-sm mx-1"
                                         title="Télécharger">
                                         <i class="ti ti-download"></i>
-                                    </button>
+                                    </button> -->
                                 </td>
                             </tr>
                         </tbody>

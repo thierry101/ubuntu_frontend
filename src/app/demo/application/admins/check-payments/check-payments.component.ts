@@ -101,8 +101,7 @@ export class CheckPaymentsComponent implements OnInit {
       checker: 'whatsappMsg'
     }
     this.adminService.putQtyMsg(payment?.id, data).subscribe({
-      next: (res: any) => {
-        console.log("the result is ", res)
+      next: () => {
         toastShow('success', '✅ Statut de paiement mis à jour avec succès.')
       },
       error: (err) => {
@@ -124,8 +123,7 @@ export class CheckPaymentsComponent implements OnInit {
       'payment_proof': this.imgPaymentManuel
     }
     this.adminService.putPayment(this.idPayment, data).subscribe({
-      next: (res: any) => {
-        console.log("the result is ", res)
+      next: () => {
         toastShow('success', '✅ Preuve de paiement mise à jour avec succès.')
         this.errors = []
         this.paymentPreview = '';

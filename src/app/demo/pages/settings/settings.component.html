@@ -151,7 +151,7 @@
                             <label class="form-label fw-semibold">URL de la galerie numérique</label>
                             <div class="d-flex align-items-center gap-3">
                                 <input readonly formControlName="urlSite" class="form-control form-control-sm bg-light">
-                                <div style="cursor: pointer;" (click)="downloadQRCode()" class="position-relative">
+                                <div style="cursor: pointer;" (click)="downloadQRCode('site')" class="position-relative">
                                     <qr-code #qrCanvas [value]="otherSettingsForm.get('urlSite')?.value" size="50"
                                         errorCorrectionLevel="M" class="border rounded-2"></qr-code>
                                     <span
@@ -169,8 +169,8 @@
                             </label>
                             <div class="d-flex align-items-center gap-3">
                                 <input readonly formControlName="urlDebt" class="form-control form-control-sm bg-light">
-                                <div style="cursor: pointer;"  class="position-relative">
-                                    <qr-code [value]="otherSettingsForm.get('urlDebt')?.value" size="50"
+                                <div style="cursor: pointer;" (click)="downloadQRCode('debt')" class="position-relative">
+                                    <qr-code #qrDebt [value]="otherSettingsForm.get('urlDebt')?.value" size="50"
                                         errorCorrectionLevel="M" class="border rounded-2"></qr-code>
                                     <span
                                         class="position-absolute top-100 start-50 translate-middle-x text-muted small mt-1">

@@ -21,7 +21,7 @@ import { TooltipComponent } from 'src/app/demo/application/reusableComponents/to
 @Component({
   selector: 'app-articles',
   standalone: true,
-  imports: [SearchListComponent, ImagePipe, NgSelectModule, SharedModule, SetPaginationComponent, SpinnersComponent, 
+  imports: [SearchListComponent, ImagePipe, NgSelectModule, SharedModule, SetPaginationComponent, SpinnersComponent,
     TooltipComponent, SubmitSpinnerComponent, SelectedComponent],
   templateUrl: './articles.component.html',
   styleUrl: './articles.component.scss'
@@ -188,6 +188,7 @@ export class ArticlesComponent implements OnInit {
         toastShow("success", "✅ Aricle mis à jour avec sucès")
         this.isSaving = false
         document.getElementById('closeModalProd004')?.click()
+        this.fetchProducts(this.pagination?.currentPage);
       },
       error: (err) => {
         this.errors = [];
@@ -214,7 +215,7 @@ export class ArticlesComponent implements OnInit {
         this.articleManagementService.deleteProduct(idProduct).subscribe({
           next: () => {
             this.all_products = this.all_products.filter((category: any) => category?.id !== idProduct);
-            this.fetchProducts(1)
+        this.fetchProducts(this.pagination?.currentPage);
             toastShow('success', "✅ Produit supprimé avec succès");
             this.errors = []
           },

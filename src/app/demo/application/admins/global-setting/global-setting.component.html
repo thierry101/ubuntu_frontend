@@ -92,14 +92,32 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Prix SMS Whatsapp</label>
-                            <input formControlName="simpleWhatsapp" type="number"
+                            <input formControlName="simpleWhatsapp" type="number" min="0"
                                 class="form-control form-control-sm" />
                             <small class="text-danger">{{errors?.simpleWhatsapp}}</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Prix SMS Whatsapp PUB</label>
-                            <input formControlName="pubWhatsapp" type="number" class="form-control form-control-sm" />
+                            <input formControlName="pubWhatsapp" min="0" type="number" class="form-control form-control-sm" />
                             <small class="text-danger">{{errors?.pubWhatsapp}}</small>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Devise</label>
+                            <input formControlName="devise" type="text"
+                                class="form-control form-control-sm" />
+                            <small class="text-danger">{{errors?.devise}}</small>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Location mensuelle</label>
+                            <input formControlName="monthlyRent" min="0" type="number"
+                                class="form-control form-control-sm" />
+                            <small class="text-danger">{{errors?.monthlyRent}}</small>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Montant ajout boutique</label>
+                            <input formControlName="shopAddition" type="number" min="0" class="form-control form-control-sm" />
+                            <small class="text-danger">{{errors?.shopAddition}}</small>
                         </div>
 
                         <div class="col-md-4">
@@ -115,7 +133,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Nombre de digits</label>
-                            <input formControlName="nberDigit" type="number" class="form-control form-control-sm" />
+                            <input formControlName="nberDigit" type="number" min="0" class="form-control form-control-sm" />
                             <small class="text-danger">{{errors?.nberDigit}}</small>
                         </div>
                         <div class="col-12 text-end">

@@ -20,9 +20,9 @@
                 <select class="form-select form-select-sm w-auto" (change)="filterByStatus()"
                     [(ngModel)]="filterStatus">
                     <option value="">Tous les statuts</option>
-                    <option value="En attente de validation">En attente</option>
-                    <option value="Validé">Validé</option>
-                    <option value="Rejeté">Rejeté</option>
+                    <option value="Vérification en cours">Vérification en cours</option>
+                    <option value="Payée">Payée</option>
+                    <option value="Rejetée">Rejetée</option>
                 </select>
 
                 <!-- Filtre méthode de paiement -->
@@ -111,20 +111,20 @@
 
                             <td>
                                 <select class="form-select form-select-sm" [ngClass]="{
-      'border-warning text-warning': payment.status_payment === 'En attente de validation',
-      'border-success text-success': payment.status_payment === 'Validé',
-      'border-danger text-danger': payment.status_payment === 'Rejeté'
+      'border-warning text-warning': payment.status_payment === 'Vérification en cours',
+      'border-success text-success': payment.status_payment === 'Payée',
+      'border-danger text-danger': payment.status_payment === 'Rejetée'
     }" [(ngModel)]="payment.status_payment" (change)="onStatusChange(payment)"
-                                    [disabled]="payment?.status_payment === 'Validé' || role !== 'big_root'">
+                                    [disabled]="payment?.status_payment === 'Payée' || role !== 'big_root'">
 
-                                    <option value="En attente de validation">En attente de validation</option>
-                                    <option value="Validé">Validé</option>
-                                    <option value="Rejeté">Rejeté</option>
+                                    <option value="Vérification en cours">Vérification en cours</option>
+                                    <option value="Payée">Payée</option>
+                                    <option value="Rejetée">Rejetée</option>
                                 </select>
                             </td>
                             <td *ngIf="role!=='big_root'">
                                 <button (click)="updateProofPayment(payment?.id)"
-                                    [disabled]="payment?.status_payment === 'Validé'" class="btn btn-warning btn-sm"
+                                    [disabled]="payment?.status_payment === 'Payée'" class="btn btn-warning btn-sm"
                                     data-bs-toggle="modal" data-bs-target="#modalImgPayment"><i class="ti ti-edit"></i>
                                     <app-tooltip message="Modifier la preuve de paiement"></app-tooltip>
                                 </button>

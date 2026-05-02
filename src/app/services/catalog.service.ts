@@ -72,13 +72,6 @@ export class CatalogService {
     );
   }
 
-
-  postImagePayment(data: any): Observable<{ result: InvoiceDue }> {
-    return this.http.post<{ result: InvoiceDue }>(`${environment.apiUrl}/upload-image-payment`, data, { withCredentials: true }
-    );
-  }
-
-
   getCommands(page: number = 1, search: any = '', selectWhShop?: number, startDate: string = '', endDate: string = '', pagination: boolean = true): Observable<{ results: CommandsCatalog[] }> {
     const params: string[] = [];
     params.push(`page=${page}`);
