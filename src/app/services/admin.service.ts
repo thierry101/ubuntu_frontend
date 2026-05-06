@@ -201,6 +201,11 @@ export class AdminService {
   }
 
 
+  postMobilePayment(data: any) {
+    return this.http.post(`${environment.apiUrl}/check-payment-mobile`, data, { withCredentials: true });
+  }
+
+
   getAllPayments(page: number = 1, search: any = '', statusPayment: string = '', typeService: string = ''): Observable<{ results: Enterprise }> {
     const params: string[] = [];
     params.push(`page=${page}`);
@@ -220,7 +225,7 @@ export class AdminService {
   }
 
 
-    putQtyMsg(idPayment: number, data: any) {
+  putQtyMsg(idPayment: number, data: any) {
     return this.http.put(`${environment.apiUrl}/update-qty-whatsapp/${idPayment}`, data, { withCredentials: true }
     );
   }

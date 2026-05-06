@@ -13,6 +13,7 @@ import { InvoiceDue } from 'src/app/interfaces/global';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { SubmitSpinnerComponent } from "../../reusableComponents/submit-spinner/submit-spinner.component";
 import { QuillModule } from 'ngx-quill';
+import { PublicService } from 'src/app/services/public.service';
 
 @Component({
   selector: 'app-partners-commission',
@@ -29,6 +30,7 @@ export class PartnersCommissionComponent implements OnInit {
   invoice: any = {}; // or your model interfac
   isLoading: boolean = false
   isSaving: boolean = false
+  isLoadingInvoice: boolean = false
   searchTerm: string = ''
   pages: number[] = [];
   all_invoices_partner_enterprise: any[] = [];
@@ -38,23 +40,40 @@ export class PartnersCommissionComponent implements OnInit {
     previousPage: null,
     nextPage: null,
   };
+  totalAmountInvoiced: number = 0;
+  totalPartnerAmount: number = 0;
+  totalAmountCollected: number = 0;
+  totalPartnerPaid: number = 0;
+  totalCommission: number = 0;
+  allTotalPartnerPaid: number = 0;
+  devise: string = '';
 
-  constructor(private partnerService: PartnerService, private authService: AuthService, private adminService: AdminService) { }
+
+  constructor(private partnerService: PartnerService, private authService: AuthService, private adminService: AdminService,
+    private publicService:PublicService
+  ) { }
 
   ngOnInit(): void {
     this.fetchInvoicesPartnerEnterprise(1)
     this.role = this.authService.currentUser?.role
+    this.publicService.adminSetting$.subscribe(setting => {
+      if (setting) {
+        this.devise = setting?.devise
+      }
+    });
   }
 
   // On doit avoir également le statut rejeté
   updateStatePayment(invoice: InvoiceDue) {
+    this.isLoading = true
     const idButton = document.getElementById('closeModalInvoice002')
-    const data = { idInvoice: invoice?.id, statePayment: invoice?.status_payment, rejetReason: invoice?.rejetReason }
+    const data = { checker: 'update', idInvoice: invoice?.id, statePayment: invoice?.status_payment, rejetReason: invoice?.rejetReason }
     this.adminService.putDetailInvoice(invoice?.id, data).subscribe({
       next: (res: { result: InvoiceDue }) => {
         this.all_invoices_partner_enterprise = this.all_invoices_partner_enterprise.filter((invoic: any) => invoic.id !== invoice?.id)
         this.all_invoices_partner_enterprise?.unshift(res?.result)
         idButton?.click()
+        this.isLoading = false
         toastShow("success", "✅ Statut paiement mis à jour")
       },
       error: (err) => {
@@ -62,6 +81,24 @@ export class PartnersCommissionComponent implements OnInit {
         this.errors = err.error.errors;
         this.isLoading = false
         showError(err, err.status, this.errors, err.error, idButton);
+      }
+    })
+  }
+
+
+  payPartner(event: any, invoice: InvoiceDue) {
+    this.isLoadingInvoice = true
+    const data = { checker: 'partnerPayment', statePaymentPartner: event.target.checked }
+    this.adminService.putDetailInvoice(invoice?.id, data).subscribe({
+      next: () => {
+        this.isLoadingInvoice = false
+        toastShow("success", "✅ Statut paiement partenaire mis à jour")
+      },
+      error: (err) => {
+        this.errors = [];
+        this.errors = err.error.errors;
+        this.isLoadingInvoice = false
+        showError(err, err.status, this.errors, err.error, document.getElementById('a'));
       }
     })
   }
@@ -76,6 +113,13 @@ export class PartnersCommissionComponent implements OnInit {
       this.searchTerm,
       (data: any) => {
         this.pagination = data;
+        this.totalPartnerAmount = data?.total_commission
+        this.totalPartnerPaid = data?.total_commission_paid
+        
+        this.totalAmountInvoiced = data?.totals?.total_invoiced
+        this.totalAmountCollected = data?.totals?.total_collected
+        this.totalCommission = data?.totals?.total_commission
+        this.allTotalPartnerPaid = data?.totals?.total_commission_paid
         this.all_invoices_partner_enterprise = data?.listItems;
         this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
         this.isLoading = false;
@@ -107,9 +151,18 @@ export class PartnersCommissionComponent implements OnInit {
   }
 
   onShowPromoDetails(idInvoice: any) {
+    this.isLoadingInvoice = true
+    this.errors = [];
     this.adminService.getDetailInvoice(idInvoice).subscribe({
       next: (res: { result: InvoiceDue }) => {
         this.invoice = res?.result
+        this.isLoadingInvoice = false
+      },
+      error: (err) => {
+        this.errors = [];
+        this.errors = err.error.errors;
+        this.isLoadingInvoice = false
+        showError(err, err.status, this.errors, err.error, document.getElementById('a'));
       }
     })
   }

@@ -1,5 +1,5 @@
 /* ════════════════════════════════
-   MOBILE — < 768px
+  MOBILE — < 768px
 ════════════════════════════════ */
 @media (max-width: 767px) {
 
@@ -344,13 +344,15 @@
         -webkit-overflow-scrolling: touch !important;
         flex: 1 1 auto !important;
         padding: 14px !important;
-        max-height: calc(95vh - 140px) !important;
+        max-height: calc(95vh - 200px) !important;
         overscroll-behavior: contain !important;
     }
 
     .modal-footer {
         flex-shrink: 0 !important;
         padding: 12px 16px !important;
+        padding-bottom: calc(12px + 50px) !important;
+        /* 70px = hauteur bottom nav */
         background: #fff !important;
         border-top: 0.5px solid #e6f0fa !important;
         gap: 8px !important;
@@ -360,9 +362,10 @@
 
         .btn {
             flex: 1 !important;
-            padding: 10px !important;
-            font-size: 13px !important;
+            padding: 8px 12px !important;
+            font-size: 12px !important;
             border-radius: 8px !important;
+            height: 36px !important;
         }
     }
 
@@ -644,6 +647,6 @@
     }
 
     .modal-lg .modal-body {
-        max-height: calc(95vh - 140px) !important;
+        max-height: calc(95vh - 200px) !important;
     }
 }

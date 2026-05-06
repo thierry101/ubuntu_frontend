@@ -135,7 +135,6 @@ export class ListEnterprisesComponent implements OnInit {
     const data = { idEnterprise: this.itemEnterprise?.id, monthInvoice: this.monthInvoice }
     this.adminService.postInvoiceManually(data).subscribe({
       next: (res: { result: InvoiceDue }) => {
-        console.log(res)
         toastShow('success', '✅ Facture générée.')
         this.payments?.unshift(res?.result)
         this.isSaving = false

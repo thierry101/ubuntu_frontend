@@ -65,6 +65,7 @@ export class CreditInvoiceComponent implements OnInit {
   idCreditNote: number = 0
   warehouses: Warehouse[] = []
   role: string = ''
+  allTotal!: any
 
 
   constructor(private expensiveService: ExpensiveService, private authService: AuthService, private publicService: PublicService, private storeService: StoreService) { }
@@ -118,10 +119,7 @@ export class CreditInvoiceComponent implements OnInit {
     setPaginationMultiParams(this.storeService.getCreditsNote.bind(this.storeService), page, this.searchTerm, this.selectWhShop, (data: any) => {
       this.pagination = data;
       this.all_credits_note = data?.listItems;
-      // this.collect_day = data?.amount_collect_day
-      // this.collect_day_tva = data?.amount_collect_day_tva
-      // this.collect_day_startDate = data?.amount_collect_startDate
-      // this.collect_day_rangeDate = data?.amount_collect_rangeDate
+      this.allTotal = this.pagination?.amount_collect_day
       this.pages = Array.from({ length: data.nber_pages }, (_, i) => i + 1);
       this.isLoading = false;
     },
@@ -159,7 +157,6 @@ export class CreditInvoiceComponent implements OnInit {
     this.storeService.getCreditNote(idCredit).subscribe({
       next: (res: { result: CreditNote, serial_deposit: any }) => {
         this.selectedCredit = res?.result
-        console.log(this.selectedCredit)
         this.allDepositsCreditNote = res?.serial_deposit
       }
     })
@@ -213,7 +210,6 @@ export class CreditInvoiceComponent implements OnInit {
       this.reasonReturn = ''
       this.storeService.getOrderDetail(invoice?.id).subscribe({
         next: (res: any) => {
-          console.log(res)
           this.all_items = res?.result?.listItems
           this.isLoadingProd = false
           this.amtCollectToClient = res?.total_retrieve || 0
@@ -243,11 +239,13 @@ export class CreditInvoiceComponent implements OnInit {
         // this.all_credits_note = this.all_credits_note.filter(item => item.id !== this.idCreditNote);
         // this.all_credits_note?.unshift(res?.result)
         this.fetchCreditsNote(1)
-        this.allDepositsCreditNote?.unshift(res?.deposit);
+        this.selectedCredit = res?.result
+        // this.allDepositsCreditNote?.unshift(res?.deposit);
         this.isSaving = false
         this.errors = []
         this.amounts = {}
         this.nextDate = ''
+        toastShow("success", "✅ Montant enregistré.");
       },
       error: (err) => {
         this.errors = err.error.errors || [];

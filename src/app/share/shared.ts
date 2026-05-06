@@ -98,7 +98,6 @@ export function swalWithApprobation(icon: any, title: string, message: string, c
 
 
 const messages: Record<number, [string, string, string]> = {
-  // 0: ['error', 'Erreur réseau', 'Vérifiez votre connexion internet'],
   404: ['error', 'Introuvable', 'Ressource non trouvée'],
   409: ['warning', 'Conflit', 'Cette ressource existe déjà'],
   413: ['error', 'Fichier trop volumineux', 'Réduisez la taille du fichier'],
@@ -120,6 +119,7 @@ export function showError(
   // Cas particulier 400
   if (error && status == 400) {
     table = allErrors;
+    return;
   }
 
   // Cas 403 spécifique (droits)
@@ -164,6 +164,9 @@ export function setPagination(
         nber_pages: data?.num_pages,
         editSoldPrice: data?.editSoldPrice,
         devise: data?.devise,
+        total_commission: data?.total_commission,
+        total_commission_paid: data?.total_commission_paid,
+        totals: data?.totals,
       });
     },
     error: (err: any) => {

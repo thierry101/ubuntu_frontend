@@ -238,6 +238,26 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+
+  ConfirmPayment() {
+    this.isPayment = true
+    const data = {
+      checker: 'paymentWhatsappMsg',
+      typePayment: 'manuel',
+      nbreWhatasapp: this.quantity,
+    }
+    this.adminService.postMobilePayment(data).subscribe({
+      next: (res: any) => {
+        console.log("the result is ", res)
+        this.isPayment = false
+      },
+      error: (err) => {
+        this.isPayment = false
+        this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error);
+      }
+    })
+  }
+
   onLogoChange(event: any) {
     const reader = new FileReader();
     this.isLoading = true;

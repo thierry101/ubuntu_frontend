@@ -414,6 +414,20 @@
 
                             </div>
 
+                            <div class="col-6 col-md-3" *ngFor="let method of [
+                                {key: 'mobile', img: 'manuel.jpg', label: 'Mobile. Money'}
+                            ]">
+
+                                <input #paymentRadio type="radio" class="btn-check" name="payment"
+                                    [id]="'pay-' + method.key" (change)="onPaymentChange(method.key)">
+
+                                <label class="payment-card" [for]="'pay-' + method.key">
+                                    <img [src]="'assets/images/payments/' + method.img" />
+                                    <span>{{ method.label }}</span>
+                                </label>
+
+                            </div>
+
                         </div>
 
                         <small class="text-danger d-block mt-2">
@@ -469,6 +483,9 @@
                 </button>
                 <app-submit-spinner [loading]="isPayment" label="Valider l'achat" icon="ti ti-send me-1"
                     cssClass="btn btn-primary btn-sm mt-2" (clicked)="confirmPayement()">
+                </app-submit-spinner>
+                <app-submit-spinner [loading]="isPayment" label="mobile" icon="ti ti-send me-1"
+                    cssClass="btn btn-primary btn-sm mt-2" (clicked)="ConfirmPayment()">
                 </app-submit-spinner>
 
                 <!-- <button class="btn btn-primary btn-sm px-4" [disabled]="!quantity || !total"

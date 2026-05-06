@@ -35,7 +35,7 @@ import { BluetoothPrinterComponent } from "../../reusableComponents/bluetooth-pr
     SpinnersComponent,
     SubmitSpinnerComponent,
     BluetoothPrinterComponent
-],
+  ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'
 })
@@ -86,7 +86,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   };
   previousChoice: string | null = null;
   private destroy$ = new Subject<void>();
-  
+
   isMobileApp: boolean = false;
   allCoupons: any[] = [];
 
@@ -221,7 +221,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.item_of_deposit = res?.deposit;
         this.choiceType = 'sell';
         this.isValidCommand = false;
-        toastShow("success", "✅ Commande validée");
         this.cartProds = [];
         this.tableProdsTrocks = [];
         this.idClient = 0;
@@ -238,6 +237,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.paymentStatus = true;
         this.nextDate = '';
         this.amountAdvanced = 0;
+        this.allCoupons = []
+        toastShow("success", "✅ Commande validée");
       },
       error: (err) => {
         this.errors = err.error?.errors || [];

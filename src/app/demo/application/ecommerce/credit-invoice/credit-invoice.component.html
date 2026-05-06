@@ -1,698 +1,665 @@
 <div class="">
-    <div class="card border-0 shadow-sm">
-        <!-- HEADER -->
-        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between py-3">
-            <h5 class="mb-0 fw-semibold">
-                🧾 Factures avoir
-            </h5>
+  <div class="card border-0 shadow-sm">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between py-3">
+      <h5 class="mb-0 fw-semibold"> 🧾 Factures avoir </h5>
 
-            <button type="button" (click)="resetFormCreditNote()" class="btn btn-light btn-sm fw-semibold"
-                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                ➕ Facture avoir
-            </button>
-        </div>
-
-
-
-        <!-- BODY -->
-        <div class="card">
-            <div class="card-body">
-                <!-- 🔍 Filters -->
-                <div class="row g-3 align-items-end mb-4">
-                    <!-- Recherche facture -->
-                    <div class="col-12 col-md-3">
-                        <label class="form-label fw-semibold small text-muted">🔍 Recherchez une facture</label>
-                        <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)">
-                        </app-search-list>
-                    </div>
-
-                    <!-- Boutique / Entrepôt -->
-                    <div class="col-12 col-md-3" *ngIf="role === 'Admin' || role === 'Daf'">
-                        <label class="form-label fw-semibold small text-muted">🏬 Recherchez une boutique /
-                            entrepôt</label>
-                        <select [(ngModel)]="selectWhShop" class="form-select form-select-sm">
-                            <option value="0">Choisir ...</option>
-                            <option *ngFor="let item of warehouses" [value]="item?.id">{{ item?.nameWh }}</option>
-                        </select>
-                    </div>
-
-                    <!-- Dates -->
-                    <div class="col-6 col-md-2">
-                        <label class="form-label fw-semibold small text-muted">📅 Date de début</label>
-                        <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
-                    </div>
-
-                    <div class="col-6 col-md-2">
-                        <label class="form-label fw-semibold small text-muted">📅 Date de fin</label>
-                        <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
-                    </div>
-
-                    <!-- Bouton Valider -->
-                    <div class="col-6 col-md-2">
-                        <button (click)="filterStock()" class="btn btn-sm btn-success w-100">
-                            ✅ Valider
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 💰 Résumé -->
-                <!-- <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-4">
-                        <div class="card bg-success text-white shadow-sm rounded-3">
-                            <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="small mb-1">💰 Montant total</h6>
-                                    <h5 class="fw-bold mb-0">{{ amt_all_deposits | number }} {{ devise }}</h5>
-                                </div>
-                                <i class="ti ti-coin-euro fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <div class="card bg-warning text-white shadow-sm rounded-3">
-                            <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="small mb-1">📥 Montant collecté</h6>
-                                    <h5 class="fw-bold mb-0">{{ amt_deposit_colllected | number }} {{ devise }}</h5>
-                                </div>
-                                <i class="ti ti-coin-euro fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <div class="card bg-danger text-white shadow-sm rounded-3">
-                            <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="small mb-1">📉 Montant restant</h6>
-                                    <h5 class="fw-bold mb-0">{{ rest_amt_deposit | number }} {{ devise }}</h5>
-                                </div>
-                                <i class="ti ti-coin-euro fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- Loading Spinner -->
-                <app-spinners *ngIf="isLoading" message="⏳ Chargement des historiques ..."></app-spinners>·
-                <div *ngIf="!isLoading" class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>N° Avoir</th>
-                                <th>Client</th>
-                                <th>Entrepôt</th>
-                                <th>Total à remboursé</th>
-                                <th>Reste à remboursé</th>
-                                <th>Remboursement</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr *ngFor="let credit of all_credits_note; let i = index">
-                                <td>{{ i + 1 }}</td>
-                                <td>{{ credit?.credit_number }}</td>
-                                <td>{{ credit?.client?.name }}</td>
-                                <td>{{ credit?.warehouse?.nameWh }}</td>
-                                <td>{{ credit?.amt_return_to_client || 0 | number:'1.0-0'}} {{devise}}</td>
-                                <td>{{ credit?.remaining_amount | number:'1.0-0'}} {{devise}}</td>
-                                <td>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" role="switch"
-                                            id="switchCheckChecked" [checked]="credit?.is_total_refund" disabled>
-                                        <label *ngIf="credit?.is_total_refund" class="form-check-label"
-                                            for="switchCheckChecked">Total</label>
-                                        <label *ngIf="!credit?.is_total_refund" class="form-check-label"
-                                            for="switchCheckChecked">Partiel</label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#creditModal" title="Voir" (click)="selectCredit(credit?.id)">
-                                        <i class="ti ti-eye"></i>
-                                    </button>
-
-                                    <button class="btn btn-info btn-sm mx-1" (click)="printCreditInvoice(credit?.id)"
-                                        title="Imprimer" data-bs-toggle="modal"
-                                        data-bs-target="#modalCreditInvoice0023">
-                                        <i class="ti ti-printer"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- LISTE MOBILE -->
-                <div *ngIf="!isLoading" class="mobile-credit-list d-block d-md-none">
-
-                    <div *ngIf="!all_credits_note?.length"
-                        style="text-align:center;padding:30px;color:#7a9ab8;font-size:13px">
-                        Aucune facture avoir trouvée
-                    </div>
-
-                    <div *ngFor="let credit of all_credits_note; let i = index" class="credit-card">
-
-                        <div class="credit-top">
-                            <div>
-                                <div class="credit-nber">{{ credit?.credit_number }}</div>
-                                <div class="credit-client">{{ credit?.client?.name }}</div>
-                            </div>
-                            <span [ngClass]="credit?.is_total_refund ? 'badge-total' : 'badge-partial'">
-                                {{ credit?.is_total_refund ? '✓ Total' : '⏳ Partiel' }}
-                            </span>
-                        </div>
-
-                        <span class="credit-meta-pill" *ngIf="credit?.warehouse?.nameWh">
-                            🏪 {{ credit?.warehouse?.nameWh }}
-                        </span>
-
-                        <div class="credit-amounts">
-                            <div class="amt-block">
-                                <span class="amt-lbl">À rembourser</span>
-                                <span class="amt-val total">
-                                    {{ credit?.amt_return_to_client || 0 | number:'1.0-0' }} {{ devise }}
-                                </span>
-                            </div>
-                            <div class="amt-block">
-                                <span class="amt-lbl">Reste</span>
-                                <span class="amt-val rest">
-                                    {{ credit?.remaining_amount | number:'1.0-0' }} {{ devise }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="credit-actions">
-                            <button class="btn-act btn-view" data-bs-toggle="modal" data-bs-target="#creditModal"
-                                (click)="selectCredit(credit?.id)">
-                                👁 Voir
-                            </button>
-                            <button class="btn-act btn-print" (click)="printCreditInvoice(credit?.id)"
-                                data-bs-toggle="modal" data-bs-target="#modalCreditInvoice0023">
-                                🖨️ Imprimer
-                            </button>
-                        </div>
-
-                    </div>
-
-                </div>
-                <!-- 📄 Pagination -->
-                <app-set-pagination [currentPage]="pagination?.currentPage" [totalPages]="pagination?.nber_pages"
-                    [previousPage]="pagination?.previousPage" [nextPage]="pagination?.nextPage"
-                    (pageChange)="onPageChange($event)">
-                </app-set-pagination>
-            </div>
-        </div>
-
+      <button
+        type="button"
+        (click)="resetFormCreditNote()"
+        class="btn btn-light btn-sm fw-semibold"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+      >
+        ➕ Facture avoir
+      </button>
     </div>
-</div>
 
+    <!-- BODY -->
+    <div class="card">
+      <div class="card-body">
+        <!-- 🔍 Filters -->
+        <div class="row g-3 align-items-end mb-4">
+          <!-- Recherche facture -->
+          <div class="col-12 col-md-3">
+            <label class="form-label fw-semibold small text-muted">🔍 Recherchez une facture</label>
+            <app-search-list [searchTerm]="searchTerm" (searchChange)="onSearchChangeStock($event)"> </app-search-list>
+          </div>
+
+          <!-- Boutique / Entrepôt -->
+          <div class="col-12 col-md-3" *ngIf="role === 'Admin' || role === 'Daf'">
+            <label class="form-label fw-semibold small text-muted">🏬 Recherchez une boutique / entrepôt</label>
+            <select [(ngModel)]="selectWhShop" class="form-select form-select-sm">
+              <option value="0">Choisir ...</option>
+              <option *ngFor="let item of warehouses" [value]="item?.id">{{ item?.nameWh }}</option>
+            </select>
+          </div>
+
+          <!-- Dates -->
+          <div class="col-6 col-md-2">
+            <label class="form-label fw-semibold small text-muted">📅 Date de début</label>
+            <input [(ngModel)]="startDate" type="date" class="form-control form-control-sm" />
+          </div>
+
+          <div class="col-6 col-md-2">
+            <label class="form-label fw-semibold small text-muted">📅 Date de fin</label>
+            <input [(ngModel)]="endDate" type="date" class="form-control form-control-sm" />
+          </div>
+
+          <!-- Bouton Valider -->
+          <div class="col-6 col-md-2">
+            <button (click)="filterStock()" class="btn btn-sm btn-success w-100"> ✅ Valider </button>
+          </div>
+        </div>
+
+        <!-- 💰 Résumé -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="card bg-success text-white shadow-sm rounded-3">
+              <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="small mb-1">💰 Montant total des retour</h6>
+                  <h5 class="fw-bold mb-0">{{ allTotal?.total_amt_return | number }} {{ devise }}</h5>
+                </div>
+                <i class="ti ti-coin-euro fs-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="card bg-warning text-white shadow-sm rounded-3">
+              <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="small mb-1">📥 Déjà remboursé</h6>
+                  <h5 class="fw-bold mb-0">{{ allTotal?.total_return | number }} {{ devise }}</h5>
+                </div>
+                <i class="ti ti-coin-euro fs-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="card bg-danger text-white shadow-sm rounded-3">
+              <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="small mb-1">📉 Reste remboursé</h6>
+                  <h5 class="fw-bold mb-0">{{ allTotal?.total_rest | number }} {{ devise }}</h5>
+                </div>
+                <i class="ti ti-coin-euro fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <app-spinners *ngIf="isLoading" message="⏳ Chargement des historiques ..."></app-spinners>·
+        <div *ngIf="!isLoading" class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>N° Avoir</th>
+                <th>Client</th>
+                <th>Entrepôt</th>
+                <th>Total à remboursé</th>
+                <th>Reste à remboursé</th>
+                <th>Remboursement</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let credit of all_credits_note; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ credit?.credit_number }}</td>
+                <td>{{ credit?.client?.name }}</td>
+                <td>{{ credit?.warehouse?.nameWh }}</td>
+                <td>{{ credit?.amt_return_to_client || 0 | number: '1.0-0' }} {{ devise }}</td>
+                <td>{{ credit?.rest_to_return | number: '1.0-0' }} {{ devise }}</td>
+                <td>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="switchCheckChecked"
+                      [checked]="credit?.is_total_refund"
+                      disabled
+                    />
+                    <label *ngIf="credit?.is_total_refund" class="form-check-label" for="switchCheckChecked">Total</label>
+                    <label *ngIf="!credit?.is_total_refund" class="form-check-label" for="switchCheckChecked">Partiel</label>
+                  </div>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#creditModal"
+                    title="Voir"
+                    (click)="selectCredit(credit?.id)"
+                  >
+                    <i class="ti ti-eye"></i>
+                  </button>
+
+                  <button
+                    class="btn btn-info btn-sm mx-1"
+                    (click)="printCreditInvoice(credit?.id)"
+                    title="Imprimer"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCreditInvoice0023"
+                  >
+                    <i class="ti ti-printer"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- LISTE MOBILE -->
+        <div *ngIf="!isLoading" class="mobile-credit-list d-block d-md-none">
+          <div *ngIf="!all_credits_note?.length" style="text-align: center; padding: 30px; color: #7a9ab8; font-size: 13px">
+            Aucune facture avoir trouvée
+          </div>
+
+          <div *ngFor="let credit of all_credits_note; let i = index" class="credit-card">
+            <div class="credit-top">
+              <div>
+                <div class="credit-nber">{{ credit?.credit_number }}</div>
+                <div class="credit-client">{{ credit?.client?.name }}</div>
+              </div>
+              <span [ngClass]="credit?.is_total_refund ? 'badge-total' : 'badge-partial'">
+                {{ credit?.is_total_refund ? '✓ Total' : '⏳ Partiel' }}
+              </span>
+            </div>
+
+            <span class="credit-meta-pill" *ngIf="credit?.warehouse?.nameWh"> 🏪 {{ credit?.warehouse?.nameWh }} </span>
+
+            <div class="credit-amounts">
+              <div class="amt-block">
+                <span class="amt-lbl">À rembourser</span>
+                <span class="amt-val total"> {{ credit?.amt_return_to_client || 0 | number: '1.0-0' }} {{ devise }} </span>
+              </div>
+              <div class="amt-block">
+                <span class="amt-lbl">Reste</span>
+                <span class="amt-val rest"> {{ credit?.rest_to_return | number: '1.0-0' }} {{ devise }} </span>
+              </div>
+            </div>
+
+            <div class="credit-actions">
+              <button class="btn-act btn-view" data-bs-toggle="modal" data-bs-target="#creditModal" (click)="selectCredit(credit?.id)">
+                👁 Voir
+              </button>
+              <button
+                class="btn-act btn-print"
+                (click)="printCreditInvoice(credit?.id)"
+                data-bs-toggle="modal"
+                data-bs-target="#modalCreditInvoice0023"
+              >
+                🖨️ Imprimer
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- 📄 Pagination -->
+        <app-set-pagination
+          [currentPage]="pagination?.currentPage"
+          [totalPages]="pagination?.nber_pages"
+          [previousPage]="pagination?.previousPage"
+          [nextPage]="pagination?.nextPage"
+          (pageChange)="onPageChange($event)"
+        >
+        </app-set-pagination>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal to print credit note -->
 <div class="modal fade" id="creditModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" *ngIf="selectedCredit">
-
-            <div
-                class="modal-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-
-                <!-- TITRE ET FACTURE ORIGINALE -->
-                <div class="mb-2 mb-md-0">
-                    <h5 class="modal-title mb-1">
-                        Facture Avoir – {{ selectedCredit?.credit_number }}
-                    </h5>
-                    <small class="text-muted">
-                        Facture originale : {{ selectedCredit?.original_invoice }}
-                    </small>
-                </div>
-
-                <!-- BADGE + BOUTON FERMER -->
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge"
-                        [ngClass]="selectedCredit?.is_total_refund ? 'bg-success' : 'bg-warning text-dark'">
-                        {{ selectedCredit?.is_total_refund ? 'Remboursement total' : 'Remboursement partiel' }}
-                    </span>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-            </div>
-
-
-
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="card mb-3 shadow-sm">
-                            <!-- BODY -->
-                            <div class="card-body">
-
-                                <!-- Client / Entrepôt -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <p><strong>Client :</strong> {{ selectedCredit?.client.name }}</p>
-                                    </div>
-                                    <div class="col-md-6 text-end">
-                                        <p><strong>Magasin :</strong> {{ selectedCredit?.warehouse.nameWh }}</p>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <!-- Produits remboursés -->
-                                <h6>Articles remboursés</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Article</th>
-                                                <th>Quantité</th>
-                                                <th>P.U</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr *ngFor="let item of selectedCredit?.refunded_items">
-                                                <td class="text-wrap">{{ item?.product }}</td>
-                                                <td>{{ item?.quantity | number:'1.0-0' }}</td>
-                                                <td>{{ item?.sold_price | number:'1.0-0' }} {{devise}} </td>
-                                                <td>{{ item?.total_price | number:'1.0-0' }} {{devise}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><b>HT : </b>
-                                                    {{ selectedCredit?.subtotal | number:'1.0-0' }} {{devise}}</td>
-                                                <td colspan="3"><b>TVA : </b>
-                                                    {{ selectedCredit?.total_tva | number:'1.0-0' }} {{devise}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3">
-                                                    <b>TTC : </b>
-                                                </td>
-                                                <td colspan="3">
-                                                    {{selectedCredit?.total_refund | number:'1.0-0'}} {{devise}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <hr>
-
-                                <!-- Totaux -->
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <p><strong>Motif :</strong> {{ selectedCredit?.reason }}</p>
-                                    </div>
-                                </div>
-
-                                <div *ngIf="selectedCredit?.amt_return_to_client > 0">
-                                    <div class="d-flex flex-column flex-md-row gap-2 mt-3">
-                                        <!-- Montant à rembourser -->
-                                        <div class="badge bg-info text-dark d-flex flex-column p-2 fs-6">
-                                            <span class="fw-semibold">À rembourser</span>
-                                            <span>{{ selectedCredit?.amt_return_to_client | number:'1.0-0' }} {{ devise
-                                                }}</span>
-                                        </div>
-
-                                        <!-- Montant déjà remboursé -->
-                                        <div class="badge bg-success d-flex flex-column p-2 fs-6">
-                                            <span class="fw-semibold">Déjà remboursé</span>
-                                            <span>{{ selectedCredit?.total_advanced | number:'1.0-0' }} {{ devise
-                                                }}</span>
-                                        </div>
-
-                                        <!-- Reste à rembourser -->
-                                        <div class="badge bg-warning text-dark d-flex flex-column p-2 fs-6">
-                                            <span class="fw-semibold">Reste</span>
-                                            <span>{{ selectedCredit?.remaining_amount | number:'1.0-0' }} {{ devise
-                                                }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-5">
-                        <h6 class="fw-semibold mb-3">
-                            Échelonnement de remboursement
-                        </h6>
-
-                        <div *ngIf="allDepositsCreditNote?.length; else noSchedule">
-
-                            <div *ngFor="let item of allDepositsCreditNote"
-                                class="border rounded-3 p-3 mb-3 bg-light shadow-sm">
-
-                                <!-- HEADER -->
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <strong class="d-block">
-                                            {{ item?.user.name }} {{ item?.user.surname }}
-                                        </strong>
-                                        <small class="text-muted">
-                                            {{ item?.user.phone }}
-                                        </small>
-                                    </div>
-
-                                    <span class="badge bg-primary">
-                                        Avance client
-                                    </span>
-                                </div>
-
-                                <hr class="my-2">
-
-                                <!-- INFOS -->
-                                <div class="small">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span class="text-muted">Montant payé</span>
-                                        <strong>
-                                            {{ item?.amountPaid | number:'1.0-0' }} {{ devise }}
-                                        </strong>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span class="text-muted">Date</span>
-                                        <span>
-                                            {{ item?.created_at | date:'dd/MM/yyyy HH:mm' }}
-                                        </span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between" *ngIf="item?.nextPaymentDate">
-                                        <span class="text-muted">Prochaine échéance</span>
-                                        <span class="badge bg-warning text-dark">
-                                            {{ item?.nextPaymentDate | date:'dd/MM/yyyy' }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <hr class="my-2">
-
-                                <!-- ACTION -->
-                                <div class="d-flex justify-content-end">
-                                    <button class="btn btn-outline-secondary btn-sm" (click)="printAdvance(item)">
-                                        🖨 Imprimer (80mm)
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label for="">Méthode de remboursement</label>
-                                <ng-container *ngFor="let payment of defaultTypePayments">
-
-                                    <div class="col-4" *ngIf="fetchedTypePayments?.[payment?.value]">
-                                        <label [for]="'input-' + payment?.value" class="form-label small text-muted">
-                                            {{ payment?.name}}</label>
-                                        <input type="number" min="0" class="form-control form-control-sm"
-                                            [id]="'input-' + payment?.value" [name]="payment?.value"
-                                            [(ngModel)]="amounts[payment.value]" />
-                                    </div>
-                                </ng-container>
-                                <span class="text-danger">{{errors?.amount}}</span>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <label class="form-label small fw-semibold">📅 Date prochain paiement</label>
-                                <input [min]="minDate" type="date" [(ngModel)]="nextDate"
-                                    class="form-control form-control-sm" />
-                                <small class="text-danger">{{ errors?.nextDate }}</small>
-                            </div>
-
-                            <app-submit-spinner [loading]="isSaving" label="Enregistrer" icon="ti ti-check me-1"
-                                cssClass="btn btn-primary btn-sm mt-2" (clicked)="saveNewpayment()">
-                            </app-submit-spinner>
-                        </div>
-
-                        <!-- EMPTY STATE -->
-                        <ng-template #noSchedule>
-                            <div class="text-muted small fst-italic">
-                                Aucun échelonnement enregistré
-                            </div>
-                        </ng-template>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-sm" id="closeModalCredDeposit" data-bs-dismiss="modal">
-                    Fermer
-                </button>
-                <button class="btn btn-success btn-sm">
-                    Imprimer
-                </button>
-            </div>
-
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedCredit">
+      <div class="modal-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+        <!-- TITRE ET FACTURE ORIGINALE -->
+        <div class="mb-2 mb-md-0">
+          <h5 class="modal-title mb-1"> Facture Avoir – {{ selectedCredit?.credit_number }} </h5>
+          <small class="text-muted"> Facture originale : {{ selectedCredit?.original_invoice }} </small>
         </div>
+
+        <!-- BADGE + BOUTON FERMER -->
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge" [ngClass]="selectedCredit?.is_total_refund ? 'bg-success' : 'bg-warning text-dark'">
+            {{ selectedCredit?.is_total_refund ? 'Remboursement total' : 'Remboursement partiel' }}
+          </span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-7">
+            <div class="card mb-3 shadow-sm">
+              <!-- BODY -->
+              <div class="card-body">
+                <!-- Client / Entrepôt -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <p><strong>Client :</strong> {{ selectedCredit?.client.name }}</p>
+                  </div>
+                  <div class="col-md-6 text-end">
+                    <p><strong>Magasin :</strong> {{ selectedCredit?.warehouse.nameWh }}</p>
+                  </div>
+                </div>
+
+                <hr />
+
+                <!-- Produits remboursés -->
+                <h6>Articles remboursés</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Article</th>
+                        <th>Quantité</th>
+                        <th>P.U</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of selectedCredit?.refunded_items">
+                        <td class="text-wrap">{{ item?.product }}</td>
+                        <td>{{ item?.quantity | number: '1.0-0' }}</td>
+                        <td>{{ item?.sold_price | number: '1.0-0' }} {{ devise }} </td>
+                        <td>{{ item?.total_price | number: '1.0-0' }} {{ devise }}</td>
+                      </tr>
+                      <tr>
+                        <td colspan="3"><b>HT : </b> {{ selectedCredit?.subtotal | number: '1.0-0' }} {{ devise }}</td>
+                        <td colspan="3"><b>TVA : </b> {{ selectedCredit?.total_tva | number: '1.0-0' }} {{ devise }}</td>
+                      </tr>
+                      <tr>
+                        <td colspan="3">
+                          <b>TTC : </b>
+                        </td>
+                        <td colspan="3"> {{ selectedCredit?.total_refund | number: '1.0-0' }} {{ devise }} </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <hr />
+
+                <!-- Totaux -->
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <p><strong>Motif :</strong> {{ selectedCredit?.reason }}</p>
+                  </div>
+                </div>
+
+                <div *ngIf="selectedCredit?.amt_return_to_client > 0">
+                  <div class="d-flex flex-column flex-md-row gap-2 mt-3">
+                    <!-- Montant à rembourser -->
+                    <div class="badge bg-info text-dark d-flex flex-column p-2 fs-6">
+                      <span class="fw-semibold">À rembourser</span>
+                      <span>{{ selectedCredit?.amt_return_to_client | number: '1.0-0' }} {{ devise }}</span>
+                    </div>
+
+                    <!-- Montant déjà remboursé -->
+                    <div class="badge bg-success d-flex flex-column p-2 fs-6">
+                      <span class="fw-semibold">Déjà remboursé</span>
+                      <span>{{ selectedCredit?.total_refunded | number: '1.0-0' }} {{ devise }}</span>
+                    </div>
+
+                    <!-- Reste à rembourser -->
+                    <div class="badge bg-warning text-dark d-flex flex-column p-2 fs-6">
+                      <span class="fw-semibold">Reste</span>
+                      <span>{{ selectedCredit?.rest_to_return | number: '1.0-0' }} {{ devise }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <h6 class="fw-semibold mb-3"> Échelonnement de remboursement </h6>
+
+            <div *ngIf="allDepositsCreditNote?.length; else noSchedule">
+              <div *ngFor="let item of allDepositsCreditNote" class="border rounded-3 p-3 mb-3 bg-light shadow-sm">
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <strong class="d-block"> {{ item?.user.name }} {{ item?.user.surname }} </strong>
+                    <small class="text-muted">
+                      {{ item?.user.phone }}
+                    </small>
+                  </div>
+
+                  <span class="badge bg-primary"> Avance client </span>
+                </div>
+
+                <hr class="my-2" />
+
+                <!-- INFOS -->
+                <div class="small">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Montant payé</span>
+                    <strong> {{ item?.amountPaid | number: '1.0-0' }} {{ devise }} </strong>
+                  </div>
+
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Date</span>
+                    <span>
+                      {{ item?.created_at | date: 'dd/MM/yyyy HH:mm' }}
+                    </span>
+                  </div>
+
+                  <div class="d-flex justify-content-between" *ngIf="item?.nextPaymentDate">
+                    <span class="text-muted">Prochaine échéance</span>
+                    <span class="badge bg-warning text-dark">
+                      {{ item?.nextPaymentDate | date: 'dd/MM/yyyy' }}
+                    </span>
+                  </div>
+                </div>
+
+                <hr class="my-2" />
+
+                <!-- ACTION -->
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-outline-secondary btn-sm" (click)="printAdvance(item)"> 🖨 Imprimer (80mm) </button>
+                </div>
+              </div>
+
+              <div class="row" *ngIf="selectedCredit?.rest_to_return > 0">
+                <label for="">Méthode de remboursement</label>
+                <ng-container *ngFor="let payment of defaultTypePayments">
+                  <div class="col-4" *ngIf="fetchedTypePayments?.[payment?.value]">
+                    <label [for]="'input-' + payment?.value" class="form-label small text-muted"> {{ payment?.name }}</label>
+                    <input
+                      type="number"
+                      min="0"
+                      class="form-control form-control-sm"
+                      [id]="'input-' + payment?.value"
+                      [name]="payment?.value"
+                      [(ngModel)]="amounts[payment.value]"
+                    />
+                  </div>
+                </ng-container>
+                <span class="text-danger">{{ errors?.amount }}</span>
+              </div>
+              <div class="col-md-6 mb-2" *ngIf="selectedCredit?.rest_to_return > 0">
+                <label class="form-label small fw-semibold">📅 Date prochain paiement</label>
+                <input [min]="minDate" type="date" [(ngModel)]="nextDate" class="form-control form-control-sm" />
+                <small class="text-danger">{{ errors?.nextDate }}</small>
+              </div>
+
+              <app-submit-spinner
+                *ngIf="selectedCredit?.rest_to_return > 0"
+                [loading]="isSaving"
+                label="Enregistrer"
+                icon="ti ti-check me-1"
+                cssClass="btn btn-primary btn-sm mt-2"
+                (clicked)="saveNewpayment()"
+              >
+              </app-submit-spinner>
+            </div>
+
+            <!-- EMPTY STATE -->
+            <ng-template #noSchedule>
+              <div class="text-muted small fst-italic"> Aucun échelonnement enregistré </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="closeModalCredDeposit" data-bs-dismiss="modal"> Fermer </button>
+        <button class="btn btn-success btn-sm"> Imprimer </button>
+      </div>
     </div>
+  </div>
 </div>
-
-
 
 <!-- Modal to create credit note -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" (click)="clickOutside()">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" (click)="clickOutside()">
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title">Facture avoir</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
 
-            <!-- HEADER -->
-            <div class="modal-header">
-                <h5 class="modal-title">Facture avoir</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <!-- BODY -->
+      <div class="modal-body">
+        <span class="text-danger">{{ errors?.permission }}</span>
+
+        <!-- INFOS -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Facture</label>
+            <app-selected
+              [placeholder]="'Choisir la facture...'"
+              [(searchTerm)]="searchTermInv"
+              [results]="all_invocices"
+              [error]="errors?.invoice"
+              [displayField]="'nberInvoice'"
+              [showResults]="!!all_invocices?.length"
+              (search)="searchProduct($event)"
+              (select)="selectOriginalInvoice($event)"
+            >
+            </app-selected>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Client</label>
+            <input class="form-control form-control-sm" readonly [(ngModel)]="nameClient" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Montant facture</label>
+            <input class="form-control form-control-sm" readonly value="{{ amtInvoice | number: '1.0-0' }} {{ devise }}" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Montant payé par le client</label>
+            <input class="form-control form-control-sm" readonly value="{{ amtCollectToClient | number: '1.0-0' }} {{ devise }}" />
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <!-- Loading Spinner -->
+        <app-spinners *ngIf="isLoadingProd" message="⏳ Chargement des articles ..."></app-spinners>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Article</th>
+                <th style="width: 120px">Quantité</th>
+                <th>P.U</th>
+                <th>Total</th>
+                <th style="width: 80px">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of all_items" [class.table-active]="item?.selected">
+                <td class="text-wrap">
+                  {{ item?.product?.product }} ({{ item?.product?.indiceStock }})
+                  <span class="badge bg-secondary ms-2"> Facturé: {{ item?.quantity }} </span>
+                </td>
+
+                <td>
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    min="1"
+                    [max]="item?.quantity"
+                    [(ngModel)]="item.selectedQuantity"
+                    [disabled]="!item?.selected"
+                    (ngModelChange)="onQuantityChange(item)"
+                  />
+                </td>
+
+                <td>{{ item?.sold_price | number: '1.0-0' }} {{ devise }}</td>
+
+                <td>
+                  <span *ngIf="item?.selected; else dash">
+                    {{ item?.selectedQuantity * item?.sold_price | number: '1.0-0' }}
+                    {{ devise }}
+                  </span>
+                  <ng-template #dash>—</ng-template>
+                </td>
+
+                <td>
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="item.selected" (change)="onItemToggle(item)" />
+                </td>
+              </tr>
+
+              <tr *ngIf="!all_items?.length">
+                <td colspan="5" class="text-center text-muted"> Aucun article </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-container *ngIf="errors?.quantity_refund">
+          <span *ngFor="let item of errors?.quantity_refund" class="text-danger">{{ item }}</span>
+        </ng-container>
+        <span class="text-danger">{{ errors?.items }}</span>
+        <div class="row">
+          <!-- SWITCH -->
+          <div class="d-flex align-items-center gap-2 my-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="statusCreditNote" id="switchCredit" />
             </div>
 
-            <!-- BODY -->
-            <div class="modal-body">
-
-                <!-- INFOS -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Facture</label>
-                        <app-selected [placeholder]="'Choisir la facture...'" [(searchTerm)]="searchTermInv"
-                            [results]="all_invocices" [error]="errors?.invoice" [displayField]="'nberInvoice'"
-                            [showResults]="!!all_invocices?.length" (search)="searchProduct($event)"
-                            (select)="selectOriginalInvoice($event)">
-                        </app-selected>
-
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Client</label>
-                        <input class="form-control form-control-sm" readonly [(ngModel)]="nameClient">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Montant facture</label>
-                        <input class="form-control form-control-sm" readonly
-                            value="{{amtInvoice | number:'1.0-0'}} {{devise}}">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Montant payé par le client</label>
-                        <input class="form-control form-control-sm" readonly
-                            value="{{amtCollectToClient | number:'1.0-0'}} {{devise}}">
-                    </div>
-                </div>
-
-                <!-- TABLE -->
-                <!-- Loading Spinner -->
-                <app-spinners *ngIf="isLoadingProd" message="⏳ Chargement des articles ..."></app-spinners>
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Article</th>
-                                <th style="width: 120px">Quantité</th>
-                                <th>P.U</th>
-                                <th>Total</th>
-                                <th style="width: 80px">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            <tr *ngFor="let item of all_items" [class.table-active]="item?.selected">
-
-                                <td class="text-wrap">
-                                    {{ item?.product?.product }} ({{ item?.product?.indiceStock }})
-                                    <span class="badge bg-secondary ms-2">
-                                        Facturé: {{ item?.quantity }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <input type="number" class="form-control form-control-sm" min="1"
-                                        [max]="item?.quantity" [(ngModel)]="item.selectedQuantity"
-                                        [disabled]="!item?.selected" (ngModelChange)="onQuantityChange(item)">
-                                </td>
-
-                                <td>{{ item?.sold_price | number:'1.0-0' }} {{ devise }}</td>
-
-                                <td>
-                                    <span *ngIf="item?.selected; else dash">
-                                        {{ item?.selectedQuantity * item?.sold_price | number:'1.0-0' }}
-                                        {{devise }}
-                                    </span>
-                                    <ng-template #dash>—</ng-template>
-                                </td>
-
-                                <td>
-                                    <input type="checkbox" class="form-check-input" [(ngModel)]="item.selected"
-                                        (change)="onItemToggle(item)">
-                                </td>
-                            </tr>
-
-                            <tr *ngIf="!all_items?.length">
-                                <td colspan="5" class="text-center text-muted">
-                                    Aucun article
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-                <ng-container *ngIf="errors?.quantity_refund">
-                    <span *ngFor="let item of errors?.quantity_refund" class="text-danger">{{ item }}</span>
-                </ng-container>
-                <span class="text-danger">{{errors?.items}}</span>
-                <div class="row">
-                    <!-- SWITCH -->
-                    <div class="d-flex align-items-center gap-2 my-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" [(ngModel)]="statusCreditNote"
-                                id="switchCredit">
-                        </div>
-
-                        <span class="badge" [ngClass]="statusCreditNote ? 'bg-success' : 'bg-warning text-dark'">
-                            {{ statusCreditNote ? 'Remboursement total' : 'Avoir Remboursement' }}
-                        </span>
-                        <div class="col-md-4" *ngIf="!statusCreditNote">
-                            <label for="inputDate0004" class="form-label">Date prochain remboursement</label>
-                            <input type="date" [(ngModel)]="nextPaymentDate" class="form-control form-control-sm"
-                                id="inputDate0004">
-                        </div>
-                    </div>
-
-                    <label for="">Méthode de remboursement</label>
-                    <ng-container *ngFor="let item of defaultTypePayments">
-                        <div class="col-2" *ngIf="fetchedTypePayments?.[item?.value]">
-                            <label [for]="'input-' + item?.value" class="form-label small text-muted">
-                                {{ item?.name}}</label>
-                            <input type="number" min="0" class="form-control form-control-sm"
-                                [id]="'input-' + item?.value" [name]="item?.value" [(ngModel)]="amounts[item.value]" />
-                        </div>
-                    </ng-container>
-                    <span class="text-danger">{{errors?.amount_note}}</span>
-                </div>
-                <div class="form-floating mt-2">
-                    <textarea [(ngModel)]="reasonReturn" class="form-control"
-                        placeholder="Ecrivez la raison pour l'avoir" id="floatingTextarea2"
-                        style="height: 100px"></textarea>
-                    <label for="floatingTextarea2">Raison</label>
-                </div>
-                <span class="text-danger">{{errors?.reason}}</span>
+            <span class="badge" [ngClass]="statusCreditNote ? 'bg-success' : 'bg-warning text-dark'">
+              {{ statusCreditNote ? 'Remboursement total' : 'Avoir Remboursement' }}
+            </span>
+            <div class="col-md-4" *ngIf="!statusCreditNote">
+              <label for="inputDate0004" class="form-label">Date prochain remboursement</label>
+              <input type="date" [(ngModel)]="nextPaymentDate" class="form-control form-control-sm" id="inputDate0004" />
             </div>
+          </div>
 
-            <!-- FOOTER -->
-            <div class="modal-footer sticky-bottom bg-white border-top d-flex justify-content-between">
+          <label for="">Méthode de remboursement</label>
+          <ng-container *ngFor="let item of defaultTypePayments">
+            <div class="col-2" *ngIf="fetchedTypePayments?.[item?.value]">
+              <label [for]="'input-' + item?.value" class="form-label small text-muted"> {{ item?.name }}</label>
+              <input
+                type="number"
+                min="0"
+                class="form-control form-control-sm"
+                [id]="'input-' + item?.value"
+                [name]="item?.value"
+                [(ngModel)]="amounts[item.value]"
+              />
+            </div>
+          </ng-container>
+          <span class="text-danger">{{ errors?.amount_note }}</span>
+        </div>
+        <div class="form-floating mt-2">
+          <textarea
+            [(ngModel)]="reasonReturn"
+            class="form-control"
+            placeholder="Ecrivez la raison pour l'avoir"
+            id="floatingTextarea2"
+            style="height: 100px"
+          ></textarea>
+          <label for="floatingTextarea2">Raison</label>
+        </div>
+        <span class="text-danger">{{ errors?.reason }}</span>
+      </div>
 
-                <div>
-                    <small class="text-muted">Total avoir</small><br>
-                    <span class="badge bg-success fs-6">
-                        {{ creditTotal | number:'1.0-0' }} {{ devise }}
-                    </span>
-                    <!-- <span class="badge bg-success fs-6">
+      <!-- FOOTER -->
+      <div class="modal-footer sticky-bottom bg-white border-top d-flex justify-content-between">
+        <div>
+          <small class="text-muted">Total avoir</small><br />
+          <span class="badge bg-success fs-6"> {{ creditTotal | number: '1.0-0' }} {{ devise }} </span>
+          <!-- <span class="badge bg-success fs-6">
                                     {{ amtInvoice | number:'1.0-0' }} {{ devise }}
                                 </span> -->
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal" id="canceledNote001">
-                        Annuler
-                    </button>
-                    <button class="btn btn-primary btn-sm" [disabled]="!invoiceSelected || errors?.invoice"
-                        (click)="validateCreditNote()">
-                        Valider l’avoir
-                    </button>
-                </div>
-            </div>
         </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal" id="canceledNote001"> Annuler </button>
+          <button class="btn btn-primary btn-sm" [disabled]="!invoiceSelected || errors?.invoice" (click)="validateCreditNote()">
+            Valider
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-
-
 <!-- Modal -->
-<div class="modal fade" id="modalCreditInvoice0023" tabindex="-1" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Infos générales -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Client :</strong> {{ selectedCredit?.client.name }}<br>
-                        <strong>Email :</strong> {{ selectedCredit?.client.email }}
-                    </div>
+<div class="modal fade" id="modalCreditInvoice0023" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Infos générales -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Client :</strong> {{ selectedCredit?.client.name }}<br />
+            <strong>Email :</strong> {{ selectedCredit?.client.email }}
+          </div>
 
-                    <div class="col-md-6 text-end">
-                        <strong>Entrepôt :</strong> {{ selectedCredit?.warehouse.nameWh }}<br>
-                        <strong>TVA :</strong> {{ selectedCredit?.warehouse.rateTva }} %
-                    </div>
-                </div>
-
-                <hr>
-
-                <!-- Produits remboursés -->
-                <table class="table table-sm table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Produit</th>
-                            <th>Quantité</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of selectedCredit?.refunded_items">
-                            <td>{{ item.product }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <hr>
-
-                <!-- Totaux -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Motif :</strong> {{ selectedCredit?.reason }}
-                    </div>
-
-                    <div class="col-md-6 text-end">
-                        <p><strong>Sous-total :</strong> {{ selectedCredit?.subtotal | number }} {{devise}}</p>
-                        <p><strong>TVA :</strong> {{ selectedCredit?.total_tva | number }} {{devise}}</p>
-                        <p class="fs-5">
-                            <strong>Total à remboursé :</strong>
-                            {{ selectedCredit?.total_refund | number }} {{devise}}
-                        </p>
-                    </div>
-                </div>
-
-                <hr>
-
-                <!-- Facture originale -->
-                <p>
-                    <strong>Facture originale :</strong>
-                    {{ selectedCredit?.original_invoice }}
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+          <div class="col-md-6 text-end">
+            <strong>Entrepôt :</strong> {{ selectedCredit?.warehouse.nameWh }}<br />
+            <strong>TVA :</strong> {{ selectedCredit?.warehouse.rateTva }} %
+          </div>
         </div>
+
+        <hr />
+
+        <!-- Produits remboursés -->
+        <table class="table table-sm table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Produit</th>
+              <th>Quantité</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of selectedCredit?.refunded_items">
+              <td>{{ item.product }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <hr />
+
+        <!-- Totaux -->
+        <div class="row">
+          <div class="col-md-6"> <strong>Motif :</strong> {{ selectedCredit?.reason }} </div>
+
+          <div class="col-md-6 text-end">
+            <p><strong>Sous-total :</strong> {{ selectedCredit?.subtotal | number }} {{ devise }}</p>
+            <p><strong>TVA :</strong> {{ selectedCredit?.total_tva | number }} {{ devise }}</p>
+            <p class="fs-5">
+              <strong>Total à remboursé :</strong>
+              {{ selectedCredit?.total_refund | number }} {{ devise }}
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- Facture originale -->
+        <p>
+          <strong>Facture originale :</strong>
+          {{ selectedCredit?.original_invoice }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
     </div>
+  </div>
 </div>
