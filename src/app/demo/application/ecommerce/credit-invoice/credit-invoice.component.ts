@@ -66,6 +66,7 @@ export class CreditInvoiceComponent implements OnInit {
   warehouses: Warehouse[] = []
   role: string = ''
   allTotal!: any
+  isSubmitNote: boolean = false
 
 
   constructor(private expensiveService: ExpensiveService, private authService: AuthService, private publicService: PublicService, private storeService: StoreService) { }
@@ -316,6 +317,7 @@ export class CreditInvoiceComponent implements OnInit {
   // ======================
   validateCreditNote() {
     this.isLoading = true
+    this.isSubmitNote = true
     const idCloseModal = document.getElementById('canceledNote001');
     const payload: any = {
       numberInvoice: this.invoiceSelected?.nberInvoice || '',
@@ -325,26 +327,12 @@ export class CreditInvoiceComponent implements OnInit {
       nextPaymentDate: this.nextPaymentDate
     };
 
-    // AVOIR PARTIEL
-    // if (!this.statusCreditNote) {
-    //   if (!this.creditItems.length) {
-    //     alert('Veuillez sélectionner au moins un article.');
-    //     return;
-    //   }
-
     payload.items = this.creditItems.map(item => ({
-      // numberInvoice: this.invoiceSelected?.nberInvoice || '',
       stock_id: item?.product_id,
       quantity: item?.quantity,
-      // unit_price: item?.unit_price,
-      // total: item?.total,
-      // reason: this.reasonReturn,
-      // amounts: this.amounts
     }));
 
     payload.total_amount = this.creditTotal;
-    // }
-
 
     this.storeService.postCreditNote(this.invoiceSelected?.id || 0, payload).subscribe({
       next: () => {
@@ -363,12 +351,14 @@ export class CreditInvoiceComponent implements OnInit {
         this.reasonReturn = '';
         this.errors = [];
         this.isLoading = false
+        this.isSubmitNote = false
         idCloseModal?.click();
 
       },
       error: (err) => {
         this.errors = err.error.errors || [];
         this.isLoading = false
+        this.isSubmitNote = false
         showError(err, err.status, this.errors, err.error, idCloseModal);
       }
     })

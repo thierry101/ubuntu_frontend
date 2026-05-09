@@ -275,7 +275,7 @@
               <small class="text-muted">Client ayant effectué l’achat le plus important</small>
             </div>
             <div class="col-auto text-end">
-              <h4 class="mb-0">{{ highestBestClient?.total_achats | number:'1.0-0' }} {{ devise }}</h4>
+              <h4 class="mb-0">{{ highestBestClient?.total_achats || 0 | number:'1.0-0' }} {{ devise }}</h4>
             </div>
           </div>
         </div>

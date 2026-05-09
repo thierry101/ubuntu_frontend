@@ -11,15 +11,18 @@ import { SetPaginationComponent } from "src/app/demo/application/reusableCompone
 import { SpinnersComponent } from 'src/app/demo/application/reusableComponents/spinners/spinners.component';
 import Swal from 'sweetalert2';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
+import { SubmitSpinnerComponent } from "src/app/demo/application/reusableComponents/submit-spinner/submit-spinner.component";
+
 
 @Component({
   selector: 'app-setting-promotion',
   standalone: true,
-  imports: [SharedModule, SetPaginationComponent, SpinnersComponent, ImagePipe],
+  imports: [SharedModule, SetPaginationComponent, SpinnersComponent, ImagePipe, SubmitSpinnerComponent],
   templateUrl: './setting-promotion.component.html',
   styleUrl: './setting-promotion.component.scss'
 })
 export class SettingPromotionComponent implements OnInit {
+
 
   settingReward!: TypeReward
   listRewardedClients!: any
@@ -59,6 +62,7 @@ export class SettingPromotionComponent implements OnInit {
   allRewards: TypeReward[] = []
   itemEdit!: TypeReward
   editRw: boolean = false
+  isReward: boolean = false
   modalTitle: string = ''
   idsOrders!: any
   flippedCards: boolean[] = [];
@@ -77,8 +81,11 @@ export class SettingPromotionComponent implements OnInit {
           this.devise = res?.devise || '';
         },
         error: (err) => {
-          console.error('Error fetching enterprise customisation:', err);
-        }
+        this.errors = [];
+        this.errors = err.error.errors;
+        this.isReward = false
+        showError(err, err.status, this.errors, err.error, document.getElementById('b'));
+      }
       });
     this.articleManagementService.getSettingPromotion().subscribe({
       next: (res: { result: TypeReward[] }) => {
@@ -185,6 +192,7 @@ export class SettingPromotionComponent implements OnInit {
 
   // ********************************** To set parameter about reward **********************************
   validateReward() {
+    this.isReward = true
     const rewardData = {
       nameRw: this.nameRw,
       colorRw: this.colorRw,
@@ -206,11 +214,13 @@ export class SettingPromotionComponent implements OnInit {
         this.amtReward = 0
         this.percentReward = 0
         this.fetchCLientRewarded(1)
+        this.isReward = false
         toastShow('success', "✅ Paramètre enregistré");
       },
       error: (err) => {
         this.errors = [];
         this.errors = err.error.errors;
+        this.isReward = false
         showError(err, err.status, this.errors, err.error, document.getElementById('closeModelPromo009'));
       }
     })

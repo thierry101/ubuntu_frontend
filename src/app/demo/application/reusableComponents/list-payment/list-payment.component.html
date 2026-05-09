@@ -1,0 +1,11 @@
+<div class="row g-3">
+  <div class="col-6 col-md-3" *ngFor="let method of paymentMethods">
+    <input type="radio" class="btn-check" name="payment" [id]="'pay-' + method.key" (change)="onPaymentChange(method.key)" />
+
+    <label class="payment-card" [for]="'pay-' + method.key">
+      <img [src]="'assets/images/payments/' + method.img" />
+
+      <span>{{ method.label }}</span>
+    </label>
+  </div>
+</div>

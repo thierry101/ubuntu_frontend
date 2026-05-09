@@ -5,7 +5,7 @@ import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImagePipe } from 'src/app/pipes/image.pipe';
 import { PublicService } from 'src/app/services/public.service';
-import { devises, invalidSelectValidator, isMobileApp, itermsNber, showError, toastShow, typesPayment } from 'src/app/share/shared';
+import { devises, invalidSelectValidator, isMobileApp, itermsNber, showError, toastShow } from 'src/app/share/shared';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { QrCodeComponent } from 'ng-qrcode';
 import { Enterprise, globalInterface } from 'src/app/interfaces/global';
@@ -13,20 +13,19 @@ import { TooltipComponent } from '../../application/reusableComponents/tooltip/t
 import { CatalogService } from 'src/app/services/catalog.service';
 import { AdminService } from 'src/app/services/admin.service';
 import { SubmitSpinnerComponent } from '../../application/reusableComponents/submit-spinner/submit-spinner.component';
-import { PrintService, PrinterDevice } from 'src/app/services/print.service'; // ✅
+import { PrintService } from 'src/app/services/print.service'; // ✅
 import { SpinnersComponent } from '../../application/reusableComponents/spinners/spinners.component';
 import { BluetoothPrinterComponent } from "../../application/reusableComponents/bluetooth-printer/bluetooth-printer.component";
+import { ListPaymentComponent } from "../../application/reusableComponents/list-payment/list-payment.component";
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent, SpinnersComponent, BluetoothPrinterComponent],
+  imports: [SharedModule, ImagePipe, QrCodeComponent, TooltipComponent, SubmitSpinnerComponent, SpinnersComponent, BluetoothPrinterComponent, ListPaymentComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
-  // @ViewChild('qrContainer') qrContainer!: ElementRef;
-  // @ViewChild('qrCanvas', { static: false }) qrCanvas: any;
   @ViewChild('qrCanvas', { static: false, read: ElementRef }) qrCanvas!: ElementRef;
   @ViewChild('qrDebt', { read: ElementRef }) qrDebt!: ElementRef;
   @ViewChildren('paymentRadio') paymentRadios!: QueryList<ElementRef<HTMLInputElement>>;
@@ -49,12 +48,10 @@ export class SettingsComponent implements OnInit {
   enableWhatsap: boolean = false;
   expiredProd: boolean = false;
   isPayment: boolean = false;
-  typePayments!: any;
   adminSetting$ = this.publicService.adminSetting$;
   total: number = 0;
   quantity: number = 0;
   unitPrice: number = 0;
-  manuelPayment: boolean = false;
   typePaymentSelected: string = '';
   isLoading: boolean = false;
 
@@ -99,7 +96,6 @@ export class SettingsComponent implements OnInit {
     this.isMobileApp = isMobileApp;
     this.allDevises = devises;
     this.items = itermsNber;
-    this.typePayments = typesPayment;
     this.isLoading = true;
 
     this.publicService.getSettingEtprise().subscribe({
@@ -149,28 +145,10 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  // ngAfterViewInit() {
-  //   const canvas = this.qrCanvas?.nativeElement?.querySelector('canvas');
-  // }
-
 
   // ══════════════════════════════════════════════
   // PARAMÈTRES
   // ══════════════════════════════════════════════
-
-  onPaymentChange(payment: string) {
-    this.typePaymentSelected = payment;
-    if (payment === 'manuel') {
-      this.manuelPayment = true;
-      this.catalogService.getMyPayments().subscribe({
-        next: (res) => { this.accountsNbers = res?.result || []; },
-        error: (err) => { console.error('Erreur lors de la récupération des méthodes de paiement :', err); }
-      });
-    } else {
-      this.manuelPayment = false;
-    }
-  }
-
   calculateTotal(value?: number) {
     const qty = value ?? this.quantity;
     this.total = qty * this.unitPrice;
@@ -210,53 +188,88 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  confirmPayement() {
-    if (this.typePaymentSelected === 'manuel') {
-      this.isPayment = true;
-      const data = {
-        checker: 'paymentWhatsappMsg',
-        typePayment: 'manuel',
-        nbreWhatasapp: this.quantity,
-        imgPayment: this.imgPaymentManuel
-      };
-      this.adminService.postInvoice(data).subscribe({
-        next: () => {
-          toastShow('success', '✅ Paiement traité avec succès');
-          this.errors = [];
-          this.quantity = 0;
-          this.total = 0;
-          this.typePaymentSelected = '';
-          this.manuelPayment = false;
-          this.imgPaymentManuel = { name: '', file: '' };
-          this.imgPaymentManuelPreview = '';
-          this.isPayment = false;
-          this.paymentRadios.forEach(radio => { radio.nativeElement.checked = false; });
-          document.getElementById('closeModalPayment')?.click();
-        },
-        error: (err) => { this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error); this.isPayment = false; }
+
+  receivePayment(payment: string) {
+    this.typePaymentSelected = payment
+    if (payment === 'manuel') {
+      this.catalogService.getMyPayments().subscribe({
+        next: (res) => { this.accountsNbers = res?.result || []; },
+        error: (err) => { console.error('Erreur lors de la récupération des méthodes de paiement :', err); }
       });
     }
   }
 
 
-  ConfirmPayment() {
-    this.isPayment = true
-    const data = {
-      checker: 'paymentWhatsappMsg',
-      typePayment: 'manuel',
-      nbreWhatasapp: this.quantity,
-    }
-    this.adminService.postMobilePayment(data).subscribe({
-      next: (res: any) => {
-        console.log("the result is ", res)
-        this.isPayment = false
-      },
-      error: (err) => {
-        this.isPayment = false
-        this.errors = err?.error?.errors || []; showError(err, err.status, this.errors, err.error);
+  confirmPayement() {
+    if (!this.typePaymentSelected) {
+      toastShow("error", "❌ Choisissez un moyen de paiement")
+    } else {
+      this.isPayment = true;
+      if (this.typePaymentSelected === 'manuel') {
+        const data = {
+          checker: 'paymentWhatsappMsg',
+          typePayment: 'manuel',
+          nbreWhatasapp: this.quantity,
+          imgPayment: this.imgPaymentManuel
+        };
+        this.adminService.postInvoice(data).subscribe({
+          next: () => {
+            toastShow('success', '✅ Paiement traité avec succès');
+            this.resetPaymentForm();
+            document.getElementById('closeModalPayment')?.click();
+          },
+          error: (err) => {
+            this.handleError(err);
+          }
+        });
+
+        return;
       }
-    })
+
+      // MOBILE PAYMENT
+
+      const data = {
+        checker: 'paymentWhatsappMsg',
+        typePayment: 'mobile',
+        nbreWhatasapp: this.quantity,
+      };
+      this.adminService.postMobilePayment(data).subscribe({
+        next: (res: any) => {
+          window.open(res?.url, '_blank');
+          this.isPayment = false;
+        },
+
+        error: (err) => {
+          this.handleError(err);
+        }
+      });
+    }
   }
+
+
+  resetPaymentForm() {
+    this.errors = [];
+    this.quantity = 0;
+    this.total = 0;
+    this.typePaymentSelected = '';
+    this.imgPaymentManuel = {
+      name: '',
+      file: ''
+    };
+    this.imgPaymentManuelPreview = '';
+    this.isPayment = false;
+    this.paymentRadios.forEach(radio => {
+      radio.nativeElement.checked = false;
+    });
+  }
+
+
+  handleError(err: any) {
+    this.isPayment = false;
+    this.errors = err?.error?.errors || [];
+    showError(err, err?.status, this.errors, err?.error);
+  }
+
 
   onLogoChange(event: any) {
     const reader = new FileReader();
